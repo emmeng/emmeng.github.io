@@ -2595,7 +2595,7 @@ input, select, textarea {
 				position: relative;
 				display: block;
 				width: 100%;
-				border-radius: 4px;
+				border-radius: 20px;
 				overflow: hidden;
 			}
 
@@ -2613,16 +2613,32 @@ input, select, textarea {
 					content: '';
 					display: block;
 					position: absolute;
-					top: 0;
+					top: 60%;
 					left: 0;
 					width: 100%;
 					height: 100%;
-					opacity: 1.0;
 					z-index: 1;
 					opacity: 0.8;
 				}
 
-				.tiles article > .image:after {
+				/* .tiles article oneline > .image:before {
+					pointer-events: none;
+					-moz-transition: background-color 0.5s ease, opacity 0.5s ease;
+					-webkit-transition: background-color 0.5s ease, opacity 0.5s ease;
+					-ms-transition: background-color 0.5s ease, opacity 0.5s ease;
+					transition: background-color 0.5s ease, opacity 0.5s ease;
+					content: '';
+					display: block;
+					position: absolute;
+					top: 60%;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					z-index: 1;
+					opacity: 0.8;
+				} */
+
+				/* .tiles article > .image:after {
 					pointer-events: none;
 					-moz-transition: opacity 0.5s ease;
 					-webkit-transition: opacity 0.5s ease;
@@ -2641,7 +2657,7 @@ input, select, textarea {
 					background-size: 100% 100%;
 					opacity: 0.25;
 					z-index: 2;
-				}
+				} */
 
 			.tiles article > a {
 				display: -moz-flex;
@@ -2665,7 +2681,7 @@ input, select, textarea {
 				-ms-transition: background-color 0.5s ease, -ms-transform 0.5s ease;
 				transition: background-color 0.5s ease, transform 0.5s ease;
 				position: absolute;
-				top: 0;
+				top: 30%;
 				left: 0;
 				width: 100%;
 				height: 100%;
@@ -2707,27 +2723,39 @@ input, select, textarea {
 					}
 
 			.tiles article.style1 > .image:before {
-				background-color: #f2849e;
+				/* background-color: #f2849e; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			.tiles article.style2 > .image:before {
-				background-color: #7ecaf6;
+				/* background-color: #7ecaf6; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			.tiles article.style3 > .image:before {
-				background-color: #7bd0c1;
+				/* background-color: #7bd0c1; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			.tiles article.style4 > .image:before {
-				background-color: #c75b9b;
+				/* background-color: #c75b9b; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			.tiles article.style5 > .image:before {
-				background-color: #ae85ca;
+				/* background-color: #ae85ca; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			.tiles article.style6 > .image:before {
-				background-color: #8499e7;
+				/* background-color: #8499e7; */
+				background-color:#ffff;
+				opacity: 0.3;
 			}
 
 			body:not(.is-touch) .tiles article:hover > .image {
