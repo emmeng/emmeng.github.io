@@ -2621,7 +2621,7 @@ input, select, textarea {
 					opacity: 0.8;
 				}
 
-				/* .tiles article oneline > .image:before {
+				.tiles article > .blender-image:before {
 					pointer-events: none;
 					-moz-transition: background-color 0.5s ease, opacity 0.5s ease;
 					-webkit-transition: background-color 0.5s ease, opacity 0.5s ease;
@@ -2630,15 +2630,15 @@ input, select, textarea {
 					content: '';
 					display: block;
 					position: absolute;
-					top: 60%;
+					top: 100%;
 					left: 0;
 					width: 100%;
 					height: 100%;
 					z-index: 1;
 					opacity: 0.8;
-				} */
+				}
 
-				/* .tiles article > .image:after {
+				/* .tiles article > .blender-image:after {
 					pointer-events: none;
 					-moz-transition: opacity 0.5s ease;
 					-webkit-transition: opacity 0.5s ease;
@@ -2694,6 +2694,41 @@ input, select, textarea {
 				z-index: 3;
 			}
 
+			.tiles article > .blender-a {
+				display: -moz-flex;
+				display: -webkit-flex;
+				display: -ms-flex;
+				display: flex;
+				-moz-flex-direction: column;
+				-webkit-flex-direction: column;
+				-ms-flex-direction: column;
+				flex-direction: column;
+				-moz-align-items: center;
+				-webkit-align-items: center;
+				-ms-align-items: center;
+				align-items: center;
+				-moz-justify-content: center;
+				-webkit-justify-content: center;
+				-ms-justify-content: center;
+				justify-content: center;
+				-moz-transition: background-color 0.5s ease, -moz-transform 0.5s ease;
+				-webkit-transition: background-color 0.5s ease, -webkit-transform 0.5s ease;
+				-ms-transition: background-color 0.5s ease, -ms-transform 0.5s ease;
+				transition: background-color 0.5s ease, transform 0.5s ease;
+				position: absolute;
+				top: 0%;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				padding: 1em;
+				border-radius: 4px;
+				border-bottom: 0;
+				color: #ffffff;
+				text-align: center;
+				text-decoration: none;
+				z-index: 3;
+			}
+
 				.tiles article > a > :last-child {
 					margin: 0;
 				}
@@ -2704,6 +2739,18 @@ input, select, textarea {
 
 				.tiles article > a h2 {
 					margin: 0;
+				}
+
+				.tiles article > a .h-blender {
+					-moz-transition: max-height 0.5s ease, opacity 0.5s ease;
+					-webkit-transition: max-height 0.5s ease, opacity 0.5s ease;
+					-ms-transition: max-height 0.5s ease, opacity 0.5s ease;
+					transition: max-height 0.5s ease, opacity 0.5s ease;
+					width: 100%;
+					max-height: 0;
+					line-height: 1.5;
+					margin-top: 0.35em;
+					opacity: 0;
 				}
 
 				.tiles article > a .content {
@@ -2752,7 +2799,7 @@ input, select, textarea {
 				opacity: 0.3;
 			}
 
-			.tiles article.style6 > .image:before {
+			.tiles article.style6 > .blender-image:before {
 				/* background-color: #8499e7; */
 				background-color:#ffff;
 				opacity: 0.3;
@@ -2765,6 +2812,13 @@ input, select, textarea {
 				transform: scale(1.1);
 			}
 
+			body:not(.is-touch) .tiles article:hover > .blender-image {
+				-moz-transform: scale(1);
+				-webkit-transform: scale(1);
+				-ms-transform: scale(1);
+				transform: scale(1);
+			}
+
 				body:not(.is-touch) .tiles article:hover > .image:before {
 					background-color: #333333;
 					opacity: 0.35;
@@ -2774,9 +2828,28 @@ input, select, textarea {
 					opacity: 0;
 				}
 
-			body:not(.is-touch) .tiles article:hover .content {
+				body:not(.is-touch) .tiles article:hover .content {
+					max-height: 15em;
+					opacity: 1;
+					z-index: 4;
+				}
+
+			body:not(.is-touch) .tiles article:hover .h-blender {
 				max-height: 15em;
 				opacity: 1;
+				z-index: 4;
+			}
+			body:not(.is-touch) .tiles article:hover .t-background {
+				background: black;
+				height: 100%;
+				width: 100%;
+				position: absolute;
+				opacity: 40%;
+				z-index: 2;
+				border-radius: 20px;
+
+
+
 			}
 
 		* + .tiles {
@@ -3374,7 +3447,7 @@ input, select, textarea {
 		overflow: auto;
 
 	}
-	
+
 	.image-format {
 		border-radius: 10px;
 	}
