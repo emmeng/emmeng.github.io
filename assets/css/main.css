@@ -3451,3 +3451,13 @@ input, select, textarea {
 	.image-format {
 		border-radius: 10px;
 	}
+
+	.t-d {
+		  font-weight: bold;
+			margin: 0em;
+			/* text-align: center; */
+	}
+	.n-m {
+			margin: 0em;
+			/* text-align: center; */
+	}
