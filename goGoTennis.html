@@ -21,13 +21,27 @@
 					<div id="main">
 						<div class="inner">
 							<h1>GOGO TENNIS</h1>
-							<!-- <span class="image main"><img src="images/pic13.jpg" alt="" /></span> -->
-							<p>&emsp;This project is created in Unity with a group of 5 people.</p>
-							<p>&emsp;GOGO TENNIS is a fitness app that encourages people to stay active through a multiplayer tennis game. With this, users will be able perform physical activities within the comfort of their own home with devices they already have, making it an accessible service for many.</p>
-							<p>&emsp;GOGO TENNIS requires three devices to play, one computer to host the match room over the local network, and two phones that join as player clients. The library we used to make multiplayer possible and build this architecture was through Unity Netcode as it has high level level function calls developers can make to allow for server-client communication.</p>
-							<p>&emsp;To reflect real-time racket swings, we use the user's phone sensor, the gyroscope, to compare the relative change per frame and accurately update the racket to the user.</p>
-							<br></br>
-						 	<p><b>&emsp; Official Demo Video</b></p>
+								<p class="t-d">OVERVIEW</p>
+									<p>&emsp;GOGO TENNIS is a fitness app that promotes active living through a multiplayer tennis game, accessible from home using existing devices. It requires one computer as a local network host and two smartphones as player clients, with Unity Netcode facilitating multiplayer communication. Real-time racket swings are tracked using phone gyroscopes for precise user control.</p>
+								<p class="t-d">MY ROLE</p>
+								<p class="n-m"><i>Development</i></p>
+								<p>&emsp; I was heavily involved in our multiplayer architecture(networking code), utilizing Unity Netcode, the official multiplayer library, to establish our multiplayer system. This library provides essential functions like clientrpc and serverrpc, streamlining communication between clients and the server, ensuring seamless data synchronization across devices. Additionally, I created a player lobby allowing clients to connect by entering the correct IP address. Our network code involved designating the tennis ball, players, and score as networked objects, granting them authority when it was each player's turn to interact with the ball. This facilitated the synchronization of crucial game data, including player positions, ball movement, and scores, across all connected clients and the server. Furthermore, I handled networked events such as serving, hitting, and scoring, ensuring a cohesive and engaging multiplayer tennis experience.</p>
+								<p class="n-m"><i>Testing and Debugging</i></p>
+								<p>&emsp; In terms of testing and debugging, I employed a range of tools, including the Unity editor and Unity remote, while also creating builds through Xcode for deployment on mobile devices. My rigorous testing encompassed various scenarios such as boundary checks, double bouncing, and point scoring to validate the functionality and alignment with real tennis gameplay. Following the successful validation of our single-player mode, which featured an AI opponent, I shifted our focus to multiplayer testing. To ensure seamless synchronization across clients, I ran our game on multiple devices, conducting thorough assessments on both Android and iOS platforms. Debug statements played a important role in facilitating unit and integration testing within Unity and Xcode, enabling me to scrutinize our code for issues and swiftly implement resolutions.</p>
+								<p class="n-m"><i>Project Management</i></p>
+								<p>&emsp; I was the project leader in our team, and I oversaw key responsibilities such as deadlines and milestones, coordinated team meetings, allocating tasks, and ensured product delivery for deadlines.</p>
+								<p class="n-m"><i>3D Modeling/Creative Direction</i></p>
+								<p>&emsp;I actively contributed to refining the finalized theme and UI/UX design through multiple iterative processes. Additionally, I took charge of scene design, and 3D modeling all in-scene objects and one core character. I also used Mixamo to craft animations for all playable characters.</p>
+								<p class="n-m"><i>Previous title screen iteration</i></p>
+								<img src="images/prev_gogotennis.png" alt="" width= "500px" >
+								<br></br>
+								<p class="t-d">DEVELOPMENT STACK</p>
+								<p> For this project we used Unity/C#, built in Android and iOS sensors, Unity Netcode Library for multiplayer, and Blender.</p>
+								<p class="t-d">DETAILS</p>
+								<p class="n-m">&emsp;In our game, players compete in the best-of-three rounds format, with points scored when opponents miss the ball or hit it out of bounds, mirroring real tennis scoring. We've introduced game states like deuce and match point to elevate the excitement. To differentiate ourselves from similar games like Wii Sports, we prioritize realism, featuring accurate physics simulations, player-controlled racket orientation, and variable hit strengths based on swing speed. Notably, we've rectified issues where the ball would pass through the racket in Wii Sports by precisely calculating the angle and speed of ball deflection upon impact.</p>
+								<p>&emsp;Moreover, we've incorporated engaging animations between rounds, signaling score resets and showcasing winning and losing emotes for each player. To enhance ball visibility on computer screens, we've added a ground imprint, displaying a red circle at its last location upon impact. Additionally, a trail renderer ensures the ball's airborne position remains clear. Players serving receive an indicated server tag, and an "out" tag appears when the ball is out. After every play, the winning player enjoys a sparkling animation, while the losing player displays a bewildered star animation. At the game's conclusion on all devices, the winning player celebrates with a "victory screen," granting users the option to choose a rematch or exit the game via computer.</p>
+
+						 	<p class="n-m"><b> Project Overview Video</b></p>
 							<iframe width="560" height="315" src="https://www.youtube.com/embed/pJMIDkWTKEo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 						</div>
 					</div>

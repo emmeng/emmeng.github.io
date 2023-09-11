@@ -17,16 +17,38 @@
 						<div class="inner">
 							<h1>MR Real-Time Radiation Data Visualization</h1>
 							<p class="t-d">OVERVIEW</p>
+
+							<p>&emsp;The aim behind the development of this tool is to convert complex data, like dual neutron/gamma radiation scatter patterns from the H2DPI, into a user-friendly radiation visualization within an MR environment using Microsoft's HoloLens 2. Practical applications of this technology encompass identifying radiation leaks within a facility, enhancing national security, and mitigating the risk of illicit nuclear product smuggling.</p>
 							<p class="t-d">MY ROLE</p>
+							<p>&emsp;I played a pivotal role in crafting the UI/UX experience with a strong emphasis on Human-Computer Interaction (HCI) principles to ensure the system's user-friendliness, particularly for swift utilization by emergency responders. My contributions included the development of the hand menu, an intuitive interface element that appears when users click their wrist. Additionally, I took responsibility for meticulously composing our project documentation, ensuring that it provides comprehensive guidance for future project collaborators in subsequent semesters.</p>
+							<p>Furthermore, I spent my efforts on enhancing data visualization capabilities, incorporating various modes such as:</p>
+								<ul>
+                <li>Advanced Mode:<i> Toggle different data viewing settings.</i></li>
+                <li>Directional Rays:<i> Show/hide rays pointing to the source location.</i></li>
+                <li>Mesh Visualization:<i> Show/hide the automatically generated spatial mesh.</i></li>
+                <li>Colormap Cycling:<i> Cycle through various colormaps (Cividis, Inferno, Plasma, Viridis).</i></li>
+                <li>Cone Image View:<i> Examine cone images from H2DPI data.</i></li>
+            </ul>
 							<p class="t-d">DEVELOPMENT STACK</p>
+							<ul>
+								<li>Unity/C#</li>
+								<li>Rust</li>
+								<li>Python</li>
+								<li>QR code API</li>
+								<li>MRTK Library</li>
+								<li>Tensor FLow</li>
+								<li>Numpy</li>
+							</ul>
+							<p>&emsp;In addition to these core responsibilities, I also made significant contributions outside of the immediate project scope. I edited the demo video that the DNNG chair posted on her LinkedIn profile, ensuring it effectively showcased our work. Moreover, I created informational posters in Adobe Illustrator to increase the project's visibility and impact.</p>
+
 							<p class="t-d">DETAILS</p>
-							<p>&emsp;This data visualization tool was created in Unity using Microsoft's MRTK.</p>
-							<p>&emsp;The purpose of creating such a tool is to transform data - such as double scatters of neutrons/gamma radiation - from the H2DPI into an easy to access radiation visualization in an MR space through the HoloLens 2, Microsoft’s second AR lens released in 2019. Example use cases include: detecting radiation leakage in a facility, national security and preventing the smuggling of nuclear products.
-							</p>
+							<p class="n-m">How it works:</p>
+							<p class="n-m">&emsp;In the ComPASS system(radiation data collector), the H2DPI(hand-held dual particle imager) plays a crucial role by detecting radiation and generating waveforms, which are stored as binary files on the acquisition computer. Subsequently, the Rust/Python component comes into action. A Python script continuously monitors for new files created by ComPASS, triggering the execution of Rust data processing code. This code takes on the task of parsing the waveforms originating from all 32 light detectors, combining and structuring them into cohesive events. These events serve as valuable data points for identifying double scatter occurrences, offering key insights into potential source locations. The outcomes are represented as cones, which are constructed and saved as JSON files. Following this, the Python code then sends these JSON files to the web server hosted on the HoloLens.</p>
+							<p>&emsp; Within the Unity/HoloLens 2 environment, the HoloLens engages in visualization computations. It calculates the back projection using the overlap between the cones it receives and projects the angular data onto the 3D world, allowing the user to see the direction and relative intensity of multiple sources in real time.</p>
 							<br></<br>
-							<p><b>&emsp; Official Demo Video</b></p>
-							<iframe src="https://drive.google.com/file/d/1u3gjgFpAQ4tJU8NX215pP570ZJ4Liz6a/preview" width="640" height="480" allow="autoplay"></iframe>
-							<p>&emsp;Graphics:</p>
+							<p class="n-m"><b>Official Demo Video</b></p>
+							<iframe src="https://drive.google.com/file/d/1u3gjgFpAQ4tJU8NX215pP570ZJ4Liz6a/preview" width="770" height="450" allow="autoplay"></iframe>
+							<p class="n-m"><b>Informational Posters:</b></p>
 							<img src="images/Poster_graphic.png" alt="" width= "300px" >
 							<img src="images/Poster_graphic2.png" alt="" width= "300px" >
 
