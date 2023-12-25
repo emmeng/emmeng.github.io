@@ -12,6 +12,14 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+	<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.153.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@<version>/examples/jsm/"
+    }
+  }
+</script>
 	<body class="is-preload">
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -26,11 +34,21 @@
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
-							<header>
-								<h1 class="special">Hi, I'm Emilee<br /></h1>
-								<div class=typewriter>I'm a senior studying computer science at the University of Michigan with an enthusiasm for creating immersive digital experiences ✩彡 </div>
-							</header>
-							<br>
+						 <div id="top-section">
+					        <div class="half-widthL">
+										<header>
+										 <h1 class="special">Hi, I'm Emilee<br /></h1>
+										 <div id="desc"> </div>
+										 <br></br>
+										 <div id="text-display"> Double Click Phone -> </div>
+									 </header>
+					        </div>
+					        <div class="half-widthR" >
+									<div id="model-container">
+									 </div>
+									</div>
+    					</div>
+							<br></br>
 							<h2> Ongoing Projects</h2>
 							<section class="tiles">
 								<article class="style5">
@@ -292,6 +310,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script type="module" src="assets/js/code.js"></script>
 
 	</body>
 </html>
