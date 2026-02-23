@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Iceberg Scanner — Fading Spider Web</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        canvas.overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <canvas id="overlay" class="overlay"></canvas>
+
+    <script type="module">
+        import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.module.js";
+
+        const IMAGE_URL = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2048&q=80";
+        const COLS = 32, ROWS = 32;
+        const TOTAL_REVEAL_MS = 4500;
+        const TILE_FADE_MS = 400;
+        const LINE_DRAW_MS = 250;
+        const LINE_FADE_MS =400;
+        const AI_LINE_DELAY = 80;
+        const AI_SHOW_PROB = 0.1;
+        const MAX_CONNECT_DIST = 1;
+        const container = document.getElementById('container');
+        const overlay = document.getElementById('overlay');
+        const overlayCtx = overlay.getContext('2d');
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio || 1);
+        container.appendChild(renderer.domElement);
+
+        let scene, camera, tiles = [], orderedIndices = [], activeMeshes = [], overlayItems = [], revealStartTime = 0;
+
+        function resizeAll() {
+            const w = window.innerWidth, h = window.innerHeight;
+            renderer.setSize(w, h);
+            overlay.width = w * (devicePixelRatio || 1);
+            overlay.height = h * (devicePixelRatio || 1);
+            overlay.style.width = w + 'px';
+            overlay.style.height = h + 'px';
+            overlayCtx.setTransform(devicePixelRatio || 1, 0, 0, devicePixelRatio || 1, 0, 0);
+            if (camera) {
+                camera.left = -w / 2; camera.right = w / 2; camera.top = h / 2; camera.bottom = -h / 2;
+                camera.updateProjectionMatrix();
+            }
+        }
+        window.addEventListener('resize', resizeAll);
+
+        function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function easeOutQuad(t) { return 1 - (1 - t) * (1 - t); }
+
+        async function loadAndPrepare() {
+            resizeAll();
+            const img = await loadImage(IMAGE_URL);
+            const imgW = img.naturalWidth, imgH = img.naturalHeight;
+            const bigCanvas = document.createElement('canvas');
+            bigCanvas.width = imgW; bigCanvas.height = imgH;
+            const bigCtx = bigCanvas.getContext('2d');
+            bigCtx.drawImage(img, 0, 0, imgW, imgH);
+
+            const tilePxW = Math.ceil(imgW / COLS), tilePxH = Math.ceil(imgH / ROWS);
+            const screenW = window.innerWidth, screenH = window.innerHeight;
+            const scale = Math.min(screenW / imgW, screenH / imgH);
+            const worldImgW = imgW * scale, worldImgH = imgH * scale;
+            const tileWorldSize = Math.max(worldImgW / COLS, worldImgH / ROWS);
+            const originX = -worldImgW / 2 + tileWorldSize / 2, originY = worldImgH / 2 - tileWorldSize / 2;
+
+            tiles = [];
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const sx = c * tilePxW, sy = r * tilePxH, sw = Math.min(tilePxW, imgW - sx), sh = Math.min(tilePxH, imgH - sy);
+                    const tc = document.createElement('canvas');
+                    tc.width = sw; tc.height = sh;
+                    tc.getContext('2d').drawImage(bigCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+                    const tex = new THREE.CanvasTexture(tc);
+                    tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
+                    const wx = originX + c * tileWorldSize, wy = originY - r * tileWorldSize;
+                    const centerX = sx + sw / 2 - imgW / 2, centerY = -(sy + sh / 2 - imgH / 2);
+                    const dist = Math.sqrt(centerX * centerX + centerY * centerY);
+                    tiles.push({ r, c, texture: tex, world: { x: wx, y: wy, size: tileWorldSize }, centerX, centerY, dist, revealed: false });
+                }
+            }
+
+            orderedIndices = makeSpiralOrder(tiles);
+
+            const total = orderedIndices.length;
+            const now = performance.now() + 50;
+            revealStartTime = now;
+            for (let k = 0; k < total; k++) {
+                const tnorm = k / (total - 1);
+                const eased = easeInOutCubic(tnorm);
+                const jitter = (Math.random() - 0.5) * 0.02;
+                const idx = orderedIndices[k];
+                const baseDelay = 80;
+                tiles[idx].revealAt = now + baseDelay + (eased + jitter) * TOTAL_REVEAL_MS;
+            }
+
+            scene = new THREE.Scene();
+            camera = new THREE.OrthographicCamera(-screenW / 2, screenW / 2, screenH / 2, -screenH / 2, -1000, 1000);
+            camera.position.z = 10;
+            const bg = new THREE.Mesh(new THREE.PlaneGeometry(screenW, screenH), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+            bg.position.z = -50; scene.add(bg);
+
+            for (let i = 0; i < tiles.length; i++) {
+                const t = tiles[i];
+                const geo = new THREE.BoxGeometry(t.world.size, t.world.size, t.world.size * 0.05);
+                const mat = new THREE.MeshBasicMaterial({ map: t.texture, transparent: true, opacity: 0 });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(t.world.x, t.world.y, 0);
+                scene.add(mesh);
+                t.mesh = mesh;
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+function makeSpiralOrder(tilesArr){
+  // Compute distance from center for each tile
+  const coords = tilesArr.map((t,i)=>({
+    i,
+    r: Math.sqrt(Math.pow(t.world.x,2)+Math.pow(t.world.y,2)),
+    angle: Math.atan2(t.world.y,t.world.x)
+  }));
+
+  // Sort **descending** so outer tiles appear first
+  coords.sort((a,b)=>b.r - a.r + (Math.random()-0.5)*0.2);
+
+  return coords.map(c=>c.i);
+}
+
+        function worldToScreen(wx, wy) { return { x: wx + window.innerWidth / 2, y: window.innerHeight / 2 - wy }; }
+        async function loadImage(url) { return new Promise((res, rej) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => res(img); img.onerror = e => rej(e); img.src = url; }); }
+
+        function loop(now) {
+            requestAnimationFrame(loop);
+            const tnow = performance.now();
+
+            for (let i = 0; i < tiles.length; i++) {
+                const t = tiles[i];
+                if (!t.revealed && t.revealAt && tnow >= t.revealAt) {
+                    t.revealed = true; activeMeshes.push({ mesh: t.mesh, born: tnow, fade: 0 });
+
+                    if (Math.random() < AI_SHOW_PROB) {
+                        let prevTile = null;
+                        const candidates = tiles.filter(tt => tt.revealed && tt !== t);
+                        if (candidates.length > 0) {
+                            prevTile = candidates[Math.floor(Math.random() * candidates.length)];
+                        }
+                        if (prevTile) {
+                            const from = worldToScreen(prevTile.mesh.position.x, prevTile.mesh.position.y);
+                            const to = worldToScreen(t.mesh.position.x, t.mesh.position.y);
+                            overlayItems.push({
+                                from, to, born: tnow + AI_LINE_DELAY,
+                                number: overlayItems.length + 1,
+                                tilePos: worldToScreen(t.mesh.position.x, t.mesh.position.y),
+                                fadeStart: null, // will be set when next box connects
+                                alpha: 1
+                            });
+                            // trigger fading of previous overlay if connected
+                            const last = overlayItems[overlayItems.length - 2];
+                            if (last) last.fadeStart = tnow + AI_LINE_DELAY+ 300;
+                        }
+                    }
+                }
+            }
+
+            for (let k = activeMeshes.length - 1; k >= 0; k--) {
+                const a = activeMeshes[k]; const age = tnow - a.born;
+                a.fade = Math.min(1, age / TILE_FADE_MS);
+                if (a.mesh && a.mesh.material) a.mesh.material.opacity = easeOutQuad(a.fade);
+            }
+
+            overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+            overlayCtx.save();
+            overlayCtx.strokeStyle = "white";
+            overlayCtx.fillStyle = "white";
+            overlayCtx.lineWidth = 1.2;
+
+            for (let i = overlayItems.length - 1; i >= 0; i--) {
+                const item = overlayItems[i];
+                const elapsed = tnow - item.born;
+                if (elapsed < 0) continue;
+
+                // Handle fading
+                if (item.fadeStart) {
+                    const fadeElapsed = tnow - item.fadeStart;
+                    item.alpha = Math.max(0, 1 - fadeElapsed / LINE_FADE_MS);
+                }
+
+                // Draw line
+                const tL = Math.min(1, elapsed / LINE_DRAW_MS);
+                const mx = lerp(item.from.x, item.to.x, tL), my = lerp(item.from.y, item.to.y, tL);
+                overlayCtx.beginPath();
+                overlayCtx.moveTo(item.from.x, item.from.y);
+                overlayCtx.lineTo(mx, my);
+                overlayCtx.strokeStyle = `rgba(255,255,255,${item.alpha})`;
+                overlayCtx.stroke();
+
+                // Draw box and number when fully drawn
+                if (tL >= 1 && item.alpha > 0) {
+                    const s = 16;
+                    overlayCtx.strokeRect(item.tilePos.x - s / 2, item.tilePos.y - s / 2, s, s);
+                    overlayCtx.font = "12px sans-serif";
+                    overlayCtx.fillStyle = `rgba(255,255,255,${item.alpha})`;
+                    overlayCtx.fillText(item.number, item.tilePos.x + 4, item.tilePos.y + 10);
+                }
+            }
+
+            overlayCtx.restore();
+            renderer.render(scene, camera);
+        }
+
+        loadAndPrepare().catch(err => { console.error(err); alert("Error loading image: " + err); });
+    </script>
+</body>
+
+</html>

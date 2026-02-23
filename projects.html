@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Emilee Meng</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/projects.css" />
+
+  <!-- Site Scripts -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+  <!-- Three.js r170 with ES Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+
+</head>
+
+<body class="is-preload">
+
+    <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <img src="images/emiiverse_logo_anim.gif" alt="Loading..." class="loading-gif">
+      <h2>Loading Project Plaza...</h2>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0%</div>
+    </div>
+  </div>
+    
+  <!-- TRANSITIONS -->
+  <div id="project-page-transition"></div>
+
+
+  <!-- Navigation -->
+  <nav id="top-nav">
+    <a href="projects_coean.html" class="nav-button">Projects</a>
+    <a href="aboutMe.html" class="nav-button">About Me</a>
+  </nav>
+
+  <div id="mobile-projects">
+    <h1>Projects</h1>
+    <div class="projects-grid" id="projects-grid">
+      <!-- Cards will be populated by JavaScript -->
+    </div>
+  </div>
+
+<div id="id-card-overlay" style="display: none;">
+  <div id="id-card">
+    <div class="card-shine"></div> <!-- Shine layer -->
+    <div class="card-content"> <!-- Content wrapper -->
+      <span class="close-card">&times;</span>
+
+      <!-- Left Side -->
+      <div class="card-left">
+        <img class="character-icon" src="" alt="Character Icon">
+        <img class="project-gif" src="" alt="Project Demo">
+        <div class="card-name"></div>
+        <div class="card-date"></div>
+      </div>
+
+      <!-- Right Side -->
+      <div class="card-right">
+        <div class="project-title"></div>
+        <div class="skills-container"></div>
+        <div class="project-description"></div>
+        <a href="#" class="learn-more-btn" target="_blank">VIEW PROJECT</a>
+        <img class="logo" src="images/emiiverse_logo.png" alt="Logo">
+      </div>
+    </div>
+  </div>
+</div>
+  <div id="clock"></div>
+
+  <!-- Splash -->
+  <!-- <div id="splash-overlay">
+    <img src="images/emiiverse_splash.png" id="splash-img" />
+  </div> -->
+
+  <!-- Fullscreen Three.js -->
+  <div id="plaza-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module" src="assets/js/projects.js"></script>
+  
+</body>
+
+</html>

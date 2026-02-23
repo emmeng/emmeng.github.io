@@ -1,0 +1,863 @@
+/* ═══════════════════════════════════════
+   $1 UNISTROKE RECOGNIZER
+   ═══════════════════════════════════════ */
+(function () {
+    var NumPoints = 64, SquareSize = 250, Origin = { X: 0, Y: 0 },
+        Diagonal = Math.sqrt(2 * SquareSize * SquareSize), HalfDiagonal = Diagonal / 2,
+        AngleRange = 45, AnglePrecision = 2, Phi = 0.5 * (-1 + Math.sqrt(5));
+
+    function Point(x, y) { this.X = x; this.Y = y; }
+    function Rectangle(x, y, w, h) { this.X = x; this.Y = y; this.Width = w; this.Height = h; }
+
+    function Unistroke(name, points) {
+        this.Name = name;
+        this.Points = Resample(points, NumPoints);
+        var r = IndicativeAngle(this.Points);
+        this.Points = RotateBy(this.Points, -r);
+        this.Points = ScaleTo(this.Points, SquareSize);
+        this.Points = TranslateTo(this.Points, Origin);
+    }
+
+    function Result(name, score) {
+        this.Name = name;
+        this.Score = score;
+    }
+
+    function DollarRecognizer() {
+        this.Unistrokes = [];
+
+        this.AddGesture = function (name, points) {
+            this.Unistrokes.push(new Unistroke(name, points));
+        };
+
+        this.Recognize = function (points, useProtractor) {
+            if (!points || points.length < 2 || this.Unistrokes.length === 0) {
+                return new Result("No match", 0);
+            }
+
+            points = Resample(points, NumPoints);
+            var r = IndicativeAngle(points);
+            points = RotateBy(points, -r);
+            points = ScaleTo(points, SquareSize);
+            points = TranslateTo(points, Origin);
+
+            var b = Infinity, u = -1;
+
+            for (var i = 0; i < this.Unistrokes.length; i++) {
+                var d = useProtractor
+                    ? OptimalCosineDistance(this.Unistrokes[i].Points, points)
+                    : DistanceAtBestAngle(points, this.Unistrokes[i], -AngleRange, AngleRange, AnglePrecision);
+
+                if (d < b) { b = d; u = i; }
+            }
+
+            return u === -1
+                ? new Result("No match", 0)
+                : new Result(this.Unistrokes[u].Name, 1 - b / HalfDiagonal);
+        };
+    }
+
+    function Resample(points, n) {
+        var I = PathLength(points) / (n - 1);
+        var D = 0.0;
+        var newpoints = [points[0]];
+
+        for (var i = 1; i < points.length; i++) {
+            var d = Distance(points[i - 1], points[i]);
+            if ((D + d) >= I) {
+                var qx = points[i - 1].X + ((I - D) / d) * (points[i].X - points[i - 1].X);
+                var qy = points[i - 1].Y + ((I - D) / d) * (points[i].Y - points[i - 1].Y);
+                var q = new Point(qx, qy);
+                newpoints.push(q);
+                points.splice(i, 0, q);
+                D = 0.0;
+            } else {
+                D += d;
+            }
+        }
+
+        while (newpoints.length < n) {
+            newpoints.push(points[points.length - 1]);
+        }
+
+        return newpoints;
+    }
+
+    function IndicativeAngle(points) {
+        var c = Centroid(points);
+        return Math.atan2(c.Y - points[0].Y, c.X - points[0].X);
+    }
+
+    function RotateBy(points, radians) {
+        var c = Centroid(points);
+        var cos = Math.cos(radians);
+        var sin = Math.sin(radians);
+        return points.map(p =>
+            new Point(
+                (p.X - c.X) * cos - (p.Y - c.Y) * sin + c.X,
+                (p.X - c.X) * sin + (p.Y - c.Y) * cos + c.Y
+            )
+        );
+    }
+
+    function ScaleTo(points, size) {
+        var B = BoundingBox(points);
+        var scale = Math.max(B.Width, B.Height);
+        if (scale === 0) return points;
+        return points.map(p =>
+            new Point(p.X * (size / scale), p.Y * (size / scale))
+        );
+    }
+
+    function TranslateTo(points, pt) {
+        var c = Centroid(points);
+        return points.map(p =>
+            new Point(p.X + pt.X - c.X, p.Y + pt.Y - c.Y)
+        );
+    }
+
+    function DistanceAtBestAngle(points, T, a, b, threshold) {
+        var x1 = Phi * a + (1 - Phi) * b;
+        var f1 = DistanceAtAngle(points, T, x1);
+        var x2 = (1 - Phi) * a + Phi * b;
+        var f2 = DistanceAtAngle(points, T, x2);
+
+        while (Math.abs(b - a) > threshold) {
+            if (f1 < f2) {
+                b = x2; x2 = x1; f2 = f1;
+                x1 = Phi * a + (1 - Phi) * b;
+                f1 = DistanceAtAngle(points, T, x1);
+            } else {
+                a = x1; x1 = x2; f1 = f2;
+                x2 = (1 - Phi) * a + Phi * b;
+                f2 = DistanceAtAngle(points, T, x2);
+            }
+        }
+        return Math.min(f1, f2);
+    }
+
+    function DistanceAtAngle(points, T, radians) {
+        return PathDistance(RotateBy(points, radians), T.Points);
+    }
+
+    function Centroid(points) {
+        var x = 0, y = 0;
+        points.forEach(p => { x += p.X; y += p.Y; });
+        return new Point(x / points.length, y / points.length);
+    }
+
+    function BoundingBox(points) {
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        points.forEach(p => {
+            minX = Math.min(minX, p.X); minY = Math.min(minY, p.Y);
+            maxX = Math.max(maxX, p.X); maxY = Math.max(maxY, p.Y);
+        });
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    function PathDistance(a, b) {
+        var len = Math.min(a.length, b.length);
+        if (len === 0) return Infinity;
+        var d = 0;
+        for (var i = 0; i < len; i++) d += Distance(a[i], b[i]);
+        return d / len;
+    }
+
+    function PathLength(points) {
+        var d = 0;
+        for (var i = 1; i < points.length; i++) d += Distance(points[i - 1], points[i]);
+        return d;
+    }
+
+    function Distance(p1, p2) {
+        var dx = p2.X - p1.X, dy = p2.Y - p1.Y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function OptimalCosineDistance(a, b) {
+        var dot = 0, det = 0;
+        var len = Math.min(a.length, b.length);
+        for (var i = 0; i < len; i++) {
+            dot += a[i].X * b[i].X + a[i].Y * b[i].Y;
+            det += a[i].X * b[i].Y - a[i].Y * b[i].X;
+        }
+        return Math.acos(dot / Math.sqrt(dot * dot + det * det));
+    }
+
+    window.DollarRecognizer = DollarRecognizer;
+    window.DollarPoint = Point;
+})();
+
+
+// ══════════════════════════════════════════
+// THREE.JS — INTRO MODEL
+// ══════════════════════════════════════════
+(function () {
+    const container = document.getElementById('model-container');
+    const canvas = document.getElementById('three-canvas');
+    const W = container.clientWidth, H = container.clientHeight;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+    camera.position.set(0, 0.5, 4.5);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dir = new THREE.DirectionalLight(0x78B8FF, 1.2);
+    dir.position.set(3, 5, 3);
+    scene.add(dir);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
+    fill.position.set(-3, 0, 2);
+    scene.add(fill);
+
+    const group = new THREE.Group();
+
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x43424C, roughness: 0.4, metalness: 0.1 });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 1.1, 16), bodyMat);
+    body.position.y = -0.1;
+    group.add(body);
+
+    const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0xF5C5A3, roughness: 0.5 })
+    );
+    head.position.y = 0.88;
+    group.add(head);
+
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x43424C });
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 12), eyeMat);
+    eyeL.position.set(-0.13, 0.95, 0.33);
+    group.add(eyeL);
+    const eyeR = eyeL.clone();
+    eyeR.position.set(0.13, 0.95, 0.33);
+    group.add(eyeR);
+
+    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 10), bodyMat);
+    armL.position.set(-0.55, -0.05, 0);
+    armL.rotation.z = 0.4;
+    group.add(armL);
+    const armR = armL.clone();
+    armR.position.set(0.55, -0.05, 0);
+    armR.rotation.z = -0.4;
+    group.add(armR);
+
+    scene.add(group);
+
+    const animations = {
+        circle: () => {
+            gsap.to(group.rotation, { y: Math.PI * 2, duration: 1, ease: 'power2.inOut', onComplete: () => { group.rotation.y = 0; } });
+        },
+        star: () => {
+            gsap.to(eyeR.scale, { y: 0.05, duration: 0.15, yoyo: true, repeat: 1, ease: 'power1.inOut' });
+            gsap.to(group.rotation, { z: 0.2, duration: 0.3, yoyo: true, repeat: 1 });
+        },
+        square: () => {
+            gsap.to(group.scale, { y: 1.2, x: 0.85, duration: 0.25, yoyo: true, repeat: 1, ease: 'elastic.out' });
+        },
+        zigzag: () => {
+            gsap.to(armR.rotation, { z: -1.2, duration: 0.25, yoyo: true, repeat: 3, ease: 'power1.inOut' });
+            gsap.to(group.position, { x: 0.1, duration: 0.12, yoyo: true, repeat: 5 });
+        }
+    };
+
+    window._triggerModelAnimation = (name) => {
+        if (animations[name]) animations[name]();
+    };
+
+    const clock = new THREE.Clock();
+    let introVisible = false;
+
+    function animate() {
+        if (!introVisible) return;
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        group.position.y = Math.sin(t * 0.8) * 0.06;
+        group.rotation.y = Math.sin(t * 0.3) * 0.15;
+        renderer.render(scene, camera);
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        introVisible = entries[0].isIntersecting;
+        if (introVisible) animate();
+    }, { threshold: 0.1 });
+    observer.observe(canvas);
+    
+    window.addEventListener('resize', () => {
+        const w = container.clientWidth, h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+})();
+
+
+// ══════════════════════════════════════════
+// GESTURE DRAWING + $1 RECOGNITION
+// ══════════════════════════════════════════
+(function () {
+    const container = document.getElementById('model-container');
+    const gc = document.getElementById('gesture-canvas');
+    const resultEl = document.getElementById('gesture-result');
+
+    function resizeGC() {
+        gc.width = container.offsetWidth;
+        gc.height = container.offsetHeight;
+    }
+    resizeGC();
+    window.addEventListener('resize', resizeGC);
+
+    const ctx = gc.getContext('2d');
+    const recognizer = new window.DollarRecognizer();
+    const Pt = (x, y) => new window.DollarPoint(x, y);
+    const pts = arr => arr.map(p => Pt(p[0], p[1]));
+
+    recognizer.AddGesture('circle', pts([
+        [127, 141], [124, 140], [120, 139], [118, 139], [116, 139], [111, 140], [109, 141], [104, 144], [100, 147],
+        [96, 152], [93, 157], [90, 163], [87, 169], [85, 175], [83, 181], [82, 190], [82, 195], [83, 200], [84, 205],
+        [88, 213], [91, 216], [96, 219], [103, 222], [108, 224], [111, 224], [120, 224], [133, 223], [142, 221],
+        [152, 218], [160, 214], [167, 210], [173, 204], [178, 198], [179, 196], [182, 188], [182, 185], [182, 180],
+        [181, 175], [178, 167], [173, 161], [168, 155], [163, 150], [156, 147], [149, 145], [142, 143], [136, 142], [127, 141]
+    ]));
+
+    recognizer.AddGesture('star', pts([
+        [75, 250], [75, 247], [77, 244], [78, 242], [79, 239], [80, 237], [82, 234], [82, 232], [84, 229], [85, 225],
+        [87, 222], [88, 219], [89, 216], [91, 212], [92, 208], [94, 204], [95, 201], [96, 196], [97, 194], [98, 191],
+        [100, 185], [102, 182], [104, 178], [106, 174], [108, 171], [110, 168], [111, 166], [113, 163], [116, 158],
+        [117, 156], [119, 152], [121, 148], [122, 146], [123, 145], [125, 141], [127, 139], [130, 136], [132, 135],
+        [134, 136], [146, 152], [156, 169], [166, 185], [177, 202], [188, 218], [199, 235], [187, 219], [175, 202],
+        [165, 186], [155, 169], [146, 153], [133, 134], [148, 134], [167, 135], [186, 136], [204, 136], [221, 137],
+        [203, 149], [186, 163], [171, 177], [156, 191], [141, 205], [125, 219]
+    ]));
+
+    recognizer.AddGesture('square', pts([
+        [50, 50], [150, 50],
+        [150, 50], [150, 150],
+        [150, 150], [50, 150],
+        [50, 150], [50, 50]
+    ]));
+
+    // To record your own zigzag: uncomment the console.log in moveDraw, draw once, copy the array
+    recognizer.AddGesture('zigzag', pts([
+        [100, 50], [150, 70], [100, 90], [150, 110], [100, 130], [150, 150], [100, 170], [150, 190],
+        [130, 80], [100, 100], [130, 120], [100, 140], [130, 160],
+        [110, 60], [150, 80], [110, 100], [150, 120], [110, 140], [150, 160], [110, 180]
+    ]));
+
+    let drawing = false;
+    let points = [];
+    let drawnPts = [];
+
+    function getPos(e) {
+        const rect = container.getBoundingClientRect();
+        const src = e.touches ? e.touches[0] : e;
+        return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+    }
+
+    function redrawStroke(alpha) {
+        ctx.clearRect(0, 0, gc.width, gc.height);
+        if (drawnPts.length < 2) return;
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = '#78B8FF';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(drawnPts[0].x, drawnPts[0].y);
+        for (let i = 1; i < drawnPts.length; i++) ctx.lineTo(drawnPts[i].x, drawnPts[i].y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    }
+
+    function startDraw(e) {
+        e.preventDefault();
+        drawing = true;
+        points = [];
+        drawnPts = [];
+        ctx.clearRect(0, 0, gc.width, gc.height);
+        const p = getPos(e);
+        points.push(Pt(p.x, p.y));
+        drawnPts.push(p);
+    }
+
+    function moveDraw(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        const p = getPos(e);
+        points.push(Pt(p.x, p.y));
+        drawnPts.push(p);
+        // Uncomment to record your own gesture:
+        // console.log(JSON.stringify(points.map(pt => [Math.round(pt.X), Math.round(pt.Y)])));
+        redrawStroke(1);
+    }
+
+    let fadeTimer = null;
+    function endDraw() {
+        if (!drawing) return;
+        drawing = false;
+
+        if (points.length > 20) {
+            const result = recognizer.Recognize(points, false);
+            console.log('Recognized:', result.Name, '| score:', result.Score.toFixed(2));
+            const map = {
+                circle: { text: '◯ Circle detected!', anim: 'circle' },
+                star: { text: '★ Star detected — wink!', anim: 'star' },
+                square: { text: '□ Square detected!', anim: 'square' },
+                zigzag: { text: '〜 Hello!!', anim: 'zigzag' }
+            };
+            const match = map[result.Name];
+            if (match && result.Score > 0.45) {
+                resultEl.textContent = match.text;
+                window._triggerModelAnimation(match.anim);
+            } else {
+                resultEl.textContent = 'Try: circle, star, square, or zigzag';
+            }
+            resultEl.classList.add('visible');
+            setTimeout(() => resultEl.classList.remove('visible'), 3000);
+        }
+
+        if (fadeTimer) clearInterval(fadeTimer);
+        let alpha = 1;
+        fadeTimer = setInterval(() => {
+            alpha -= 0.07;
+            if (alpha <= 0) {
+                clearInterval(fadeTimer);
+                ctx.clearRect(0, 0, gc.width, gc.height);
+                drawnPts = [];
+            } else {
+                redrawStroke(alpha);
+            }
+        }, 30);
+    }
+
+    container.addEventListener('mousedown', startDraw);
+    container.addEventListener('mousemove', moveDraw);
+    container.addEventListener('mouseup', endDraw);
+    container.addEventListener('mouseleave', endDraw);
+    container.addEventListener('touchstart', startDraw, { passive: false });
+    container.addEventListener('touchmove', moveDraw, { passive: false });
+    container.addEventListener('touchend', endDraw);
+
+    gc.style.pointerEvents = 'none';
+    document.getElementById('three-canvas').style.pointerEvents = 'none';
+})();
+
+
+// ══════════════════════════════════════════
+// THREE.JS — EXPERIENCE MODEL (GLTF)
+// ══════════════════════════════════════════
+
+
+function addFlowersAndSnowman(scene, loader) {
+    // --- Flower setup ---
+    const flowerCount = 100;
+    const dummy = new THREE.Object3D();
+    const flowerData = [];
+    let flowerInstancedMesh = null;
+
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('models/textures/nemphilia_tex.png', (texture) => {
+        texture.colorSpace = THREE.SRGBEncoding;
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+
+        const flowerMaterial = new THREE.MeshToonMaterial({
+            map: texture,
+            transparent: true,
+            alphaTest: 0.5,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+
+        loader.load('models/nemphilia_2.glb', (gltf) => {
+            const flowerModel = gltf.scene;
+            flowerModel.traverse((child) => {
+                if (child.isMesh) {
+                    flowerInstancedMesh = new THREE.InstancedMesh(
+                        child.geometry,
+                        flowerMaterial,
+                        flowerCount
+                    );
+
+                    let validFlowerCount = 0;
+                    for (let i = 0; i < flowerCount; i++) {
+                        const x = (Math.random() - 0.5) * 10;
+                        const z = (Math.random() - 0.5) * 10;
+                        const s = 0.1 + Math.random() * 0.1;
+
+                        dummy.position.set(x, 0, z);
+                        dummy.rotation.y = Math.random() * Math.PI * 2;
+                        dummy.scale.setScalar(s);
+                        dummy.updateMatrix();
+
+                        flowerInstancedMesh.setMatrixAt(validFlowerCount, dummy.matrix);
+                        flowerData.push({ x, z, scale: s, rotationOffset: Math.random() * Math.PI * 2 });
+                        validFlowerCount++;
+                    }
+
+                    flowerInstancedMesh.count = validFlowerCount;
+                    flowerInstancedMesh.instanceMatrix.needsUpdate = true;
+                    scene.add(flowerInstancedMesh);
+                }
+            });
+        });
+    });
+
+    // --- Snowman setup ---
+    const snowmanGroup = new THREE.Group();
+
+    const createSphere = (radius, color, y) => {
+        const geom = new THREE.SphereGeometry(radius, 16, 16);
+        const mat = new THREE.MeshToonMaterial({ color });
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.y = y;
+        return mesh;
+    };
+
+    // Body
+    snowmanGroup.add(createSphere(0.3, 0xffffff, 0.3));
+    snowmanGroup.add(createSphere(0.22, 0xffffff, 0.7));
+
+    // Eyes
+    const eyeGeom = new THREE.SphereGeometry(0.03, 8, 8);
+    const eyeMat = new THREE.MeshToonMaterial({ color: 0x000000 });
+    const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
+    leftEye.position.set(-0.1, 0.78, 0.15);
+    snowmanGroup.add(leftEye);
+    const rightEye = new THREE.Mesh(eyeGeom, eyeMat);
+    rightEye.position.set(0.1, 0.78, 0.15);
+    snowmanGroup.add(rightEye);
+
+    // Nose
+    const noseGeom = new THREE.ConeGeometry(0.02, 0.1, 8);
+    const noseMat = new THREE.MeshToonMaterial({ color: 0xff8c42 });
+    const nose = new THREE.Mesh(noseGeom, noseMat);
+    nose.rotation.x = Math.PI / 2;
+    nose.position.set(0, 0.73, 0.25);
+    snowmanGroup.add(nose);
+
+    // Buttons
+    const buttonGeom = new THREE.SphereGeometry(0.02, 6, 6);
+    const buttonMat = new THREE.MeshToonMaterial({ color: 0x000000 });
+    for (let i = 0; i < 3; i++) {
+        const button = new THREE.Mesh(buttonGeom, buttonMat);
+        button.position.set(0, 0.6 - i * 0.1, 0.21);
+        snowmanGroup.add(button);
+    }
+
+    snowmanGroup.position.set(-0.5, 0, -0.3);
+    snowmanGroup.rotation.y = Math.PI / 6;
+    scene.add(snowmanGroup);
+
+    return { flowerData, flowerInstancedMesh, snowmanGroup, dummy };
+}
+
+(function () {
+    const canvas = document.getElementById('exp-canvas');
+    if (!canvas) return;
+    const container = canvas.parentElement;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.set(0, 1, 5);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dl = new THREE.DirectionalLight(0x78B8FF, 1.2);
+    dl.position.set(3, 5, 3);
+    scene.add(dl);
+
+    function resize() {
+        const w = container.clientWidth, h = container.clientHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let mixer = null;
+    let lookAtAction = null; // the animation clip you want to scrub
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('images/your-model.glb', (gltf) => {
+        const model = gltf.scene;
+        scene.add(model);
+
+        if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(model);
+            // Use the first animation clip — change index if needed
+            lookAtAction = mixer.clipAction(gltf.animations[0]);
+            lookAtAction.play();
+            lookAtAction.paused = true; // we'll scrub it manually
+        }
+    });
+
+    const { flowerData, flowerInstancedMesh, snowmanGroup, dummy } = addFlowersAndSnowman(scene, loader);
+
+    // Optional: animate flowers (similar to your previous animate loop)
+    function animateFlowers() {
+        const t = performance.now() * 0.001;
+        if (flowerInstancedMesh && flowerData.length) {
+            for (let i = 0; i < flowerData.length; i++) {
+                const data = flowerData[i];
+                const wave = Math.sin(data.x * 0.5 + data.z * 0.5 + t * 2 + data.rotationOffset) * 0.15;
+                dummy.position.set(data.x, 0, data.z);
+                dummy.rotation.x = wave;
+                dummy.rotation.z = wave * 0.5;
+                dummy.rotation.y = data.rotationOffset;
+                dummy.scale.setScalar(data.scale);
+                dummy.updateMatrix();
+                flowerInstancedMesh.setMatrixAt(i, dummy.matrix);
+            }
+            flowerInstancedMesh.instanceMatrix.needsUpdate = true;
+        }
+        requestAnimationFrame(animateFlowers);
+    }
+    animateFlowers();
+
+    // Pause/resume rendering when out of view
+    let isVisible = false;
+    const observer = new IntersectionObserver(entries => {
+        isVisible = entries[0].isIntersecting;
+        if (isVisible) animate();
+    }, { threshold: 0.1 });
+    observer.observe(canvas);
+
+    const clock = new THREE.Clock();
+    function animate() {
+        if (!isVisible) return;
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+
+    // Expose scrub function for GSAP to call
+    window._scrubExpModel = (progress) => {
+        if (!mixer || !lookAtAction) return;
+        const clip = lookAtAction.getClip();
+        // Set the animation time based on scroll progress
+        mixer.setTime(progress * clip.duration);
+    };
+})();
+
+// ══════════════════════════════════════════
+// GSAP SCROLL ANIMATIONS
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Intro entrance
+    gsap.from('.intro-title', { y: 60, opacity: 0, duration: 1.2, ease: 'power3.out', delay: 0.2 });
+    gsap.from('.intro-subtitle', { y: 40, opacity: 0, duration: 1.0, ease: 'power3.out', delay: 0.5 });
+    gsap.from('.intro-right', { x: 60, opacity: 0, duration: 1.2, ease: 'power3.out', delay: 0.3 });
+
+    // Experience: shoot in from left at 7°, stay tilted on landing
+    // all 4 finish by the time section hits top of screen
+    ['exp-title', 'exp-1', 'exp-2', 'exp-3'].forEach((id) => {
+        gsap.fromTo('#' + id,
+            { rotation: 7, x: -window.innerWidth, y: 0, opacity: 0 },
+            {
+                rotation: 7, x: -50, y: 0, opacity: 1,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#experience',
+                    start: 'top bottom',
+                    end: 'top top',
+                    scrub: 2,
+                    onUpdate: self => window._scrubExpModel(self.progress) // ADD THIS
+                }
+            }
+        );
+    });
+
+
+    gsap.to('#wave-divider-1', {
+        backgroundPosition: '200px 0',
+        ease: 'none',
+        scrollTrigger: {
+            trigger: '#wave-divider-1',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 5,
+        }
+    });
+
+    gsap.to('#wave-divider-2', {
+        backgroundPosition: '200px 0',
+        ease: 'none',
+        scrollTrigger: {
+            trigger: '#awards',
+            start: 'top bottom',
+            end: 'top top',
+            scrub: 5,
+        }
+    });
+
+    // Skills: 4 cards start offscreen right, pan across to offscreen left
+    // runner travels left→right across the visible viewport in sync
+    (function () {
+        const track = document.getElementById('skills-track');
+        const boxes = track.querySelectorAll('.skill-box');
+
+        const boxW = 260 + 24;
+        const totalW = boxes.length * boxW;
+
+        // END when last box is fully visible
+        const wrapper = document.querySelector('.skills-track-wrapper');
+        const wrapperW = wrapper.offsetWidth;
+
+        const endX = wrapperW - totalW;
+
+        gsap.fromTo(
+            track,
+            { x: 120 }, // keep your original start
+            {
+                x: endX,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#skills',
+                    start: 'top top',
+                    end: '+=800',
+                    pin: true,
+                    scrub: 3,
+
+                    onUpdate: self => {
+                        const runner = document.getElementById('runner-char');
+                        const runnerRect = runner.getBoundingClientRect();
+
+                        boxes.forEach(box => {
+                            const br = box.getBoundingClientRect();
+
+                            const enter =
+                                runnerRect.right > br.left &&
+                                runnerRect.left < br.right;
+
+                            const exit =
+                                runnerRect.left > br.right + 20 ||
+                                runnerRect.right < br.left - 20;
+
+                            if (enter) {
+                                box.classList.add('lift');
+                            } else if (exit) {
+                                box.classList.remove('lift');
+                            }
+                        });
+
+                        // runner movement stays the same
+                        gsap.set(runner, {
+                            x: -90 + self.progress * (window.innerWidth + 90)
+                        });
+                    }
+                }
+            }
+        );
+    })();
+
+    // Awards entrance
+    gsap.from('.award-item', {
+        x: -50, opacity: 0, stagger: 0.15, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+            trigger: '#awards',
+            start: 'top 75%',
+            toggleActions: 'play none none reverse'
+        }
+    });
+
+    // About entrance
+    gsap.from('.about-image', {
+        x: -60, opacity: 0, duration: 1,
+        scrollTrigger: { trigger: '#about', start: 'top 80%', toggleActions: 'play none none reverse' }
+    });
+    gsap.from('.about-text', {
+        y: 40, opacity: 0, duration: 1,
+        scrollTrigger: { trigger: '#about', start: 'top 80%', toggleActions: 'play none none reverse' }
+    });
+
+    // Logo shake on scroll into view
+    ScrollTrigger.create({
+        trigger: '.about-logo',
+        start: 'top 90%',
+        once: true,
+        onEnter: () => {
+            gsap.timeline({ defaults: { ease: 'power2.inOut' } })
+                .to('#about-logo-img', { rotation: -6, duration: 0.18 })
+                .to('#about-logo-img', { rotation: 6, duration: 0.28 })
+                .to('#about-logo-img', { rotation: 0, duration: 0.18 });
+        }
+    });
+
+}); // end DOMContentLoaded
+
+
+// ══════════════════════════════════════════
+// THREE.JS — AWARDS SECTION MODEL
+// ══════════════════════════════════════════
+(function () {
+    const canvas = document.getElementById('awards-canvas');
+    const container = canvas.parentElement;
+    const W = container.clientWidth, H = container.clientHeight;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+    camera.position.set(0, 0.5, 4.5);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dl = new THREE.DirectionalLight(0x78B8FF, 1);
+    dl.position.set(2, 4, 3);
+    scene.add(dl);
+
+    const g = new THREE.Group();
+    const bMat = new THREE.MeshStandardMaterial({ color: 0x43424C, roughness: 0.4 });
+    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 1.1, 16), bMat));
+
+    const h = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0xF5C5A3, roughness: 0.5 })
+    );
+    h.position.y = 0.88;
+    g.add(h);
+
+    const trophy = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.06, 0.12, 0.4, 12),
+        new THREE.MeshStandardMaterial({ color: 0xFFD700, roughness: 0.3, metalness: 0.8 })
+    );
+    trophy.position.set(0.55, 0.3, 0.2);
+    g.add(trophy);
+
+    scene.add(g);
+
+    const clock = new THREE.Clock();
+    let awardsAnimating = false;
+    function animAwards() {
+        if (!awardsAnimating) return;
+        requestAnimationFrame(animAwards);
+        const t = clock.getElapsedTime();
+        g.position.y = Math.sin(t * 0.7) * 0.05;
+        g.rotation.y = Math.sin(t * 0.25) * 0.2;
+        renderer.render(scene, camera);
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        awardsAnimating = entries[0].isIntersecting;
+        if (awardsAnimating) animAwards();
+    }, { threshold: 0.1 });
+    observer.observe(canvas);
+
+    window.addEventListener('resize', () => {
+        const w = container.clientWidth, h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+})();

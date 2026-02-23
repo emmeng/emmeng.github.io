@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(#17181d, #2e3031);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #4a6fa5;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            z-index: 10;
+        }
+
+        /* Fullscreen overlay */
+        #splash-overlay {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            overflow: hidden;
+            animation: fadeOut 0.3s ease forwards;
+            animation-delay: 0.6s;
+        }
+
+        /* Splash image itself */
+        #splash-img {
+            width: 60vmin;
+            height: auto;
+            object-fit: cover;
+            transform: scale(3);
+            opacity: 1;
+            image-rendering: high-quality;
+            animation: growSplash 0.6s linear forwards;
+        }
+
+        /* Expansion animation */
+        @keyframes growSplash {
+            0% {
+                transform: scale(3);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(3);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(10);
+                opacity: 0;
+            }
+        }
+
+        /* Fade out the overlay */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-overlay">
+        <img src="images/emiiverse_splash_pixel.png" id="splash-img" alt="Splash" />
+    </div>
+    <div class="loading" id="loading">Loading flowers...</div>
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+        import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/GLTFLoader.js';
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0xc0e0ff, 3, 25);
+
+        const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 50);
+        camera.position.set(0, 2, 6);
+
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.8;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableRotate = true;
+        controls.rotateSpeed = 1.0;
+        controls.enableZoom = true;
+        controls.minDistance = 5;
+        controls.maxDistance = 7;
+        controls.enablePan = false;
+        controls.minPolarAngle = (130 * Math.PI) / 360;
+        controls.maxPolarAngle = (50 * Math.PI) / 180;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+        const sun = new THREE.DirectionalLight(0xfff0e0, 0.9);
+        sun.position.set(5, 10, 3);
+        scene.add(sun);
+
+        const groundMat = new THREE.MeshToonMaterial({ color: 0xd0e8ff });
+        const ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(10, 10), groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+
+        // Instanced flowers
+        const flowerCount = 1000;
+        let flowerInstancedMesh = null;
+        const dummy = new THREE.Object3D();
+        const flowerData = [];
+
+        const loader = new GLTFLoader();
+        const textureLoader = new THREE.TextureLoader();
+        let flowerModelLoaded = false;
+
+        // Character variables
+        let headModel = null;
+        let bodyModel = null;
+        const characterGroup = new THREE.Group();
+
+        // Head rotation limits (in radians)
+        const HEAD_ROTATION_LIMITS = {
+            yaw: Math.PI / 4,    // 45 degrees left/right
+            pitch: Math.PI / 20   // 30 degrees up/down
+        };
+
+        // Cursor tracking
+        const mouse = new THREE.Vector2();
+        const targetHeadRotation = new THREE.Euler(0, 0, 0, 'YXZ');
+        const currentHeadRotation = new THREE.Euler(0, 0, 0, 'YXZ');
+        const HEAD_TRACKING_RANGE = 15;
+
+        // Circular cursor activation area (0 to 1, where 1 = edge of screen)
+        const CURSOR_ACTIVATION_RADIUS = 0.5; // 30% from center to edge
+
+        // 3D Text variables
+        let hoverText = null;
+        let hoverTimeout = null;
+        let isHovering = false;
+        let wasHovering = false; // Track previous hover state
+
+        // Text cycler array
+        const textArray = [
+            "!!! Hello",
+            "/ᐠ - ˕ -マ"
+        ];
+        let currentTextIndex = 0;
+
+        // Function to check if a position is within the cleared area
+        function isInClearedArea(x, z) {
+            const centerX = 0.5;
+            const centerZ = -0.3;
+            const radius = 0.7;
+            const distance = Math.sqrt((x - centerX) ** 2 + (z - centerZ) ** 2);
+            return distance < radius;
+        }
+
+        // Create 3D text
+        function create3DText() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+
+            // Clear canvas with transparent background
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw text
+            context.font = 'bold 48px Arial';
+            context.fillStyle = '#ffffff';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(textArray[currentTextIndex], canvas.width / 2, canvas.height / 2);
+
+            // Create texture from canvas
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+
+            // Create material
+            const material = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0
+            });
+
+            // Create sprite
+            const sprite = new THREE.Sprite(material);
+            sprite.scale.set(2, 0.5, 1);
+            sprite.visible = false; // Ensure it starts hidden
+
+            scene.add(sprite);
+            return sprite;
+        }
+
+        // Update text content
+        function updateTextContent() {
+            if (!hoverText) return;
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.font = 'bold 48px Arial';
+            context.fillStyle = '#ffffff';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(textArray[currentTextIndex], canvas.width / 2, canvas.height / 2);
+
+            hoverText.material.map.dispose(); // Clean up old texture
+            hoverText.material.map = new THREE.CanvasTexture(canvas);
+            hoverText.material.map.colorSpace = THREE.SRGBColorSpace;
+            hoverText.material.needsUpdate = true;
+        }
+
+        // Load character models - PRESERVE ORIGINAL MATERIALS
+        function loadCharacter() {
+            // Load body
+            loader.load('models/body.glb', (gltf) => {
+                bodyModel = gltf.scene;
+                bodyModel.traverse((child) => { });
+                bodyModel.position.set(0, 0, 0);
+                characterGroup.add(bodyModel);
+
+                // Load head
+                loader.load('models/head.glb', (gltf) => {
+                    headModel = gltf.scene;
+                    headModel.position.set(0, 0, 0);
+                    characterGroup.add(headModel);
+
+                    // Position entire character next to snowman
+                    characterGroup.position.set(0.8, 0, -0.3);
+                    characterGroup.scale.set(0.8, 0.8, 0.8);
+                    scene.add(characterGroup);
+
+                    // Create 3D text (starts hidden)
+                    hoverText = create3DText();
+                    // Ensure it's hidden on load
+                    hoverText.visible = false;
+                    hoverText.material.opacity = 0;
+
+                    console.log('Character loaded with original materials');
+                }, undefined, (err) => {
+                    console.error('Error loading head:', err);
+                });
+            }, undefined, (err) => {
+                console.error('Error loading body:', err);
+            });
+        }
+
+        // Mouse move listener for head tracking
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function updateHeadRotation() {
+            if (!headModel || !hoverText) return;
+
+            const headWorldPosition = new THREE.Vector3();
+            headModel.getWorldPosition(headWorldPosition);
+
+            // Convert head position to screen coordinates
+            const headScreenPosition = new THREE.Vector3();
+            headScreenPosition.copy(headWorldPosition);
+            headScreenPosition.project(camera);
+
+            // Convert from normalized device coordinates (-1 to +1) to screen coordinates (0 to 1)
+            const headScreenX = (headScreenPosition.x + 1) / 2;
+            const headScreenY = (-headScreenPosition.y + 1) / 2; // Flip Y axis
+
+            // Convert current mouse to screen coordinates (0 to 1)
+            const mouseScreenX = (mouse.x + 1) / 2;
+            const mouseScreenY = (-mouse.y + 1) / 2;
+
+            // Calculate distance from cursor to head on screen
+            const screenDistance = Math.sqrt(
+                (mouseScreenX - headScreenX) ** 2 +
+                (mouseScreenY - headScreenY) ** 2
+            );
+
+            // SMALLER Head-centered activation radius (in screen space, 0 to 1)
+            const HEAD_CENTERED_ACTIVATION_RADIUS = 0.3; // Reduced from 0.3 to 0.15 (half the size)
+
+            const distanceToCamera = camera.position.distanceTo(headWorldPosition);
+            const isWithinRange = distanceToCamera <= HEAD_TRACKING_RANGE;
+
+            const headToCamera = new THREE.Vector3();
+            headToCamera.subVectors(camera.position, headWorldPosition).normalize();
+
+            const headForward = new THREE.Vector3(0, 0, 1);
+            headForward.applyQuaternion(characterGroup.quaternion);
+
+            const dot = headForward.dot(headToCamera);
+            const isCameraInFront = dot > 0.5;
+
+            // Now using head-centered cursor detection
+            const isCursorNearHead = screenDistance <= HEAD_CENTERED_ACTIVATION_RADIUS;
+
+            // Handle hover text - detect when cursor ENTERS the hover area
+            if (isWithinRange && isCameraInFront && isCursorNearHead) {
+                if (!isHovering) {
+                    // Cursor just entered the hover area - cycle to next text
+                    currentTextIndex = (currentTextIndex + 1) % textArray.length;
+                    showHoverText(headWorldPosition);
+                    isHovering = true;
+                }
+
+                const dirX = mouseScreenX - headScreenX;
+                const dirY = mouseScreenY - headScreenY;
+
+                const normalizedX = dirX / HEAD_CENTERED_ACTIVATION_RADIUS;
+                const normalizedY = dirY / HEAD_CENTERED_ACTIVATION_RADIUS;
+
+                targetHeadRotation.y = normalizedX * HEAD_ROTATION_LIMITS.yaw;
+
+                // Different multipliers for up vs down
+                if (normalizedY > 0) {
+                    // Looking up - reduce more
+                    targetHeadRotation.x = normalizedY * HEAD_ROTATION_LIMITS.pitch * 0.3;
+                } else {
+                    // Looking down - reduce less
+                    targetHeadRotation.x = normalizedY * HEAD_ROTATION_LIMITS.pitch * 0.7;
+                }
+            } else {
+                if (isHovering) {
+                    hideHoverText();
+                    isHovering = false;
+                }
+
+                // Gradually return to neutral when not hovering
+                targetHeadRotation.y = THREE.MathUtils.lerp(targetHeadRotation.y, 0, 0.1);
+                targetHeadRotation.x = THREE.MathUtils.lerp(targetHeadRotation.x, 0, 0.1);
+            }
+
+            wasHovering = isHovering; // Store current state for next frame
+
+            currentHeadRotation.x = THREE.MathUtils.lerp(currentHeadRotation.x, targetHeadRotation.x, 0.1);
+            currentHeadRotation.y = THREE.MathUtils.lerp(currentHeadRotation.y, targetHeadRotation.y, 0.1);
+
+            headModel.rotation.x = currentHeadRotation.x;
+            headModel.rotation.y = currentHeadRotation.y;
+            headModel.rotation.z = 0;
+        }
+
+        // 3D Hover text functions
+        function showHoverText(headPosition) {
+            // Clear any existing timeout
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+                hoverTimeout = null;
+            }
+
+            // Update text content with current index
+            updateTextContent();
+
+            // Position text above head
+            hoverText.position.copy(headPosition);
+            hoverText.position.y += 2;    // Height above head
+            hoverText.position.x += -1;   // Side offset
+            hoverText.position.z += 0.2;  // Forward/backward offset
+
+            hoverText.visible = true;
+
+            // Fade in
+            hoverText.material.opacity = 0;
+            let opacity = 0;
+            const fadeIn = () => {
+                opacity += 0.05;
+                hoverText.material.opacity = opacity;
+                if (opacity < 1) {
+                    requestAnimationFrame(fadeIn);
+                }
+            };
+            fadeIn();
+
+            // Set timeout to hide after 10 seconds
+            hoverTimeout = setTimeout(() => {
+                hideHoverText();
+            }, 10000);
+        }
+
+        function hideHoverText() {
+            if (!hoverText) return;
+
+            // Fade out
+            let opacity = 1;
+            const fadeOut = () => {
+                opacity -= 0.05;
+                hoverText.material.opacity = opacity;
+                if (opacity > 0) {
+                    requestAnimationFrame(fadeOut);
+                } else {
+                    hoverText.visible = false;
+                }
+            };
+            fadeOut();
+
+            isHovering = false;
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+                hoverTimeout = null;
+            }
+        }
+
+        // Load flowers first
+        textureLoader.load('models/textures/nemphilia_tex.png', (texture) => {
+            texture.colorSpace = THREE.SRGBEncoding;
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+
+            const flowerMaterial = new THREE.MeshToonMaterial({
+                map: texture,
+                transparent: true,
+                alphaTest: 0.5,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+
+            // Load the flower GLB model
+            loader.load('models/nemphilia_2.glb', (gltf) => {
+                const flowerModel = gltf.scene;
+                flowerModel.traverse((child) => {
+                    if (child.isMesh) {
+                        flowerInstancedMesh = new THREE.InstancedMesh(
+                            child.geometry,
+                            flowerMaterial,
+                            flowerCount
+                        );
+
+                        let validFlowerCount = 0;
+
+                        for (let i = 0; i < flowerCount; i++) {
+                            const x = (Math.random() - 0.5) * 10;
+                            const z = (Math.random() - 0.5) * 10;
+                            const s = 0.1 + Math.random() * 0.1;
+
+                            if (isInClearedArea(x, z)) {
+                                continue;
+                            }
+
+                            dummy.position.set(x, 0, z);
+                            dummy.rotation.y = Math.random() * Math.PI * 2;
+                            dummy.scale.setScalar(s);
+                            dummy.updateMatrix();
+
+                            flowerInstancedMesh.setMatrixAt(validFlowerCount, dummy.matrix);
+                            flowerData.push({
+                                x: x,
+                                z: z,
+                                scale: s,
+                                rotationOffset: Math.random() * Math.PI * 2
+                            });
+
+                            validFlowerCount++;
+                        }
+
+                        flowerInstancedMesh.count = validFlowerCount;
+                        flowerInstancedMesh.instanceMatrix.needsUpdate = true;
+                        scene.add(flowerInstancedMesh);
+                        flowerModelLoaded = true;
+
+                        // Now load the character after flowers are loaded
+                        loadCharacter();
+
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                });
+            }, (progress) => {
+                const percent = ((progress.loaded / progress.total) * 100).toFixed(2);
+                document.getElementById('loading').textContent = `Loading flowers... ${percent}%`;
+            }, (err) => {
+                console.error('Failed to load flower GLB:', err);
+                document.getElementById('loading').textContent = 'Failed to load flowers';
+            });
+        }, undefined, (err) => {
+            console.error('Failed to load texture:', err);
+            document.getElementById('loading').textContent = 'Failed to load flower texture';
+        });
+
+        // Create a snowman
+        function createSnowman() {
+            const snowmanGroup = new THREE.Group();
+
+            const bottomGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+            const bottomMaterial = new THREE.MeshToonMaterial({ color: 0xffffff });
+            const bottomSphere = new THREE.Mesh(bottomGeometry, bottomMaterial);
+            bottomSphere.position.y = 0.3;
+            snowmanGroup.add(bottomSphere);
+
+            const middleGeometry = new THREE.SphereGeometry(0.22, 16, 16);
+            const middleMaterial = new THREE.MeshToonMaterial({ color: 0xffffff });
+            const middleSphere = new THREE.Mesh(middleGeometry, middleMaterial);
+            middleSphere.position.y = 0.7;
+            snowmanGroup.add(middleSphere);
+
+            const eyeGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+            const eyeMaterial = new THREE.MeshToonMaterial({ color: 0x000000 });
+
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            leftEye.position.set(-0.1, 0.78, 0.15);
+            snowmanGroup.add(leftEye);
+
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            rightEye.position.set(0.1, 0.78, 0.15);
+            snowmanGroup.add(rightEye);
+
+            const noseGeometry = new THREE.ConeGeometry(0.02, 0.1, 8);
+            const noseMaterial = new THREE.MeshToonMaterial({ color: 0xff8c42 });
+            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+            nose.rotation.x = Math.PI / 2;
+            nose.position.set(0, 0.73, 0.25);
+            snowmanGroup.add(nose);
+
+            const buttonGeometry = new THREE.SphereGeometry(0.02, 6, 6);
+            const buttonMaterial = new THREE.MeshToonMaterial({ color: 0x000000 });
+
+            for (let i = 0; i < 3; i++) {
+                const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
+                button.position.set(0, 0.6 - i * 0.1, 0.21);
+                snowmanGroup.add(button);
+            }
+
+            snowmanGroup.position.set(-0.5, 0, -0.3);
+            snowmanGroup.rotation.y = Math.PI / 6;
+            scene.add(snowmanGroup);
+            return snowmanGroup;
+        }
+
+        const snowman = createSnowman();
+
+        // Snow particle system
+        const snowCount = 300;
+        const snowGeo = new THREE.BufferGeometry();
+        const snowPositions = new Float32Array(snowCount * 3);
+
+        for (let i = 0; i < snowCount; i++) {
+            snowPositions[i * 3] = (Math.random() - 0.5) * 20;
+            snowPositions[i * 3 + 1] = Math.random() * 5 + 2;
+            snowPositions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+        }
+
+        snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPositions, 3));
+
+        const snowMat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const snow = new THREE.Points(snowGeo, snowMat);
+        scene.add(snow);
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+
+            // Update head rotation
+            updateHeadRotation();
+
+            // Make text always face camera
+            if (hoverText && hoverText.visible) {
+                hoverText.lookAt(camera.position);
+            }
+
+            if (flowerModelLoaded && flowerInstancedMesh) {
+                for (let i = 0; i < flowerData.length; i++) {
+                    const data = flowerData[i];
+                    const wave = Math.sin(data.x * 0.5 + data.z * 0.5 + t * 2 + data.rotationOffset) * 0.15;
+
+                    dummy.position.set(data.x, 0, data.z);
+                    dummy.rotation.x = wave;
+                    dummy.rotation.z = wave * 0.5;
+                    dummy.rotation.y = data.rotationOffset;
+                    dummy.scale.setScalar(data.scale);
+                    dummy.updateMatrix();
+
+                    flowerInstancedMesh.setMatrixAt(i, dummy.matrix);
+                }
+                flowerInstancedMesh.instanceMatrix.needsUpdate = true;
+            }
+
+            // Snow animation
+            const positions = snow.geometry.attributes.position.array;
+            for (let i = 0; i < snowCount; i++) {
+                positions[i * 3 + 1] -= 0.01 + Math.random() * 0.005;
+                positions[i * 3] += Math.sin(t + i) * 0.002;
+                positions[i * 3 + 2] += Math.cos(t + i) * 0.002;
+
+                if (positions[i * 3 + 1] < 0) {
+                    positions[i * 3 + 1] = Math.random() * 5 + 3;
+                    positions[i * 3] = (Math.random() - 0.5) * 11;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 11;
+                }
+            }
+            snow.geometry.attributes.position.needsUpdate = true;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        });
+    </script>
+</body>
+
+</html>

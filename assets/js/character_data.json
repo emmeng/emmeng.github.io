@@ -1,0 +1,117 @@
+{
+    "shushu": {
+        "characterName": "SHUSHU",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "2026-PRESENT",
+        "projectTitle": "WITCH TASK",
+        "accentColor": "#DCECCE",
+        "skills": [
+            "UNITY",
+            "2D"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "witchTask.html"
+    },
+    "ghost": {
+        "characterName": "TRAIN CONDUCTOR",
+        "characterIcon": "images/1_am_train_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "1:AM TRAIN",
+        "accentColor": "#D1D2F5",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    },
+    "zero": {
+        "characterName": "DR. ZERO",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "HUH? I'VE BEEN HIRED BY ALIEN RESEARCHERS",
+        "accentColor": "#B9EEFA",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation",
+            "WebGL"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    },
+    "jun": {
+        "characterName": "JUN",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "MIIVERSE",
+        "accentColor": "#AED0F6",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation",
+            "WebGL"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    },
+    "vivi": {
+        "characterName": "VIVI",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "GOGO TENNIS",
+        "accentColor": "#FFB8CB",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation",
+            "WebGL"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    },
+    "radiation": {
+        "characterName": "",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "MR RADIATION VISUALIZER",
+        "accentColor": "#FFF7C9",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation",
+            "WebGL"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    },
+    "exploratory": {
+        "characterName": "",
+        "characterIcon": "images/aliens_icon.png",
+        "projectGif": "images/blog/bibi_underwater.gif",
+        "developedDate": "February 2026",
+        "projectTitle": "ASSORTMENT OF EXPLORATORY PROJECTS",
+        "accentColor": "#EEF6FF",
+        "skills": [
+            "Three.js",
+            "JavaScript",
+            "3D Modeling",
+            "Animation",
+            "WebGL"
+        ],
+        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "projectLink": "projects/plaza.html"
+    }
+}

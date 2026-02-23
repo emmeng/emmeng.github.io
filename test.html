@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js Rain with Independent Puddles</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    canvas { display: block; }
+    #toggleButton {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 10px 20px;
+      background-color: #88aaff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<button id="toggleButton">Toggle Rain</button>
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff); // White background
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Soft white light
+  scene.add(ambientLight);
+
+  const rainCount = 150;
+  const raindrops = [];
+  const raindropMaterial = new THREE.MeshBasicMaterial({
+    color: 0x88aaff,
+    transparent: true,
+    opacity: 0.8
+  });
+
+  function createRaindrops() {
+    for (let i = 0; i < rainCount; i++) {
+      const raindropGeometry = new THREE.PlaneGeometry(0.05, 0.5);
+      const raindrop = new THREE.Mesh(raindropGeometry, raindropMaterial);
+      raindrop.position.set(
+        (Math.random() - 0.5) * 200,
+        Math.random() * 100 + 50,
+        (Math.random() - 0.5) * 200
+      );
+
+      raindrop.userData = {
+        velocityY: 0,
+        windX: (Math.random() - 0.5) * 0.05,
+        windZ: (Math.random() - 0.5) * 0.05
+      };
+
+      scene.add(raindrop);
+      raindrops.push(raindrop);
+    }
+  }
+
+  function removeRaindrops() {
+    raindrops.forEach(raindrop => scene.remove(raindrop));
+    raindrops.length = 0; // Clear raindrop array
+  }
+
+  // Initial raindrop creation
+  createRaindrops();
+
+  camera.position.z = 50;
+
+  const puddleMaterial = new THREE.MeshBasicMaterial({
+    color: 0x88aaff,
+    transparent: true,
+    opacity: 0.7
+  });
+  const puddles = [];
+
+  function createPuddle(x, z) {
+    const geometry = new THREE.CircleGeometry(1, 32); // Larger initial size
+    const puddle = new THREE.Mesh(geometry, puddleMaterial);
+    puddle.position.set(x, -49.8, z); // Position slightly above ground level
+    puddle.rotation.x = -Math.PI / 2;
+    scene.add(puddle);
+
+    // Each puddle has its own scale and fade-out behavior
+    puddles.push({
+      mesh: puddle,
+      scale: 0.5,
+      opacity: 0.5,
+      lifespan: 100 // Lifespan for each puddle in frames
+    });
+  }
+
+  let isRaining = true;
+
+  function animate() {
+    if (isRaining) {
+      raindrops.forEach((raindrop) => {
+        const speed = raindrop.userData;
+
+        speed.velocityY -= 0.02;
+        raindrop.position.x += speed.windX;
+        raindrop.position.y += speed.velocityY;
+        raindrop.position.z += speed.windZ;
+
+        // Check if raindrop has hit the ground
+        if (raindrop.position.y < -50) {
+          createPuddle(raindrop.position.x, raindrop.position.z); // Create puddle on impact
+          raindrop.position.y = Math.random() * 100 + 50;
+          raindrop.position.x = (Math.random() - 0.5) * 200;
+          raindrop.position.z = (Math.random() - 0.5) * 200;
+          speed.velocityY = 0;
+        }
+      });
+    }
+
+    for (let i = puddles.length - 1; i >= 0; i--) {
+      const puddle = puddles[i];
+      puddle.scale += 0.02;
+      puddle.opacity -= 0.005;
+      puddle.mesh.scale.set(puddle.scale, puddle.scale, 1);
+      puddle.mesh.material.opacity = puddle.opacity;
+
+      puddle.lifespan -= 1; // Decrease lifespan
+
+      // Remove the puddle when its lifespan is over or opacity is zero
+      if (puddle.opacity <= 0 || puddle.lifespan <= 0) {
+        scene.remove(puddle.mesh);
+        puddles.splice(i, 1);
+      }
+    }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+
+  document.getElementById('toggleButton').addEventListener('click', () => {
+    isRaining = !isRaining;
+    document.getElementById('toggleButton').textContent = isRaining ? 'Turn Rain Off' : 'Turn Rain On';
+
+    if (isRaining) {
+      createRaindrops(); // Re-create raindrops when turning rain on
+    } else {
+      removeRaindrops(); // Remove all raindrops when turning rain off
+    }
+  });
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
+</script>
+</body>
+</html>

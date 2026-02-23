@@ -15,14 +15,14 @@ const dialogue = [
     "✦ ✦ ✦"
 ];
 
-const description = "I'm a XR developer with an enthusiasm for creating immersive digital experiences ✩彡 ";
-const speed = 40; // Adjust the typing speed (milliseconds per character)
+const description = "I'm a XR developer an enthusiasm for creating immersive digital experiences ✩彡 ";
+const speed = 40;
 
-let isTyping = false; // Flag to check if the typewriter is currently running
+let isTyping = false;
 
 function typeWriter(newText, element, callback) {
-    if (isTyping) return; // If typing is already in progress, do nothing
-    isTyping = true; // Set the flag to true
+    if (isTyping) return; 
+    isTyping = true;
     const typewriterElement = document.getElementById(element);
     typewriterElement.innerHTML = ''; // Clear existing text
     let i = 0;
@@ -48,7 +48,6 @@ function updateTypewriter(newText, element) {
     typewriterElement.innerHTML = newText;
 }
 
-
 function typeWriter1(newText, element, callback) {
     const typewriterElement = document.getElementById(element);
     typewriterElement.innerHTML = ''; // Clear existing text
@@ -72,29 +71,23 @@ function typeWriter1(newText, element, callback) {
 // Start the typewriter effect when the page loads
 window.onload = function () {
     typeWriter1(description, "desc");
-    //typeWriter(dialogue[0], "text-display");
 };
 
 // Function to update the typewriter with the next text
 function updateTypewriterWithNextText() {
     const nextText = dialogue[textCounter];
-
-    // Update the typewriter text
     typeWriter(nextText, "text-display");
-
-    // Increment the counter and loop back to the first text if needed
     textCounter = (textCounter + 1) % dialogue.length;
 }
 
 const scene = new THREE.Scene();
-// Set the background color using a hex value
-scene.background = new THREE.Color(0xBFD0E5);
+scene.background = new THREE.Color(0xE7F1FD);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer();
 const mcontainer = document.getElementById('model-container');
 renderer.setSize(mcontainer.clientWidth, mcontainer.clientHeight);
-renderer.gammaOutput = true;
+renderer.outputEncoding = THREE.sRGBEncoding; 
 
 mcontainer.appendChild(renderer.domElement);
 
@@ -109,8 +102,9 @@ loader.load('images/cellphone.glb', (gltf) => {
 });
 
 camera.position.z = 4.2;
-// Orbit Controls
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.minDistance = 4.2;
+controls.maxDistance = 4.2;
 
 // Animation
 function animate() {
@@ -133,11 +127,9 @@ function onWindowResize() {
     const newWidth = mcontainer.clientWidth;
     const newHeight = mcontainer.clientHeight;
 
-    // Update camera aspect ratio
     camera.aspect = newWidth / newHeight;
     camera.updateProjectionMatrix();
 
-    // Update renderer size
     renderer.setSize(newWidth, newHeight);
 }
 
@@ -148,10 +140,19 @@ const invisibleBox = new THREE.Mesh(boxGeometry, boxMaterial);
 invisibleBox.position.set(0, 0.5, 0); // Set the desired position
 scene.add(invisibleBox);
 
-// Add event listener for dblclick and pass the event object
-window.addEventListener('dblclick', (event) => onDoubleClick(event));
-
-// ... Rest of your existing code ...
+window.addEventListener('dblclick', (event) => {
+  // Only handle double-click if it's on the phone model container
+  const rect = mcontainer.getBoundingClientRect();
+  const isInPhoneArea = event.clientX >= rect.left && 
+                        event.clientX <= rect.right && 
+                        event.clientY >= rect.top && 
+                        event.clientY <= rect.bottom;
+  
+  if (isInPhoneArea) {
+    event.stopPropagation(); // Prevent plaza scene from handling this event
+    onDoubleClick(event);
+  }
+});
 
 function onDoubleClick(event) {
     // calculate mouse coordinates in normalized device coordinates
@@ -166,9 +167,7 @@ function onDoubleClick(event) {
     // calculate objects intersecting the picking ray
     const intersects = raycaster.intersectObject(invisibleBox);
 
-    // Check if there are any intersections
     if (intersects.length > 0) {
-        // Update the text in your typewriter element
         updateTypewriterWithNextText();
     }
 }
