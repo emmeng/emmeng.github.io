@@ -18,6 +18,9 @@ const VIEW_SIZE = 8;
 const trainStartX = -15;
 const trainMiddleX = 0;
 const trainEndX = 15;
+const trainStartPos = new THREE.Vector3(-10, 0.2, -5);
+const trainMiddlePos = new THREE.Vector3(0, 0.2, -7.5);
+const trainEndPos = new THREE.Vector3(10, 0.2, -10);
 let trainCycleStart = Date.now();
 
 // Store all loaded models/characters
@@ -27,7 +30,7 @@ const loadedProps = [];
 // Fountain behavior constants =============
 const FOUNTAIN_POS = new THREE.Vector3(0, 0, 0);
 const FOUNTAIN_VIEW_RADIUS = 3.5; // Distance to trigger fountain viewing
-const FOUNTAIN_VIEW_CHANCE = 0.5; // 50% chance to look when in range
+const FOUNTAIN_VIEW_CHANCE = 0.3;
 const FOUNTAIN_VIEW_TIME = 3000; // How long to watch fountain (ms)
 const SUNFISH_FADE_DURATION = 1000; // How long fade in/out takes (ms)
 const SUNFISH_VISIBLE_TIME = 3000; // How long sunfish stays visible (ms)
@@ -50,6 +53,9 @@ const EATING_DURATION = 3000; // How long eating animation lasts (ms)
 const MIN_TIME_BEFORE_EATING = 10000; // Min 10 seconds
 const MAX_TIME_BEFORE_EATING = 180000; // Max 3 minutes
 
+// Array to store street light positions
+const streetLights = [];
+
 // List of food items available at cafe
 const CAFE_FOOD_ITEMS = [
     'models/carpaccio.glb',
@@ -65,21 +71,25 @@ let hoveredCharacter = null;
 let characterData = null;
 let cardVisible = false;
 
-let ambientLight;
 let currentAccentColor = '#78B8FF';
+let currentHour = new Date().getHours();
+
+// currentHour = 20;
 
 let foliageVertexShader = null;
+let foliageFragmentShader = null;
 
-// Load shader file (put this before init() is called, or at top of init())
-fetch('assets/js/foliage-vertex.glsl')
-    .then(response => response.text())
-    .then(shaderCode => {
-        foliageVertexShader = shaderCode;
-        console.log('✓ Foliage shader loaded');
-    })
-    .catch(error => {
-        console.error('✗ Failed to load shader:', error);
-    });
+// Load both shader files
+Promise.all([
+    fetch('assets/js/foliage-vertex.glsl').then(response => response.text()),
+    fetch('assets/js/foliage-fragment.glsl').then(response => response.text())
+]).then(([vertex, fragment]) => {
+    foliageVertexShader = vertex;
+    foliageFragmentShader = fragment;
+    console.log('✓ Both shaders loaded');
+}).catch(error => {
+    console.error('✗ Failed to load shaders:', error);
+});
 
 const loadingManager = new THREE.LoadingManager();
 
@@ -117,55 +127,191 @@ if (!isMobile) {
     animate();
 }
 
-/* ------------------ INIT ------------------ */
 
-function setTimeOfDay() {
-    const hour = new Date().getHours();
 
-    let tintColor;
+// Returns 0-1 based on how strong street lighting should be
+function getStreetLightIntensity() {
+    const currentHour = new Date().getHours();
 
-    if (hour >= 7 && hour < 17) {
-        // DAY - No tint (full brightness)
-        tintColor = new THREE.Color(1.0, 1.0, 1.0);
-    } else if ((hour >= 17 && hour < 19) || (hour >= 5 && hour < 6)) {
-        // EVENING - Warm orange tint
-        tintColor = new THREE.Color(1.0, 0.85, 0.7);
+    if (currentHour >= 7 && currentHour < 17) {
+        return 0.0;  // Day: lights off
+    } else if (currentHour >= 17 && currentHour < 19) {
+        // Sunset: fade in (5pm = 0.0, 7pm = 1.0)
+        return (0.5+(currentHour - 17)) / 2;
+    } else if (currentHour >= 5 && currentHour < 7) {
+        // Sunrise: fade out (5am = 1.0, 7am = 0.0)
+        return 1.0 - ((currentHour - 5) / 2);
     } else {
-        // NIGHT - Blue dim tint
-        tintColor = new THREE.Color(0.5, 0.6, 0.8);
+        return 1.0;  // Night: full intensity
+    }
+}
+
+// Update character lighting (only during evening/night)
+function updateCharacterLighting(char) {
+    const streetLightIntensity = getStreetLightIntensity();
+
+    // Skip calculation if lights are off (daytime)
+    if (streetLightIntensity === 0.0) {
+        // Just apply time tint without street light calculation
+        char.model.traverse((child) => {
+            if (child.isMesh && child.userData.baseColor) {
+                const TIME_TINT = getTimeTint();
+                child.material.color
+                    .copy(child.userData.baseColor)
+                    .multiply(TIME_TINT);
+            }
+        });
+        return;
     }
 
-    // Apply tint to all objects in scene
-    scene.traverse((child) => {
-        if (child.isMesh && child.material.isMaterial) {
-            // Store original color if not stored yet
-            if (!child.userData.originalColor) {
-                child.userData.originalColor = child.material.color.clone();
-            }
+    // Calculate street light influence
+    let additionalLight = 0;
+    const charPos = char.model.position;
 
-            // Multiply original color by tint
-            child.material.color.copy(child.userData.originalColor).multiply(tintColor);
+    streetLights.forEach(light => {
+        const dist = charPos.distanceTo(light.position);
+        if (dist < light.radius) {
+            const falloff = 1.0 - (dist / light.radius);
+            additionalLight = Math.max(additionalLight, falloff * light.intensity);
+        }
+    });
+
+    // Apply lighting with time-based intensity
+    char.model.traverse((child) => {
+        if (child.isMesh && child.userData.baseColor) {
+            const TIME_TINT = getTimeTint();
+            const brightnessMult = 1.0 + (additionalLight * streetLightIntensity);  // Modulated by time
+
+            child.material.color
+                .copy(child.userData.baseColor)
+                .multiply(TIME_TINT)
+                .multiplyScalar(brightnessMult);
         }
     });
 }
+
+// Update glow visibility based on time
+function updateStreetLightGlows() {
+    const intensity = getStreetLightIntensity();
+
+    scene.traverse((child) => {
+        if (child.userData.isStreetLightGlow) {
+            child.material.opacity = 0.6 * intensity;  // Fade in/out with time
+        }
+    });
+}
+
+// Modified addStreetLightGlow to mark glows
+function addStreetLightGlow(x, z, radius, lampHeight) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+
+    const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    gradient.addColorStop(0, 'rgba(255, 200, 100, 0.2)');
+    gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.3)');
+    gradient.addColorStop(0.6, 'rgba(255, 200, 100, 0.2)');
+    gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 256, 256);
+
+    const texture = new THREE.CanvasTexture(canvas);
+
+    const groundGlow = new THREE.Mesh(
+        new THREE.PlaneGeometry(radius * 2, radius * 2),
+        new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        })
+    );
+    groundGlow.rotation.x = -Math.PI / 2;
+    groundGlow.position.set(x, 0.02, z);
+    groundGlow.userData.isStreetLightGlow = true;  // Mark for time-based updates
+    scene.add(groundGlow);
+
+    // ═══════════════════════════════════════
+    // LAMP SPHERE GLOW (radial falloff)
+    // ═══════════════════════════════════════
+    const sphereCanvas = document.createElement('canvas');
+    sphereCanvas.width = 128;
+    sphereCanvas.height = 128;
+    const sphereCtx = sphereCanvas.getContext('2d');
+
+    const sphereGradient = sphereCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    sphereGradient.addColorStop(0, 'rgba(255, 240, 200, 0.5)');    // Bright core
+    sphereGradient.addColorStop(0.3, 'rgba(255, 220, 150, 0.4)');
+    sphereGradient.addColorStop(0.6, 'rgba(255, 200, 100, 0.2)');
+    sphereGradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+
+    sphereCtx.fillStyle = sphereGradient;
+    sphereCtx.fillRect(0, 0, 128, 128);
+
+    const sphereTexture = new THREE.CanvasTexture(sphereCanvas);
+
+    // Create sphere of light at lamp top
+const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+        map: sphereTexture,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    })
+);
+    sprite.position.set(x, lampHeight, z);
+    sprite.scale.setScalar(radius * 1.5);
+    sprite.renderOrder = 10;
+    sprite.userData.isStreetLightGlow = true;
+    scene.add(sprite);
+
+    // Store light data
+    streetLights.push({
+        position: new THREE.Vector3(x, lampHeight, z),
+        radius,
+        intensity: 0.6
+    });
+
+
+  
+}
+function addStreetLight(x, y, z, radius = 2, lampHeight = 4) {
+    // Load the physical lamp post model
+    loadProp({
+        path: 'models/street_light.glb',
+        position: { x, y, z },
+        scale: 1,
+        hasShadow: false,
+        rendererOrder: 5 // Ensure lamp renders above characters but below glows
+    });
+
+    // Add the glow effect on the ground
+    addStreetLightGlow(x, z, radius, lampHeight);
+}
+
+/* ------------------ INIT ------------------ */
+
 function init() {
     const container = document.getElementById('plaza-container');
 
     scene = new THREE.Scene();
 
     // === TIME-OF-DAY GRADIENT SKY ===
-    function getGradientColors() {
-        const hour = new Date().getHours();
-        if (hour >= 7 && hour < 17) {
+    function getGradientSkyColors() {
+        if (currentHour >= 7 && currentHour < 17) {
             return ["#C3DFFF", "#EEF6FF"];
-        } else if ((hour >= 17 && hour < 19) || (hour >= 5 && hour < 6)) {
+        } else if ((currentHour >= 17 && currentHour < 19) || (currentHour >= 5 && currentHour < 6)) {
             return ["#EB9AB6", "#FFB46A"];
         } else {
             return ["#1C145B", "#25476D"];
         }
     }
 
-    const [topColor, bottomColor] = getGradientColors();
+    const [topColor, bottomColor] = getGradientSkyColors();
     const canvas = document.createElement("canvas");
     canvas.width = 1;
     canvas.height = 256;
@@ -177,16 +323,31 @@ function init() {
     ctx.fillRect(0, 0, 1, 256);
     scene.background = new THREE.CanvasTexture(canvas);
 
-    // === LIGHTING ===
-    ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
 
-    setTimeOfDay();
+    // setTimeOfDay();
 
     // === CAMERA & RENDERER ===
-    camera = new THREE.OrthographicCamera();
-    camera.position.set(0, 5, 10);
-    camera.lookAt(0, 0, 0);
+    const aspect = window.innerWidth / window.innerHeight;
+
+    camera = new THREE.OrthographicCamera(
+        -VIEW_SIZE * aspect / 2,  // left
+        VIEW_SIZE * aspect / 2,   // right
+        VIEW_SIZE / 2,            // top
+        -VIEW_SIZE / 2,           // bottom
+        -10,                      // near
+        1000                     // far
+    );
+    // const angle = (0.2 / 12) * Math.PI * 2; // 5 o'clock position = 150° from top
+    // const elevation = -30 * (Math.PI / 180); // 30 degrees elevation
+    // const distance = 15; // Distance from fountain
+
+    // // Calculate position
+    // const x = Math.sin(angle) * Math.cos(elevation) * distance;
+    // const y = Math.sin(elevation) * distance;
+    // const z = Math.cos(angle) * Math.cos(elevation) * distance;
+
+    camera.position.set(0, 10, 0);
+    camera.lookAt(0, 0, 0); // Look at fountain at origin
 
     renderer = new THREE.WebGLRenderer({ antialias: false });
     renderer.setPixelRatio(1);
@@ -285,14 +446,19 @@ function init() {
     floorTexture.repeat.set(6, 6);
     floorTexture.colorSpace = THREE.LinearSRGBColorSpace;
 
+    let TIME_TINT = getTimeTint();
+
+    const floorMaterial = new THREE.MeshBasicMaterial({
+        map: floorTexture,
+        color: TIME_TINT,
+        side: THREE.DoubleSide
+    });
+
     const floor = new THREE.Mesh(
-        new THREE.BoxGeometry(20, 20, 0.2),
-        new THREE.MeshBasicMaterial({
-            map: floorTexture,
-            color: 0xffffff,
-            side: THREE.DoubleSide
-        })
+        new THREE.PlaneGeometry(20, 20),
+        floorMaterial
     );
+
     floor.position.y = -0.1;
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
@@ -332,50 +498,48 @@ function init() {
         wanderBounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
     });
 
-    loadProp({
-        path: 'models/carpaccio.glb',
-        position: { x: 10, y: 1, z: 10},
-        scale: 0.8,
-        hasShadow: false
-    });
-
-    loadProp({
-        path: 'models/jasmine_tea.glb',
-        position: { x: 5, y: 2, z: 5 },
-        scale: 1,
-        hasShadow: false
-    });
 
 
 
-    loadProp({
-        path: 'models/building_center.glb',
-        position: { x: 3, y: 0, z: 0 },
-        scale: 0.6,
-        hasShadow: false
-    });
+    // loadProp({
+    //     path: 'models/building_center.glb',
+    //     position: { x: 3, y: 0, z: 0 },
+    //     scale: 0.6,
+    //     hasShadow: false
+    // });
 
     loadProp({
         path: 'models/hydrangea_bush.glb',
-        position: { x: 5, y: 0, z: -5 },
-        scale: 0.7,
+        position: { x: -7.5, y: 0, z: -1.5 },
+        rotation: { x: 0, y: Math.PI / 2, z: 0 }, 
+        scale: 0.5,
+        hasShadow: false
+    });
+
+    loadProp({
+        path: 'models/bench.glb',
+        position: { x: -5, y: 0, z: -4 },
+        scale: 0.6,
         hasShadow: false
     });
 
 
     loadProp({
         path: 'models/vending_machine.glb',
-        position: { x: -8, y: 0, z: -5 },
-        scale: 0.7,
+        position: { x: -7, y: 0, z: -3 },
+        rotation: { x: 0, y: Math.PI / 4, z: 0 }, 
+        scale: 0.45,
         hasShadow: false
     });
-
 
     loadTrain();
     loadFluffyTree(5, 0, -3); // Position near fountain
 
     window.addEventListener('resize', onResize);
     onResize();
+    addStreetLight(3, 0, -5);   // Top left area
+    addStreetLight(5, 0, 5);   // Bottom right area
+    addStreetLight(-8, 0, 0);   // Bottom right area
 }
 
 /* ------------------ SHADOWS ------------------ */
@@ -400,7 +564,7 @@ function createShadows() {
         transparent: true,
         opacity: 1,
         depthWrite: false,
-        color: 0x0032ff
+        color: 0x545454
     });
 
     window.shadowMaterial = shadowMaterial;
@@ -417,10 +581,11 @@ function onPointerMove(event) {
 
 // Update hover detection in animate loop
 function updateHoverInteraction() {
+    
     raycaster.setFromCamera(pointer, camera);
 
-    // Check all characters
     let newHoveredChar = null;
+
     for (const char of loadedCharacters) {
         const intersects = raycaster.intersectObject(char.model, true);
         if (intersects.length > 0) {
@@ -429,39 +594,83 @@ function updateHoverInteraction() {
         }
     }
 
-    // Handle hover state changes
-    if (newHoveredChar !== hoveredCharacter) {
-        if (hoveredCharacter) {
-            hoveredCharacter.isHovered = false;
-            document.body.style.cursor = 'default';
-        }
-        if (newHoveredChar) {
+    // Hover ENTER - but NOT during fountain viewing or eating
+    if (newHoveredChar && newHoveredChar !== hoveredCharacter) {
+        // Don't allow hover during fountain viewing or eating
+        if (newHoveredChar.state !== 'fountainViewing' && newHoveredChar.state !== 'eating') {
             newHoveredChar.isHovered = true;
+            newHoveredChar.rotationMode = 'hover';
+            // Save velocity BEFORE stopping
+            if (!newHoveredChar.savedVelocity) {
+                newHoveredChar.savedVelocity = newHoveredChar.velocity.clone();
+            }
+            newHoveredChar.velocity.set(0, 0, 0);
             document.body.style.cursor = 'pointer';
         }
-        hoveredCharacter = newHoveredChar;
     }
 
-    // Make hovered character face the camera
-    if (hoveredCharacter && hoveredCharacter.state !== 'fountainViewing') {
-        const model = hoveredCharacter.model;
+    // Hover EXIT → enter pause state
+    if (!newHoveredChar && hoveredCharacter) {
+        hoveredCharacter.isHovered = false;
+        hoveredCharacter.state = 'postHoverPause';
+        hoveredCharacter.pauseStartTime = performance.now();
+        hoveredCharacter.rotationMode = 'locked';
+        document.body.style.cursor = 'default';
+    }
 
-        // Get direction from character to camera
-        const dir = new THREE.Vector3();
-        dir.subVectors(camera.position, model.position);
-        dir.y = 0; // Ignore vertical
-        dir.normalize();
+    hoveredCharacter = newHoveredChar;
+}
 
-        // Create a matrix that looks in that direction
-        const lookAtMatrix = new THREE.Matrix4();
-        lookAtMatrix.lookAt(dir, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
+function applyRotation(char) {
+    const model = char.model;
 
-        // Extract just the Y rotation
-        const euler = new THREE.Euler();
-        euler.setFromRotationMatrix(lookAtMatrix);
+    // Locked = do nothing (post-hover pause)
+    if (char.rotationMode === 'locked') return;
 
-        // Apply the rotation
-        model.rotation.y = euler.y;
+    let targetY = null;
+    let lerpFactor = 0.15; // Default for movement
+
+    if (char.rotationMode === 'movement') {
+        if (char.moveDir && char.moveDir.lengthSq() > 0.0001) {
+            targetY = Math.atan2(char.moveDir.x, char.moveDir.z);
+        }
+    }
+    else if (char.rotationMode === 'hover') {
+        const modelWorldPos = new THREE.Vector3();
+        char.model.getWorldPosition(modelWorldPos);
+
+        const cameraWorldPos = new THREE.Vector3();
+        camera.getWorldPosition(cameraWorldPos);
+
+        const cameraGroundPos = new THREE.Vector3(cameraWorldPos.x, 0, cameraWorldPos.z);
+        const dir = new THREE.Vector3().subVectors(cameraGroundPos, modelWorldPos);
+
+        targetY = Math.atan2(dir.x, dir.z);
+
+        // INSTANT SNAP - no lerp
+        char.model.rotation.y = targetY;
+        return; // Skip the lerp section below
+    }
+    else if (char.rotationMode === 'fountain') {
+        const dir = new THREE.Vector3().subVectors(
+            FOUNTAIN_POS,
+            model.position
+        );
+        targetY = Math.atan2(dir.x, dir.z);
+    } else if (char.state === 'eating') {
+        // Rotation handled in updateEatingBehavior
+        return;
+    }
+
+    if (targetY !== null) {
+        const currentY = model.rotation.y;
+
+        // --- shortest angle difference ---
+        let delta = targetY - currentY;
+        delta = ((delta + Math.PI) % (Math.PI * 2)) - Math.PI;
+
+        // Smooth turn with variable lerp factor
+        model.rotation.y = currentY + delta * lerpFactor;
     }
 }
 
@@ -469,6 +678,59 @@ function updateHoverInteraction() {
 window.addEventListener('pointermove', onPointerMove);
 
 /* ------------------ MODULAR CHARACTER LOADER ------------------ */
+
+
+function getTimeTint() {
+    let tint;
+
+    if (currentHour >= 7 && currentHour < 17) { // DAY
+        tint = new THREE.Color(1.00, 1.00, 1.0);
+    } else if ((currentHour >= 17 && currentHour < 19) || (currentHour >= 5 && currentHour < 6)) { // EVENING / SUNSET
+        tint = new THREE.Color(0.95, 0.85, 0.80);
+    } else { // NIGHT
+        tint = new THREE.Color(0.75, 0.8, 0.9);
+    }
+    return tint;
+}
+
+// Separate function to update tint (can be called on time change)
+function updateMaterialTint(child) {
+    if (!child.material) return;
+
+    const TIME_TINT = getTimeTint();
+    const VERTEX_INTENSITY = getVertexLightIntensity();  // NEW!
+
+    if (child.userData.hasVertexColors) {
+        // Vertex colors are strong at night, weak during day
+        // This is done by adjusting the base color, not vertex colors
+        const adjustedColor = child.userData.baseColor.clone()
+            .multiplyScalar(1.0 - VERTEX_INTENSITY * 0.5)  // Dim during day
+            .multiply(TIME_TINT);
+
+        child.material.color.copy(adjustedColor);
+    } else {
+        child.material.color
+            .copy(child.userData.baseColor)
+            .multiply(TIME_TINT);
+    }
+
+    child.material.needsUpdate = true;
+}
+
+// Returns 0-1 based on how strong vertex lighting should be
+function getVertexLightIntensity() {
+    const currentHour = new Date().getHours();
+
+    if (currentHour >= 7 && currentHour < 17) {
+        return 0.0;  // Day: vertex lights invisible
+    } else if (currentHour >= 17 && currentHour < 19) {
+        return 0.5;  // Sunset: half intensity
+    } else if (currentHour >= 5 && currentHour < 7) {
+        return 0.7;  // Sunrise: mostly visible
+    } else {
+        return 1.0;  // Night: full intensity
+    }
+}
 
 // In your animate function, add this:
 function loadCharacter(config) {
@@ -529,21 +791,28 @@ function loadCharacter(config) {
                     isTransparent = true;
                     alphaTest = 0.5;
                 }
-
+                const isInner = child.name.toLowerCase().includes('inner');
                 child.material = new THREE.MeshBasicMaterial({
                     map: originalTexture,
                     color: materialColor,
+                    vertexColors: true,
                     side: THREE.DoubleSide,
-                    transparent: isTransparent,
-                    alphaTest: alphaTest,
+                    transparent: true,  // ALWAYS true (like index.js)
                     opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
+                    // NO alphaTest
                 });
 
-                child.material.needsUpdate = true;
-
-                if (isTransparent) {
-                    console.log(`  ✓ Transparent material: ${child.name} (alphaTest: ${alphaTest})`);
+                if (isInner) {
+                    child.renderOrder = 1;
+                } else {
+                    child.renderOrder = 2;
                 }
+                child.userData.baseColor = materialColor.clone();
+                // Apply time-based tint
+                updateMaterialTint(child);
+
+
+  
             }
         });
 
@@ -570,6 +839,7 @@ function loadCharacter(config) {
 
         if (settings.hasAnimation && gltf.animations.length) {
             mixer = new THREE.AnimationMixer(character);
+            console.log(`\n📦 ${settings.path}`); // ADD THIS
 
             // Store all animations by name
             gltf.animations.forEach(clip => {
@@ -585,6 +855,8 @@ function loadCharacter(config) {
                 currentAction = animations[firstAnim.name];
                 currentAction.play();
             }
+        } else {
+            console.log("NO ANIMATIONS")
         }
 
         scene.add(character);
@@ -675,108 +947,180 @@ function updateCharacterBehaviors() {
         updatePassengerBoarding();
     }
 }
-
 function updateWanderBehavior(char) {
     const model = char.model;
     const bounds = char.config.wanderBounds;
     const speed = char.config.wanderSpeed;
 
+    // =========================
+    // HOVER FREEZE (NO DIR CHANGE)
+    // =========================
     if (char.isHovered) {
+        char.velocity.set(0, 0, 0);
         return;
     }
 
-    // Check distance to fountain
-    const distToFountain = model.position.distanceTo(FOUNTAIN_POS);
+    // =========================
+    // POST-HOVER PAUSE
+    // =========================
+    if (char.state === 'postHoverPause') {
+        char.velocity.set(0, 0, 0);
 
-    // STATE: Walking
-    if (char.state === 'walking') {
-        // Calculate next position
-        const nextPos = model.position.clone();
-        nextPos.x += char.velocity.x;
-        nextPos.z += char.velocity.z;
+        if (performance.now() - char.pauseStartTime > 200) {
+            char.state = 'walking';
 
-        // Check distance to fountain
-        const nextDistToFountain = nextPos.distanceTo(FOUNTAIN_POS);
+            // Resume with saved velocity direction
+            if (char.savedVelocity && char.savedVelocity.lengthSq() > 0) {
+                char.velocity
+                    .copy(char.savedVelocity)
+                    .normalize()
+                    .multiplyScalar(speed);
 
-        // Check if near fountain and should view it
-        const wasNearFountain = char.wasNearFountain || false;
-        const isNearFountain = distToFountain < FOUNTAIN_VIEW_RADIUS;
-
-        
-
-        if (isNearFountain && !wasNearFountain && Math.random() < FOUNTAIN_VIEW_CHANCE) {
-            char.state = 'fountainViewing';
-            char.fountainViewStartTime = Date.now();
-            char.velocity.set(0, 0, 0);
-            char.originalRotationY = model.rotation.y;
-
-            // Look at fountain - this uses lookAt which assumes +Z forward
-            // Since our model faces +Z at rotation 0, lookAt works directly
-            model.lookAt(FOUNTAIN_POS);
-
-            char.playAnimation('shushu_wish');
-            triggerSunfishAppearance();
-            return;
+                char.moveDir = char.velocity.clone().normalize();
+            }
+            // Clear saved velocity after using it
+            char.savedVelocity = null;
         }
-
-        char.wasNearFountain = isNearFountain;
-
-        // Check if near cafe and hasn't visited yet
-        const distToCafe = model.position.distanceTo(CAFE_POS);
-        if (distToCafe < CAFE_RADIUS && !char.hasVisitedCafe && Math.random() < CAFE_PURCHASE_CHANCE) {
-            visitCafe(char);
-            return;
-        }
-
-        // Check collision with fountain
-        if (nextDistToFountain < 3) {
-            const dirFromFountain = new THREE.Vector3().subVectors(model.position, FOUNTAIN_POS).normalize();
-            char.velocity.copy(dirFromFountain.multiplyScalar(speed));
-            return;
-        }
-
-        // Check collision with props
-        const propCollision = checkPropCollision(nextPos);
-        if (propCollision) {
-            const dirFromProp = new THREE.Vector3().subVectors(model.position, propCollision).normalize();
-            char.velocity.copy(dirFromProp.multiplyScalar(speed));
-        } else {
-            model.position.copy(nextPos);
-        }
-
-        // Face movement direction
-        // For +Z forward models (rotation.y = 0 faces +Z), use atan2(x, z)
-        if (char.velocity.length() > 0.001) {
-            // atan2(x, z) gives angle where 0 = +Z, positive = turning toward +X
-            const angle = Math.atan2(char.velocity.x, char.velocity.z);
-            model.rotation.y = angle;
-            char.originalRotationY = model.rotation.y;
-        }
-
-        // Bounce off bounds
-        if (model.position.x < bounds.minX || model.position.x > bounds.maxX) {
-            char.velocity.x *= -1;
-            model.position.x = THREE.MathUtils.clamp(model.position.x, bounds.minX, bounds.maxX);
-        }
-        if (model.position.z < bounds.minZ || model.position.z > bounds.maxZ) {
-            char.velocity.z *= -1;
-            model.position.z = THREE.MathUtils.clamp(model.position.z, bounds.minZ, bounds.maxZ);
-        }
+        return;
     }
 
-    // STATE: Fountain Viewing
-    else if (char.state === 'fountainViewing') {
-        const elapsed = Date.now() - char.fountainViewStartTime;
-        model.lookAt(FOUNTAIN_POS);
+    // =========================
+    // STATE: WALKING
+    // =========================
+    if (char.state === 'walking') {
 
-        if (elapsed > FOUNTAIN_VIEW_TIME) {
+        // Ensure direction
+        if (char.velocity.lengthSq() === 0) {
+            const dir = new THREE.Vector3(
+                Math.random() - 0.5,
+                0,
+                Math.random() - 0.5
+            ).normalize();
+
+            char.velocity.copy(dir).multiplyScalar(speed);
+            char.moveDir = dir.clone();
+        }
+
+        char.velocity.normalize().multiplyScalar(speed);
+        char.moveDir = char.velocity.clone().normalize();
+
+        const nextPos = model.position.clone().add(char.velocity);
+        const distToFountain = nextPos.distanceTo(FOUNTAIN_POS);
+
+        // =========================
+        // FOUNTAIN COLLISION + VIEW
+        // =========================
+        if (distToFountain < FOUNTAIN_VIEW_RADIUS) {
+
+            // Stop movement when entering fountain radius
+            char.velocity.set(0, 0, 0);
+
+            const wasNear = char.wasNearFountain || false;
+
+            if (!wasNear && Math.random() < FOUNTAIN_VIEW_CHANCE) {
+                char.state = 'fountainViewing';
+                char.rotationMode = 'fountain';
+                char.fountainViewStartTime = Date.now();
+                char.wasNearFountain = true;
+
+                char.playAnimation('shushu_wish');
+                triggerSunfishAppearance();
+                return;
+            }
+
+            // Didn't view → gently push away
+            const away = new THREE.Vector3()
+                .subVectors(model.position, FOUNTAIN_POS)
+                .normalize();
+
+            model.position.add(away.multiplyScalar(0.08));
+
+            char.velocity.copy(away).multiplyScalar(speed);
+            char.moveDir = away.clone();
+
+            return;
+        }
+
+        char.wasNearFountain = false;
+
+
+        if (!char.hasVisitedCafe) {
+            const distToCafe = model.position.distanceTo(CAFE_POS);
+            if (distToCafe < CAFE_RADIUS && Math.random() < CAFE_PURCHASE_CHANCE) {
+                visitCafe(char);
+                return;
+            }
+        }
+
+
+        // =========================
+        // PROP COLLISION
+        // =========================
+        const propCollision = checkPropCollision(nextPos);
+        if (propCollision) {
+            const away = new THREE.Vector3()
+                .subVectors(model.position, propCollision)
+                .normalize();
+
+            char.velocity.copy(away).multiplyScalar(speed);
+            char.moveDir = away.clone();
+            return;
+        }
+
+        // =========================
+        // MOVE
+        // =========================
+        model.position.add(char.velocity);
+
+        // =========================
+        // BOUNDS BOUNCE (TRUE REFLECT)
+        // =========================
+        let bounced = false;
+
+        if (model.position.x < bounds.minX || model.position.x > bounds.maxX) {
+            char.velocity.x *= -1;
+            bounced = true;
+        }
+
+        if (model.position.z < bounds.minZ || model.position.z > bounds.maxZ) {
+            char.velocity.z *= -1;
+            bounced = true;
+        }
+
+        if (bounced) {
+            model.position.x = THREE.MathUtils.clamp(
+                model.position.x, bounds.minX, bounds.maxX
+            );
+            model.position.z = THREE.MathUtils.clamp(
+                model.position.z, bounds.minZ, bounds.maxZ
+            );
+
+            char.velocity.normalize().multiplyScalar(speed);
+            char.moveDir = char.velocity.clone().normalize();
+        }
+
+        char.rotationMode = 'movement';
+    }
+
+    // =========================
+    // STATE: FOUNTAIN VIEWING
+    // =========================
+    else if (char.state === 'fountainViewing') {
+        char.rotationMode = 'fountain';
+
+        if (Date.now() - char.fountainViewStartTime > FOUNTAIN_VIEW_TIME) {
             char.state = 'walking';
             char.wasNearFountain = false;
-            char.velocity.set(
-                (Math.random() - 0.5) * speed,
+
+            const dir = new THREE.Vector3(
+                Math.random() - 0.5,
                 0,
-                (Math.random() - 0.5) * speed
-            );
+                Math.random() - 0.5
+            ).normalize();
+
+            char.velocity.copy(dir).multiplyScalar(speed);
+            char.moveDir = dir.clone();
+
             char.playAnimation('shushu_walk');
         }
     }
@@ -915,7 +1259,9 @@ function setSunfishOpacity(opacity) {
     });
 }
 
+
 /* ------------------ MODULAR PROP LOADER ------------------ */
+
 
 function loadProp(config) {
     const defaults = {
@@ -926,7 +1272,8 @@ function loadProp(config) {
         hasShadow: false,
         shadowSize: 1,
         parent: null,
-        onLoad: null
+        onLoad: null,
+        renderOrder: 0,
     };
 
     const settings = { ...defaults, ...config };
@@ -961,11 +1308,19 @@ function loadProp(config) {
                     map: originalTexture,
                     color: materialColor,
                     side: THREE.DoubleSide,
-                    transparent: oldMaterial.transparent || false,
+                    transparent: true,
                     opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
                 });
+                child.userData.baseColor = materialColor.clone();
+
+                const TIME_TINT = getTimeTint();
+                child.material.color
+                    .copy(child.userData.baseColor)
+                    .multiply(TIME_TINT);
 
                 child.material.needsUpdate = true;
+                child.renderOrder = settings.renderOrder;
+
             }
         });
 
@@ -1127,48 +1482,52 @@ function loadFluffyTree(x, y, z) {
         tree.position.set(x, y, z);
         tree.scale.setScalar(0.5);
 
+        // Load alpha map for foliage transparency
         const textureLoader = new THREE.TextureLoader(loadingManager);
         textureLoader.load('images/tree_alpha.png', (alphaMap) => {
+            console.log('Alpha map loaded for fluffy tree');
             alphaMap.flipY = false;
             alphaMap.colorSpace = THREE.NoColorSpace;
             alphaMap.needsUpdate = true;
-
+            // Shader material
             const customMaterial = new THREE.ShaderMaterial({
-                vertexShader: foliageVertexShader,
-                fragmentShader: `
-            uniform sampler2D alphaMap;
-            varying vec2 v_uvs;
-
-            void main() {
-                vec4 texColor = texture2D(alphaMap, v_uvs);
-                if (texColor.a < 0.5) discard;
-                gl_FragColor = vec4(0.247, 0.427, 0.129, 1.0); // #3f6d21
-            }
-        `,
+                vertexShader: foliageVertexShader,   // from loaded file
+                fragmentShader: foliageFragmentShader, // from loaded file
                 uniforms: {
-                    u_effectBlend: { value: 1.0 },
+                    u_effectBlend: { value: 2.0 },
                     u_windSpeed: { value: 0.5 },
                     u_windTime: { value: 0.0 },
-                    alphaMap: { value: alphaMap }
+                    alphaMap: { value: alphaMap },
+                    u_timeOfDayTint: { value: getTimeTint() }
                 },
                 transparent: true,
                 side: THREE.DoubleSide
             });
 
+            // Apply shader to foliage meshes
             tree.traverse((child) => {
-                if (child.isMesh && child.name.toLowerCase().includes('foliage')) {
-                    child.material = customMaterial;
-                    child.frustumCulled = false;
+                if (child.isMesh) {
+                    console.log('Mesh found:', child.name);
+                    if (child.name.toLowerCase().includes('foliage')) {
+                        console.log('✓ Foliage mesh found:', child.name);
+                        child.material = customMaterial;
+                        child.userData.foliageMaterial = customMaterial;
+                        child.frustumCulled = false;
+                    }
                 }
             });
-        });
-        scene.add(tree);
-        loadedProps.push({
-            model: tree,
-            config: {
-                type: 'fluffyTree',
-                scale: 0.8
-            }
+
+            scene.add(tree);
+
+            loadedProps.push({
+                model: tree,
+                config: {
+                    type: 'fluffyTree',
+                    scale: 0.8,
+                }
+            });
+
+            console.log(`✓ Fluffy tree loaded at (${x}, ${y}, ${z})`);
         });
     });
 }
@@ -1181,43 +1540,49 @@ function loadTrain() {
     const trainTexture = new THREE.TextureLoader().load("models/textures/train_256.png");
     trainTexture.flipY = false;
 
+
     const trainMaterial = new THREE.ShaderMaterial({
         uniforms: {
             uMap: { value: trainTexture },
-            uStart: { value: trainStartX + 5 },
-            uEnd: { value: trainEndX - 5 },
-            uFade: { value: 2.0 },
+            uFadeStart: { value: -8.0 },      // Vertices before -8 are invisible
+            uFadeEnd: { value: 8.0 },         // Vertices after 8 are invisible
+            uFadeDistance: { value: 2.0 },    // Fade over 2 units
         },
         vertexShader: `
-            varying vec3 vPos;
-            varying vec2 vUv;
-            void main() {
-                vPos = (modelMatrix * vec4(position, 1.0)).xyz;
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `,
+        varying vec3 vPos;
+        varying vec2 vUv;
+        void main() {
+            vPos = (modelMatrix * vec4(position, 1.0)).xyz;
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
         fragmentShader: `
-            uniform sampler2D uMap;
-            uniform float uStart;
-            uniform float uEnd;
-            uniform float uFade;
-            varying vec3 vPos;
-            varying vec2 vUv;
+        uniform sampler2D uMap;
+        uniform float uFadeStart;
+        uniform float uFadeEnd;
+        uniform float uFadeDistance;
+        varying vec3 vPos;
+        varying vec2 vUv;
 
-            void main() {
-                vec4 baseColor = texture2D(uMap, vUv);
+        void main() {
+            vec4 baseColor = texture2D(uMap, vUv);
 
-                float fadeStart = smoothstep(uStart, uStart + uFade, vPos.x);
-                float fadeEnd   = smoothstep(uEnd - uFade, uEnd, vPos.x);
+            float alpha = 1.0;
+            
+            // Fade IN: vertices before -8 are transparent, after -8 are visible
+            float fadeIn = smoothstep(uFadeStart - uFadeDistance, uFadeStart, vPos.x);
+            
+            // Fade OUT: vertices after 8 are transparent, before 8 are visible
+            float fadeOut = 1.0 - smoothstep(uFadeEnd, uFadeEnd + uFadeDistance, vPos.x);
+            
+            alpha = fadeIn * fadeOut;
 
-                float alpha = fadeStart * (1.0 - fadeEnd);
+            if (alpha < 0.01) discard;
 
-                if (alpha < 0.01) discard;
-
-                gl_FragColor = vec4(baseColor.rgb, alpha);
-            }
-        `,
+            gl_FragColor = vec4(baseColor.rgb, alpha);
+        }
+    `,
         transparent: true,
         depthWrite: false,
         depthTest: true,
@@ -1233,24 +1598,34 @@ function loadTrain() {
         });
 
         train.scale.set(0.8, 0.8, 0.8);
-        train.position.set(trainStartX, 0.2, -10);
-        train.rotation.y = 0;
+        train.position.copy(trainStartPos);
+
+        const direction = new THREE.Vector3().subVectors(trainEndPos, trainStartPos);
+        const baseAngle = Math.atan2(direction.x, direction.z);
+
+        train.rotation.y = baseAngle - Math.PI / 2; 
+
         train.visible = false;
         train.renderOrder = 8;
+        if (gltf.animations && gltf.animations.length > 0) {
+            window.trainMixer = new THREE.AnimationMixer(train);
+            window.trainAnimations = {};
+
+            gltf.animations.forEach(clip => {
+                const action = window.trainMixer.clipAction(clip);
+                window.trainAnimations[clip.name] = action;
+                console.log('Train animation:', clip.name);
+            });
+        }
+
 
         scene.add(train);
-        console.log('Train loaded with dissipation shader');
+        console.log('Train loaded with diagonal path');
     }, undefined, (error) => {
         console.error('Error loading train:', error);
     });
 }
 
-function getTrainTimeInfo() {
-    const now = Date.now();
-    const cycleElapsedMs = now - trainCycleStart;
-    const cycleElapsedSec = cycleElapsedMs / 1000;
-    return { cycleElapsedSec };
-}
 
 /* ------------------ SUBWAY PASSENGER SYSTEM ------------------ */
 
@@ -1259,9 +1634,9 @@ function spawnSubwayPassenger() {
     passengerState = 'spawning'; // Set immediately to prevent double-spawn
 
     loadCharacter({
-        path: 'models/shushu.glb',
-        position: { x: 0, y: 0, z: -10 }, // Near train stop
-        scale: 0.5,
+        path: 'models/vivi.glb',
+        position: { x: 0, y: 0, z: -8 }, // Near train stop
+        scale: 0.6,
         hasAnimation: true,
         hasShadow: true,
         shadowSize: 1.5,
@@ -1376,6 +1751,9 @@ updateClock(); // Initial call
 
 function visitCafe(char) {
     char.hasVisitedCafe = true;
+
+    // Save current velocity before stopping
+    char.savedVelocity = char.velocity.clone();
     char.velocity.set(0, 0, 0);
 
     // Look at cafe
@@ -1431,13 +1809,18 @@ function purchaseFood(char) {
 
         console.log(`Character purchased ${randomFood}! Will eat in ${(timeUntilEat / 1000).toFixed(1)} seconds`);
 
-        // Resume walking (they now walk while holding food!)
-        char.state = 'walking';
-        char.velocity.set(
-            (Math.random() - 0.5) * char.config.wanderSpeed,
-            0,
-            (Math.random() - 0.5) * char.config.wanderSpeed
-        );
+        // Resume walking with NEW random direction (not saved direction)
+        // char.state = 'walking';
+        // const newDir = new THREE.Vector3(
+        //     Math.random() - 0.5,
+        //     0,
+        //     Math.random() - 0.5
+        // ).normalize();
+
+        // char.moveDir = newDir.clone();
+        // char.velocity.copy(newDir).multiplyScalar(char.config.wanderSpeed);
+        // char.rotationMode = 'movement';  // ADD THIS
+
     }, undefined, (error) => {
         console.error('Error loading food item:', error);
         // Still resume walking even if food failed to load
@@ -1502,14 +1885,19 @@ function finishEating(char) {
         char.holdingFood = null;
     }
 
-    // Resume walking
+    // Resume walking with NEW direction
     char.state = 'walking';
-    char.playAnimation('shushu_walk');
-    char.velocity.set(
-        (Math.random() - 0.5) * char.config.wanderSpeed,
+    char.playAnimation('walk');
+
+    const newDir = new THREE.Vector3(
+        Math.random() - 0.5,
         0,
-        (Math.random() - 0.5) * char.config.wanderSpeed
-    );
+        Math.random() - 0.5
+    ).normalize();
+
+    char.velocity.copy(newDir).multiplyScalar(char.config.wanderSpeed);
+    char.moveDir = newDir.clone();
+    char.rotationMode = 'movement';  // ADD THIS
 
     // Allow visiting cafe again
     char.hasVisitedCafe = false;
@@ -1518,25 +1906,38 @@ function finishEating(char) {
 }
 
 
-
 /* ------------------ ANIMATE ------------------ */
+function getTrainTimeInfo() {
+    const now = Date.now();
+    const cycleElapsedMs = now - trainCycleStart;
+    const cycleElapsedSec = cycleElapsedMs / 1000;
+    return { cycleElapsedSec };
+}
+
 
 function animate() {
     requestAnimationFrame(animate);
 
     const dt = clock.getDelta();
+    if (window.trainMixer) window.trainMixer.update(dt);
     const elapsedTime = clock.getElapsedTime();
 
-    // Update all character animations
-    loadedCharacters.forEach(char => {
-        if (char.mixer) char.mixer.update(dt);
-    });
+        // 1️⃣ Update animation mixers (pure animation only)
+        loadedCharacters.forEach(char => {
+            if (char.mixer) char.mixer.update(dt);
+            updateCharacterLighting(char);
+            applyRotation(char);
+        });
 
-    // Update character behaviors
-    updateCharacterBehaviors();
+        // 2️⃣ Update movement / state (NO rotation here)
+        updateCharacterBehaviors();
 
-    // Update hover interactions
-    updateHoverInteraction();
+        // 3️⃣ Update hover state ONLY (sets flags, no rotation math)
+        updateHoverInteraction();
+
+    updateStreetLightGlows();
+
+
 
     // Update sunfish fade effect
     updateSunfishFade(dt);
@@ -1549,6 +1950,7 @@ function animate() {
         if (child.userData.foliageMaterial) {
             child.userData.foliageMaterial.uniforms.u_windTime.value += dt;
         }
+        
     });
 
     // Cloud rotation
@@ -1567,7 +1969,7 @@ function animate() {
     });
 
     // Train animation
-    // Train animation
+
     if (train) {
         const { cycleElapsedSec } = getTrainTimeInfo();
 
@@ -1579,24 +1981,53 @@ function animate() {
             train.visible = true;
 
             if (cycleElapsedSec < moveDuration / 2) {
+                // Move from START to MIDDLE (diagonal)
                 const t = cycleElapsedSec / (moveDuration / 2);
-                train.position.x = THREE.MathUtils.lerp(trainStartX, trainMiddleX, t);
+                train.position.lerpVectors(trainStartPos, trainMiddlePos, t);
+                window.trainAnimations['doors_opening']
+                    .reset()
+                    .setLoop(THREE.Loop)
+                    .play();
+
             } else if (cycleElapsedSec < moveDuration / 2 + stopDuration) {
-                train.position.x = trainMiddleX;
+                // STOP at middle
+                train.position.copy(trainMiddlePos);
 
                 // Spawn passenger 0.2 seconds after train stops (first visit)
+                // Spawn passenger 0.2 seconds after train stops (first visit)
                 const timeIntoStop = cycleElapsedSec - (moveDuration / 2);
+
                 if (timeIntoStop > 0.2 && timeIntoStop < 0.3 && passengerState === 'waiting' && trainVisitCount === 0) {
+
+                    if (window.trainAnimations && window.trainAnimations['doors_opening']) {
+
+                        const action = window.trainAnimations['doors_opening'];
+
+                        window.trainMixer.stopAllAction(); // prevents other animations overriding
+
+                        action.reset();
+                        action.setLoop(THREE.LoopOnce);
+                        action.clampWhenFinished = true;
+                        action.enabled = true;
+
+                        action.play();
+                    }
+
                     spawnSubwayPassenger();
                 }
 
                 // Check if passenger should board (3rd visit)
                 if (passengerState === 'wandering' && trainVisitCount === 2) {
+                    if (window.trainAnimations && window.trainAnimations['doors_closing']) {
+                        window.trainAnimations['doors_closing'].reset().play();
+                    }
                     makePassengerBoard();
                 }
+
             } else {
+                // Move from MIDDLE to END (diagonal)
                 const t = (cycleElapsedSec - (moveDuration / 2 + stopDuration)) / (moveDuration / 2);
-                train.position.x = THREE.MathUtils.lerp(trainMiddleX, trainEndX, t);
+                train.position.lerpVectors(trainMiddlePos, trainEndPos, t);
 
                 // Train leaving with passenger
                 if (t > 0.1 && passengerState === 'boarding' && subwayPassenger) {

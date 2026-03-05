@@ -1,3 +1,8 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const loader = new GLTFLoader(); // ← top-level, accessible everywhere
+
 /* ═══════════════════════════════════════
    $1 UNISTROKE RECOGNIZER
    ═══════════════════════════════════════ */
@@ -190,93 +195,359 @@
 
 
 // ══════════════════════════════════════════
-// THREE.JS — INTRO MODEL
+// THREE.JS — INTRO
 // ══════════════════════════════════════════
+
+let pileHeight = 3; // starting height for falling stars
+let starModel = null;
+const spawnedStars = [];
+loader.load('models/ghost.glb', (gltf) => {
+    starModel = gltf.scene;
+    starModel.traverse((child) => {
+        if (child.isMesh) {
+            const oldMaterial = child.material;
+                            const originalTexture = oldMaterial.map;
+            
+                            if (originalTexture) {
+                                originalTexture.minFilter = THREE.NearestFilter;
+                                originalTexture.magFilter = THREE.NearestFilter;
+                                originalTexture.generateMipmaps = false;
+                                originalTexture.colorSpace = THREE.LinearSRGBColorSpace;
+                                originalTexture.flipY = false;
+                                originalTexture.needsUpdate = true;
+                            }
+            
+                            let materialColor = new THREE.Color(0xffffff);
+                            if (oldMaterial.color) {
+                                materialColor = oldMaterial.color.clone();
+                                if (materialColor.r < 0.1 && materialColor.g < 0.1 && materialColor.b < 0.1) {
+                                    materialColor = new THREE.Color(0xffffff);
+                                }
+                            }
+            
+                            child.material = new THREE.MeshBasicMaterial({
+                                map: originalTexture,
+                                color: materialColor,
+                                side: THREE.DoubleSide,
+                                transparent: true,
+                                opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
+                            });
+                        }
+    });
+
+});
+
+let expressionBone;
+let faceMaterial;
+const TOTAL_ROWS = 4;
+
 (function () {
+    function spawnFallingStar(index) {
+        if (!starModel) return;
+
+        const star = starModel.clone(true);
+
+        // Random horizontal spread
+        star.position.x = (Math.random() - 0.5) * 6;
+        star.position.z = (Math.random() - 0.5) * 4;
+
+        // Start high
+        star.position.y = 10 + Math.random() * 5;
+
+        scene.add(star);
+        spawnedStars.push(star);
+
+        // Delay each star slightly for nicer cascade
+        gsap.to(star.position, {
+            y: pileHeight,
+            duration: 1.2 + Math.random(),
+            delay: index * 0.03,
+            ease: "power2.in",
+            onComplete: () => {
+                pileHeight += 2; // stack upward
+            }
+        });
+
+        // Optional subtle rotation while falling
+        gsap.to(star.rotation, {
+            y: Math.random() * Math.PI * 4,
+            x: Math.random() * Math.PI * 2,
+            duration: 1.5,
+            ease: "none"
+        });
+    }
+
+    function clearStars() {
+        spawnedStars.forEach((star, index) => {
+            gsap.to(star.scale, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.6,
+                delay: index * 0.01,
+                ease: "power2.in",
+                onComplete: () => {
+                    scene.remove(star);
+                }
+            });
+        });
+
+        spawnedStars.length = 0;
+        pileHeight = 3; // reset pile
+    }
+
+    function eraseStarsQuick() {
+        if (spawnedStars.length === 0) return;
+        spawnedStars.forEach((star) => {
+            scene.remove(star);
+        });
+
+        spawnedStars.length = 0;
+        pileHeight = 3; // reset pile
+    }
+
+
     const container = document.getElementById('model-container');
     const canvas = document.getElementById('three-canvas');
+    if (!container || !canvas) {
+        console.warn('Model container or canvas not found');
+        return;
+    }
+
     const W = container.clientWidth, H = container.clientHeight;
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
     renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
+    renderer.setPixelRatio(1);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
-    camera.position.set(0, 0.5, 4.5);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const dir = new THREE.DirectionalLight(0x78B8FF, 1.2);
-    dir.position.set(3, 5, 3);
-    scene.add(dir);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
-    fill.position.set(-3, 0, 2);
-    scene.add(fill);
+    const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
+    camera.position.set(0, 5, 5);
 
     const group = new THREE.Group();
+    let model = null;
+    let mixer = null;
+    const animations = {};
 
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x43424C, roughness: 0.4, metalness: 0.1 });
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 1.1, 16), bodyMat);
-    body.position.y = -0.1;
-    group.add(body);
 
-    const head = new THREE.Mesh(
-        new THREE.SphereGeometry(0.38, 24, 24),
-        new THREE.MeshStandardMaterial({ color: 0xF5C5A3, roughness: 0.5 })
-    );
-    head.position.y = 0.88;
-    group.add(head);
+    function playOneAnimation(name) {
+        for (const key in animations) {
+            animations[key].stop();
+        }
 
-    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x43424C });
-    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 12), eyeMat);
-    eyeL.position.set(-0.13, 0.95, 0.33);
-    group.add(eyeL);
-    const eyeR = eyeL.clone();
-    eyeR.position.set(0.13, 0.95, 0.33);
-    group.add(eyeR);
+        const action = animations[name];
+        if (!action) return;
 
-    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.7, 10), bodyMat);
-    armL.position.set(-0.55, -0.05, 0);
-    armL.rotation.z = 0.4;
-    group.add(armL);
-    const armR = armL.clone();
-    armR.position.set(0.55, -0.05, 0);
-    armR.rotation.z = -0.4;
-    group.add(armR);
+        action.reset();
+        action.setLoop(THREE.LoopOnce);   // play once
+        action.clampWhenFinished = true;  // stay on last frame
+        action.play();
+    }
 
-    scene.add(group);
+    loader.load('models/emii.glb', (gltf) => {
+        model = gltf.scene;
 
-    const animations = {
+        console.log('Total animations found:', gltf.animations.length);
+        gltf.animations.forEach((clip, index) => {
+            console.log(`Animation ${index}:`, clip.name, '| Duration:', clip.duration.toFixed(2) + 's');
+        });
+
+        gltf.scene.traverse(obj => {
+
+            if (obj.isBone && obj.name === "face_switch") {
+                expressionBone = obj;
+            }
+
+            if (obj.isMesh && obj.material.map) {
+
+                const texture = obj.material.map;
+
+                // Only adjust texture settings
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.minFilter = THREE.NearestFilter;
+                texture.magFilter = THREE.NearestFilter;
+                texture.generateMipmaps = false;
+
+
+                texture.needsUpdate = true;
+                // console.log(obj.name);
+
+                // ONLY capture face material by mesh name
+                if (obj.name === "Cube012") {
+                    faceMaterial = obj.material;
+                    
+                }
+
+            }
+
+        });
+
+        // Apply unlit materials with proper color space
+        model.traverse((child) => {
+            if (child.isMesh) {
+                console.log('Mesh:', child.name, '| Material:', child.material.name);
+            }
+            if (child.isMesh) {
+                const oldMaterial = child.material;
+                const texture = oldMaterial.map;
+
+                // Setup texture with LINEAR color space
+                if (texture) {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.minFilter = THREE.NearestFilter;
+                    texture.magFilter = THREE.NearestFilter;
+                    texture.generateMipmaps = false;
+                    texture.flipY = false;
+                    texture.needsUpdate = true;
+                }
+
+                // Check if this is the outline material (by name set in Blender)
+                if (child.material.name === 'OUTLINE_MAT') {
+                    child.material = new THREE.MeshBasicMaterial({
+                        color: 0x43424C,
+
+                    });
+                } else {
+                    let materialColor = new THREE.Color(0xffffff);
+                    if (oldMaterial.color) materialColor = oldMaterial.color.clone();
+
+                    child.material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        color: materialColor,
+                        transparent: oldMaterial.transparent || false,
+                        alphaTest: oldMaterial.alphaTest || 0,
+                        side: THREE.DoubleSide
+                    });
+            }
+            }
+        });
+
+        // Setup animations if they exist
+        if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(model);
+
+            // Store all animations by name
+            gltf.animations.forEach(clip => {
+                const action = mixer.clipAction(clip);
+                animations[clip.name] = action;
+                console.log('Loaded animation:', clip.name);
+            });
+
+            // Play idle animation if it exists
+            const idleAnim = animations['idle'] || animations['Idle'] || Object.values(animations)[0];
+            if (idleAnim) {
+                idleAnim.play();
+            }
+        }
+
+        
+
+        // Add model to group
+        group.add(model);
+        scene.add(group);
+
+        console.log('Model loaded successfully');
+        setExpression(2); // or 3 if you want
+    },
+        (progress) => {
+            console.log('Loading:', (progress.loaded / progress.total * 100).toFixed(0) + '%');
+        },
+        (error) => {
+            console.error('Error loading model:', error);
+        });
+
+    
+    // Gesture-triggered animations
+    const gestureAnimations = {
         circle: () => {
-            gsap.to(group.rotation, { y: Math.PI * 2, duration: 1, ease: 'power2.inOut', onComplete: () => { group.rotation.y = 0; } });
+            eraseStarsQuick()
+            playOneAnimation('spin');
+            gsap.to(group.rotation, {
+                y: group.rotation.y + Math.PI * 2,
+                duration: 1,
+                ease: 'power2.inOut'
+            });
         },
         star: () => {
-            gsap.to(eyeR.scale, { y: 0.05, duration: 0.15, yoyo: true, repeat: 1, ease: 'power1.inOut' });
-            gsap.to(group.rotation, { z: 0.2, duration: 0.3, yoyo: true, repeat: 1 });
+            // Clear previous stars if you want a fresh fall
+            clearStars();
+
+            // Spawn new batch
+            for (let i = 0; i < 50; i++) {
+                spawnFallingStar(i);
+            }
+
+            // Play the star animation
+            playOneAnimation('star_falling');
+
+            // Clear after 4s
+            setTimeout(() => {
+                clearStars();
+            }, 4000);
         },
         square: () => {
-            gsap.to(group.scale, { y: 1.2, x: 0.85, duration: 0.25, yoyo: true, repeat: 1, ease: 'elastic.out' });
+            eraseStarsQuick()
+            playOneAnimation('rig_akiijaeAction');
+
         },
         zigzag: () => {
-            gsap.to(armR.rotation, { z: -1.2, duration: 0.25, yoyo: true, repeat: 3, ease: 'power1.inOut' });
-            gsap.to(group.position, { x: 0.1, duration: 0.12, yoyo: true, repeat: 5 });
+            eraseStarsQuick()
+            playOneAnimation('hello');
+
         }
     };
 
     window._triggerModelAnimation = (name) => {
-        if (animations[name]) animations[name]();
+        if (gestureAnimations[name]) gestureAnimations[name]();
     };
 
     const clock = new THREE.Clock();
     let introVisible = false;
 
+
     function animate() {
         if (!introVisible) return;
         requestAnimationFrame(animate);
+
+        const delta = clock.getDelta();
+
+        // Update animation mixer
+        if (mixer) mixer.update(delta);
+
+        if (expressionBone && faceMaterial) {
+            const z = Math.abs(expressionBone.position.z) * 10;  // take absolute
+
+            console.log("Z:", z);
+            // Determine expression index based on thresholds
+            let index = 0;
+            
+            if (z >= 3.27) {
+                index = 3;
+            } else if (z >= 3.25) {
+                index = 2;
+            } else if (z >= 3.23) {
+                index = 1;
+            } else {
+                index = 0;
+            }
+
+            // Clamp just in case
+            index = Math.max(0, Math.min(3, index));
+
+            // // Debug
+            //console.log("Z:", z.toFixed(3), "Expression index:", index);
+
+            setExpression(index);
+        }
+
+
+        // Idle floating animation
         const t = clock.getElapsedTime();
-        group.position.y = Math.sin(t * 0.8) * 0.06;
-        group.rotation.y = Math.sin(t * 0.3) * 0.15;
+        group.position.y = Math.sin(t * 0.8) * 0.02;
+
         renderer.render(scene, camera);
     }
 
@@ -285,7 +556,7 @@
         if (introVisible) animate();
     }, { threshold: 0.1 });
     observer.observe(canvas);
-    
+
     window.addEventListener('resize', () => {
         const w = container.clientWidth, h = container.clientHeight;
         camera.aspect = w / h;
@@ -295,6 +566,26 @@
 })();
 
 
+function setExpression(index) {
+
+    if (!faceMaterial || !faceMaterial.map) {
+        console.warn("Face material not ready");
+        return;
+    }
+
+    // Clamp safely between 0–3
+    index = Math.max(0, Math.min(TOTAL_ROWS - 1, index));
+
+    // Convert index to atlas offset
+    faceMaterial.map.offset.y =
+        index / TOTAL_ROWS
+
+    faceMaterial.map.needsUpdate = true;
+
+    //console.log("Expression set to:", index);
+}
+
+
 // ══════════════════════════════════════════
 // GESTURE DRAWING + $1 RECOGNITION
 // ══════════════════════════════════════════
@@ -302,6 +593,14 @@
     const container = document.getElementById('model-container');
     const gc = document.getElementById('gesture-canvas');
     const resultEl = document.getElementById('gesture-result');
+
+    if (!container || !gc || !resultEl) {
+        console.warn('Gesture elements not found');
+        return; faceMaterial.map.offset.y =
+            index / TOTAL_ROWS
+
+        faceMaterial.map.needsUpdate = true;
+    }
 
     function resizeGC() {
         gc.width = container.offsetWidth;
@@ -340,7 +639,6 @@
         [50, 150], [50, 50]
     ]));
 
-    // To record your own zigzag: uncomment the console.log in moveDraw, draw once, copy the array
     recognizer.AddGesture('zigzag', pts([
         [100, 50], [150, 70], [100, 90], [150, 110], [100, 130], [150, 150], [100, 170], [150, 190],
         [130, 80], [100, 100], [130, 120], [100, 140], [130, 160],
@@ -389,8 +687,6 @@
         const p = getPos(e);
         points.push(Pt(p.x, p.y));
         drawnPts.push(p);
-        // Uncomment to record your own gesture:
-        // console.log(JSON.stringify(points.map(pt => [Math.round(pt.X), Math.round(pt.Y)])));
         redrawStroke(1);
     }
 
@@ -399,26 +695,30 @@
         if (!drawing) return;
         drawing = false;
 
-        if (points.length > 20) {
+        if (points.length > 10) {
             const result = recognizer.Recognize(points, false);
             console.log('Recognized:', result.Name, '| score:', result.Score.toFixed(2));
+
             const map = {
-                circle: { text: '◯ Circle detected!', anim: 'circle' },
-                star: { text: '★ Star detected — wink!', anim: 'star' },
-                square: { text: '□ Square detected!', anim: 'square' },
-                zigzag: { text: '〜 Hello!!', anim: 'zigzag' }
+                circle: { text: '◯ Circle detected!', anim: 'circle', minScore: 0.70 },  // Circle needs higher score
+                star: { text: '★ Star detected!', anim: 'star', minScore: 0.45 },
+                square: { text: '□ Square detected!', anim: 'square', minScore: 0.45 },
+                zigzag: { text: '〜 Hello!!', anim: 'zigzag', minScore: 0.45 }
             };
+
             const match = map[result.Name];
-            if (match && result.Score > 0.45) {
+
+            // Check if gesture meets its minimum score
+            if (match && result.Score >= match.minScore) {
                 resultEl.textContent = match.text;
                 window._triggerModelAnimation(match.anim);
             } else {
                 resultEl.textContent = 'Try: circle, star, square, or zigzag';
             }
+
             resultEl.classList.add('visible');
             setTimeout(() => resultEl.classList.remove('visible'), 3000);
         }
-
         if (fadeTimer) clearInterval(fadeTimer);
         let alpha = 1;
         fadeTimer = setInterval(() => {
@@ -442,208 +742,10 @@
     container.addEventListener('touchend', endDraw);
 
     gc.style.pointerEvents = 'none';
-    document.getElementById('three-canvas').style.pointerEvents = 'none';
+    const threeCanvas = document.getElementById('three-canvas');
+    if (threeCanvas) threeCanvas.style.pointerEvents = 'none';
 })();
 
-
-// ══════════════════════════════════════════
-// THREE.JS — EXPERIENCE MODEL (GLTF)
-// ══════════════════════════════════════════
-
-
-function addFlowersAndSnowman(scene, loader) {
-    // --- Flower setup ---
-    const flowerCount = 100;
-    const dummy = new THREE.Object3D();
-    const flowerData = [];
-    let flowerInstancedMesh = null;
-
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load('models/textures/nemphilia_tex.png', (texture) => {
-        texture.colorSpace = THREE.SRGBEncoding;
-        texture.wrapS = THREE.ClampToEdgeWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping;
-
-        const flowerMaterial = new THREE.MeshToonMaterial({
-            map: texture,
-            transparent: true,
-            alphaTest: 0.5,
-            side: THREE.DoubleSide,
-            depthWrite: false
-        });
-
-        loader.load('models/nemphilia_2.glb', (gltf) => {
-            const flowerModel = gltf.scene;
-            flowerModel.traverse((child) => {
-                if (child.isMesh) {
-                    flowerInstancedMesh = new THREE.InstancedMesh(
-                        child.geometry,
-                        flowerMaterial,
-                        flowerCount
-                    );
-
-                    let validFlowerCount = 0;
-                    for (let i = 0; i < flowerCount; i++) {
-                        const x = (Math.random() - 0.5) * 10;
-                        const z = (Math.random() - 0.5) * 10;
-                        const s = 0.1 + Math.random() * 0.1;
-
-                        dummy.position.set(x, 0, z);
-                        dummy.rotation.y = Math.random() * Math.PI * 2;
-                        dummy.scale.setScalar(s);
-                        dummy.updateMatrix();
-
-                        flowerInstancedMesh.setMatrixAt(validFlowerCount, dummy.matrix);
-                        flowerData.push({ x, z, scale: s, rotationOffset: Math.random() * Math.PI * 2 });
-                        validFlowerCount++;
-                    }
-
-                    flowerInstancedMesh.count = validFlowerCount;
-                    flowerInstancedMesh.instanceMatrix.needsUpdate = true;
-                    scene.add(flowerInstancedMesh);
-                }
-            });
-        });
-    });
-
-    // --- Snowman setup ---
-    const snowmanGroup = new THREE.Group();
-
-    const createSphere = (radius, color, y) => {
-        const geom = new THREE.SphereGeometry(radius, 16, 16);
-        const mat = new THREE.MeshToonMaterial({ color });
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.y = y;
-        return mesh;
-    };
-
-    // Body
-    snowmanGroup.add(createSphere(0.3, 0xffffff, 0.3));
-    snowmanGroup.add(createSphere(0.22, 0xffffff, 0.7));
-
-    // Eyes
-    const eyeGeom = new THREE.SphereGeometry(0.03, 8, 8);
-    const eyeMat = new THREE.MeshToonMaterial({ color: 0x000000 });
-    const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
-    leftEye.position.set(-0.1, 0.78, 0.15);
-    snowmanGroup.add(leftEye);
-    const rightEye = new THREE.Mesh(eyeGeom, eyeMat);
-    rightEye.position.set(0.1, 0.78, 0.15);
-    snowmanGroup.add(rightEye);
-
-    // Nose
-    const noseGeom = new THREE.ConeGeometry(0.02, 0.1, 8);
-    const noseMat = new THREE.MeshToonMaterial({ color: 0xff8c42 });
-    const nose = new THREE.Mesh(noseGeom, noseMat);
-    nose.rotation.x = Math.PI / 2;
-    nose.position.set(0, 0.73, 0.25);
-    snowmanGroup.add(nose);
-
-    // Buttons
-    const buttonGeom = new THREE.SphereGeometry(0.02, 6, 6);
-    const buttonMat = new THREE.MeshToonMaterial({ color: 0x000000 });
-    for (let i = 0; i < 3; i++) {
-        const button = new THREE.Mesh(buttonGeom, buttonMat);
-        button.position.set(0, 0.6 - i * 0.1, 0.21);
-        snowmanGroup.add(button);
-    }
-
-    snowmanGroup.position.set(-0.5, 0, -0.3);
-    snowmanGroup.rotation.y = Math.PI / 6;
-    scene.add(snowmanGroup);
-
-    return { flowerData, flowerInstancedMesh, snowmanGroup, dummy };
-}
-
-(function () {
-    const canvas = document.getElementById('exp-canvas');
-    if (!canvas) return;
-    const container = canvas.parentElement;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 1, 5);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const dl = new THREE.DirectionalLight(0x78B8FF, 1.2);
-    dl.position.set(3, 5, 3);
-    scene.add(dl);
-
-    function resize() {
-        const w = container.clientWidth, h = container.clientHeight;
-        renderer.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    let mixer = null;
-    let lookAtAction = null; // the animation clip you want to scrub
-
-    const loader = new THREE.GLTFLoader();
-    loader.load('images/your-model.glb', (gltf) => {
-        const model = gltf.scene;
-        scene.add(model);
-
-        if (gltf.animations && gltf.animations.length > 0) {
-            mixer = new THREE.AnimationMixer(model);
-            // Use the first animation clip — change index if needed
-            lookAtAction = mixer.clipAction(gltf.animations[0]);
-            lookAtAction.play();
-            lookAtAction.paused = true; // we'll scrub it manually
-        }
-    });
-
-    const { flowerData, flowerInstancedMesh, snowmanGroup, dummy } = addFlowersAndSnowman(scene, loader);
-
-    // Optional: animate flowers (similar to your previous animate loop)
-    function animateFlowers() {
-        const t = performance.now() * 0.001;
-        if (flowerInstancedMesh && flowerData.length) {
-            for (let i = 0; i < flowerData.length; i++) {
-                const data = flowerData[i];
-                const wave = Math.sin(data.x * 0.5 + data.z * 0.5 + t * 2 + data.rotationOffset) * 0.15;
-                dummy.position.set(data.x, 0, data.z);
-                dummy.rotation.x = wave;
-                dummy.rotation.z = wave * 0.5;
-                dummy.rotation.y = data.rotationOffset;
-                dummy.scale.setScalar(data.scale);
-                dummy.updateMatrix();
-                flowerInstancedMesh.setMatrixAt(i, dummy.matrix);
-            }
-            flowerInstancedMesh.instanceMatrix.needsUpdate = true;
-        }
-        requestAnimationFrame(animateFlowers);
-    }
-    animateFlowers();
-
-    // Pause/resume rendering when out of view
-    let isVisible = false;
-    const observer = new IntersectionObserver(entries => {
-        isVisible = entries[0].isIntersecting;
-        if (isVisible) animate();
-    }, { threshold: 0.1 });
-    observer.observe(canvas);
-
-    const clock = new THREE.Clock();
-    function animate() {
-        if (!isVisible) return;
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-
-    // Expose scrub function for GSAP to call
-    window._scrubExpModel = (progress) => {
-        if (!mixer || !lookAtAction) return;
-        const clip = lookAtAction.getClip();
-        // Set the animation time based on scroll progress
-        mixer.setTime(progress * clip.duration);
-    };
-})();
 
 // ══════════════════════════════════════════
 // GSAP SCROLL ANIMATIONS
@@ -669,8 +771,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     trigger: '#experience',
                     start: 'top bottom',
                     end: 'top top',
-                    scrub: 2,
-                    onUpdate: self => window._scrubExpModel(self.progress) // ADD THIS
+                    scrub: 2
                 }
             }
         );
@@ -722,8 +823,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 ease: 'none',
                 scrollTrigger: {
                     trigger: '#skills',
-                    start: 'top top',
-                    end: '+=800',
+                    start: 'top-=100 top',
+                    end: '+=300',
                     pin: true,
                     scrub: 3,
 
@@ -801,50 +902,139 @@ window.addEventListener('DOMContentLoaded', () => {
 // ══════════════════════════════════════════
 (function () {
     const canvas = document.getElementById('awards-canvas');
+    if (!canvas) return;
+
     const container = canvas.parentElement;
     const W = container.clientWidth, H = container.clientHeight;
-
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;  // ADD THIS
+    renderer.toneMapping = THREE.NoToneMapping;        // ADD THIS
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
-    camera.position.set(0, 0.5, 4.5);
+    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 100);
+    camera.position.set(0, 2.6, 4.5);   // Camera above ground
+     camera.lookAt(0.5, 2.3, 0);  
+    // MISSING DECLARATIONS
+    const group = new THREE.Group();
+    let model = null;
+    let mixer = null;
+    const animations = {};
+    let expressionBone = null;
+    let faceMaterial = null;
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const dl = new THREE.DirectionalLight(0x78B8FF, 1);
-    dl.position.set(2, 4, 3);
-    scene.add(dl);
+    // Load your GLB model
+    const loader = new GLTFLoader(); // FIXED: was missing declaration
+    loader.load('models/emii.glb', (gltf) => {
+        model = gltf.scene;
 
-    const g = new THREE.Group();
-    const bMat = new THREE.MeshStandardMaterial({ color: 0x43424C, roughness: 0.4 });
-    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 1.1, 16), bMat));
+        gltf.scene.traverse(obj => {
+            if (obj.isBone && obj.name === "face_switch") {
+                expressionBone = obj;
+            }
 
-    const h = new THREE.Mesh(
-        new THREE.SphereGeometry(0.38, 24, 24),
-        new THREE.MeshStandardMaterial({ color: 0xF5C5A3, roughness: 0.5 })
-    );
-    h.position.y = 0.88;
-    g.add(h);
+            if (obj.isMesh && obj.material.map) {
+                const texture = obj.material.map;
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.minFilter = THREE.NearestFilter;
+                texture.magFilter = THREE.NearestFilter;
+                texture.generateMipmaps = false;
+                texture.needsUpdate = true;
 
-    const trophy = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.06, 0.12, 0.4, 12),
-        new THREE.MeshStandardMaterial({ color: 0xFFD700, roughness: 0.3, metalness: 0.8 })
-    );
-    trophy.position.set(0.55, 0.3, 0.2);
-    g.add(trophy);
+                if (obj.name === "Cube012") {
+                    faceMaterial = obj.material;
+                    faceMaterial.map.offset.y = 0.25
+                    faceMaterial.map.needsUpdate = true;
+                }
+            }
+        });
 
-    scene.add(g);
+        // Apply unlit materials
+        model.traverse((child) => {
+            if (child.isMesh) {
+                const oldMaterial = child.material;
+                const texture = oldMaterial.map;
+
+                if (texture) {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.minFilter = THREE.NearestFilter;
+                    texture.magFilter = THREE.NearestFilter;
+                    texture.generateMipmaps = false;
+                    texture.flipY = false;
+                    texture.needsUpdate = true;
+                }
+
+                if (child.material.name === 'OUTLINE_MAT') {
+                    child.material = new THREE.MeshBasicMaterial({
+                        color: 0x43424C,
+                    });
+                } else {
+                    let materialColor = new THREE.Color(0xffffff);
+                    if (oldMaterial.color) materialColor = oldMaterial.color.clone();
+
+                    child.material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        color: materialColor,
+                        transparent: oldMaterial.transparent || false,
+                        alphaTest: oldMaterial.alphaTest || 0,
+                        side: THREE.DoubleSide
+                    });
+                }
+            }
+        });
+
+        // Setup animations
+        if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(model);
+
+            gltf.animations.forEach(clip => {
+                const action = mixer.clipAction(clip);
+                animations[clip.name] = action;
+                console.log('Loaded animation:', clip.name);
+            });
+
+            // Play float animation (FIXED: look for float animation)
+            const floatAnim = animations['floating']
+            if (floatAnim) {
+                floatAnim.play();
+            }
+        }
+
+        group.add(model);
+        scene.add(group);
+
+        // Set expression if function exists
+        if (typeof setExpression === 'function') {
+            setExpression(2);
+        }
+
+    },
+        (progress) => {
+            console.log('Loading:', (progress.loaded / progress.total * 100).toFixed(0) + '%');
+        },
+        (error) => {
+            console.error('Error loading model:', error);
+        });
 
     const clock = new THREE.Clock();
     let awardsAnimating = false;
+
     function animAwards() {
         if (!awardsAnimating) return;
         requestAnimationFrame(animAwards);
+
+        const delta = clock.getDelta();
         const t = clock.getElapsedTime();
-        g.position.y = Math.sin(t * 0.7) * 0.05;
-        g.rotation.y = Math.sin(t * 0.25) * 0.2;
+
+        // Update mixer
+        if (mixer) mixer.update(delta);
+
+        // Floating animation with bounce
+
+        group.position.y = Math.sin(t * 1.5) * 0.06;
+
         renderer.render(scene, camera);
     }
 

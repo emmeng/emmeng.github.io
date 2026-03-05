@@ -67,6 +67,9 @@ body {
     align-items: center;
     padding: 150px 8vw 80px;
     gap: 100px;
+    background-size: 50%;
+    background-image: url('../../images/bg_grid.png');
+    background-repeat: repeat;
 }
 
 .intro-left {
@@ -101,9 +104,9 @@ body {
 /* 3D canvas container */
 .intro-right {
     position: relative;
-    height: 560px;
-    background: var(--light-grey);
-    border-radius: 24px;
+    height: 700px;
+    /* background: var(--light-grey); */
+    border-radius: 1px;
     overflow: hidden;
     cursor: crosshair;
 }
@@ -195,16 +198,21 @@ body {
 
 .exp-left {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-end;
+    /* Changed from center to flex-end */
+    justify-content: flex-start;
+    /* Changed from center to flex-start */
+    height: 100%;
+    /* Make it fill the grid cell */
 }
 
-.exp-gif {
-    width: 280px;
-    height: 340px;
-    object-fit: cover;
-    border-radius: 16px;
-    background: var(--light-grey);
+/* Size for the canvas container */
+.exp-left canvas,
+.exp-left>* {
+    width: 300px;
+    /* Adjust size as needed */
+    height: 300px;
+    /* Adjust size as needed */
 }
 
 .exp-right {
@@ -212,7 +220,7 @@ body {
 }
 
 .exp-title-section {
-    font-size: 30px;
+    font-size: 36px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--white);
@@ -227,14 +235,14 @@ body {
 }
 
 .exp-role {
-    font-size: clamp(20px, 2vw, 28px);
+    font-size: 30px;
     font-weight: 700;
     color: var(--dark);
     line-height: 1.1;
 }
 
 .exp-meta {
-    font-size: 14px;
+    font-size: 24px;
     font-weight: 400;
     color: #888;
     margin-top: 6px;
@@ -244,12 +252,12 @@ body {
 /* Outer wrapper height controls how long the pin lasts */
 #skills {
     position: relative;
-    height: 100vh;
+    height: 70vh;
 }
 
 .skills-sticky {
     width: 100%;
-    height: 100vh;
+    height: 70vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -264,9 +272,6 @@ body {
     margin: 0 40px;
     padding: 25px 0 20px;
     position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     max-height: calc(100vh - 80px);
 }
@@ -278,6 +283,7 @@ body {
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--blue);
+    margin-top: 50px;
     margin-bottom: 50px;
     flex-shrink: 0;
 }
@@ -337,8 +343,8 @@ body {
 .wave-divider {
     width: 100%;
     height: 6vw;
-    margin-top: -3vw;
-    margin-bottom: -3vw;
+    margin-top: -3.1vw;
+    margin-bottom: -3.1vw;
     background-image: url('../../images/wave.png');
     background-repeat: repeat-x;
     background-size: auto 100%;
@@ -359,7 +365,7 @@ body {
     bottom: 0;
     height: 200px;
     width: auto;
-    background: var(--light-grey);
+    /* background: var(--light-grey); */
     border-radius: 8px;
 }
 #runner-bob {
@@ -371,7 +377,7 @@ body {
 
 .char-runner img {
     width: auto;
-    background: var(--light-grey);
+    /* background: var(--light-grey); */
     border-radius: 8px;
 }
 
@@ -390,38 +396,50 @@ body {
 }
 /* ── SECTION 4: AWARDS ── */
 #awards {
-    min-height: 80vh;
+    min-height: 100vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    padding: 100px 8vw;
-    gap: 60px;
+    padding: 20px 8vw;
+    gap: 0;
+    /* Remove gap for overlap */
     background: var(--blue);
 }
 
 .awards-model {
-    width: 100%;
-    height: 460px;
-    background: var(--light-grey);
+    width: 130%;
+    /* Extend right by 30% */
+    height: 600px;
+    /* Increased from 460px */
+    /* background: var(--light-grey); */
     border-radius: 24px;
-    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    /* Behind the right side */
 }
 
 #awards-canvas {
-    width: 100%;
+    width: 80%;
     height: 100%;
     display: block;
 }
 
-.awards-right {}
-
+.awards-right {
+    margin-left: -40%;
+    position: relative;
+    z-index: 2;
+    padding-left: 40px;
+    /* Add some spacing from edge */
+}
 .awards-label {
-    font-size: 30px;
+    font-size: 36px;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--white);
     margin-bottom: 36px;
+    text-align: center;
+
 }
 
 .award-item {
@@ -432,12 +450,15 @@ body {
 }
 
 .award-bullet {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     flex-shrink: 0;
     margin-top: 3px;
-    background: var(--blue);
-    border-radius: 50%;
+    background-image: url('../../images/star.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+
 }
 
 .award-bullet img {
@@ -447,13 +468,13 @@ body {
 }
 
 .award-text-title {
-    font-size: 17px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--dark);
 }
 
 .award-text-sub {
-    font-size: 14px;
+    font-size: 17px;
     color: #888;
     margin-top: 3px;
 }
