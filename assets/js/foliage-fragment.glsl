@@ -13,7 +13,7 @@ void main() {
     
     // Base green with some yellow/brown variation
     vec3 darkGreen = vec3(0.2, 0.35, 0.1);
-    vec3 lightGreen = vec3(0.627, 0.639, 0.965);
+    vec3 lightGreen = vec3(0.600, 0.718, 0.373);
     
     // Mix based on position
     vec3 green = mix(darkGreen, lightGreen, v_uvs.y);

@@ -21,10 +21,12 @@
         "projectTitle": "1:AM TRAIN",
         "accentColor": "#D1D2F5",
         "skills": [
-            "Three.js",
-            "JavaScript",
-            "3D Modeling",
-            "Animation"
+            "UNITY",
+            "VR",
+            "BLENDER",
+            "HTML/CSS",
+            "JS",
+            "FIREBASE"
         ],
         "description": "Midnight Train is a website designed to improve mood and promote wellbeing, immersing users on a subway traveling endlessly through space with interactive features.1:AM Train is the VR evolution of this concept, letting users experience the journey as a ghost in fully immersive 3D space with interactive stations that extend the website’s wellbeing activities.Together, the projects combine digital and spatial experiences to create calming, reflective environments that encourage relaxation, mindfulness, and connection.",
         "projectLink": "projects/plaza.html"
@@ -37,11 +39,9 @@
         "projectTitle": "HUH? I'VE BEEN HIRED BY ALIEN RESEARCHERS",
         "accentColor": "#B9EEFA",
         "skills": [
-            "Three.js",
-            "JavaScript",
-            "3D Modeling",
-            "Animation",
-            "WebGL"
+            "UNITY",
+            "AR",
+            "BLENDER"
         ],
         "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
         "projectLink": "projects/plaza.html"
@@ -54,11 +54,9 @@
         "projectTitle": "MIIVERSE",
         "accentColor": "#AED0F6",
         "skills": [
-            "Three.js",
-            "JavaScript",
-            "3D Modeling",
-            "Animation",
-            "WebGL"
+            "UNITY",
+            "VR",
+            "BLENDER"
         ],
         "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
         "projectLink": "projects/plaza.html"
@@ -71,11 +69,9 @@
         "projectTitle": "GOGO TENNIS",
         "accentColor": "#FFB8CB",
         "skills": [
-            "Three.js",
-            "JavaScript",
-            "3D Modeling",
-            "Animation",
-            "WebGL"
+            "UNITY",
+            "MULTIPLAYER",
+            "BLENDER"
         ],
         "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
         "projectLink": "projects/plaza.html"
@@ -88,11 +84,8 @@
         "projectTitle": "MR RADIATION VISUALIZER",
         "accentColor": "#FFF7C9",
         "skills": [
-            "Three.js",
-            "JavaScript",
-            "3D Modeling",
-            "Animation",
-            "WebGL"
+            "UNITY",
+            "DATA VISUALIZATION"
         ],
         "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
         "projectLink": "projects/plaza.html"

@@ -413,4 +413,116 @@
 }
 
 
+#character-dropdown-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  /* Changed from left to right */
+  z-index: 1000;
+  font-family: 'Source Code Pro', monospace;
+}
 
+#character-dropdown-btn {
+  background: #78B8FF;
+  color: white;
+  border: 3px solid #333;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+#character-dropdown-btn:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+#character-dropdown-menu {
+  position: absolute;
+  bottom: 60px;
+  /* Appears above button */
+  right: 0;
+  /* Changed from left: 0 */
+  width: 30vw;
+  max-height: 70vh;
+  background: white;
+  border: 3px solid #333;
+  border-radius: 8px;
+  overflow-y: auto;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
+  display: none;
+  /* Hidden by default */
+}
+
+#character-dropdown-menu.show {
+  display: block;
+  /* Show when active */
+}
+
+/* Character card in dropdown */
+.dropdown-character-card {
+  padding: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dropdown-character-card:last-child {
+  border-bottom: none;
+}
+
+.dropdown-character-card:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-char-avatar {
+  width: 60px;
+  height: 60px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.dropdown-char-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-char-info {
+  flex: 1;
+}
+
+.dropdown-char-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.dropdown-char-role {
+  font-size: 14px;
+  color: #888;
+}
+
+/* Scrollbar styling */
+#character-dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+#character-dropdown-menu::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+#character-dropdown-menu::-webkit-scrollbar-thumb {
+  background: #78B8FF;
+  border-radius: 4px;
+}

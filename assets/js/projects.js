@@ -13,6 +13,14 @@ let train = null;
 const clock = new THREE.Clock();
 const PIXEL_SIZE = 3;
 const VIEW_SIZE = 8;
+const _starParticles = [];
+let currentDancer = null; // only one at a time
+const BOOMBOX_DANCE_CHANCE = 0.9; // 40% chance — tweak between 0.0 and 1.0
+// ---- Music Note Particles ----
+const _musicNotes = [];
+const MUSIC_NOTE_CHARS = ['♩', '♪', '♫', '♬'];
+let _musicNoteInterval = null;
+
 
 // Train animation variables
 const trainStartX = -15;
@@ -22,13 +30,17 @@ const trainStartPos = new THREE.Vector3(-10, 0.2, -5);
 const trainMiddlePos = new THREE.Vector3(0, 0.2, -7.5);
 const trainEndPos = new THREE.Vector3(10, 0.2, -10);
 let trainCycleStart = Date.now();
+// Add at top with other globals
+const BENCH_POS = new THREE.Vector3( -5,  0,  -4);  // Your bench position
+const BOOMBOX_POS = new THREE.Vector3(-4, 0, -2.6);  // Your boombox position
+const BOOMBOX_RADIUS = 2;  // Dance area size
 
 // Store all loaded models/characters
 const loadedCharacters = [];
 const loadedProps = [];
 
 // Fountain behavior constants =============
-const FOUNTAIN_POS = new THREE.Vector3(0, 0, 0);
+const FOUNTAIN_POS = new THREE.Vector3(0, 0, 1);
 const FOUNTAIN_VIEW_RADIUS = 3.5; // Distance to trigger fountain viewing
 const FOUNTAIN_VIEW_CHANCE = 0.3;
 const FOUNTAIN_VIEW_TIME = 3000; // How long to watch fountain (ms)
@@ -44,6 +56,13 @@ let sunfishModel = null; // Store the loaded model
 let subwayPassenger = null;
 let passengerState = 'waiting'; // 'waiting', 'wandering', 'boarding', 'gone'
 let trainVisitCount = 0;
+
+const WANDER_BOUNDS = [
+    { x: -9, z: -3.5 },   // Top-left
+    { x: 9, z: -8 },    // Top-right
+    { x: 9, z: 9 },     // Bottom-right
+    { x: -9, z: 9 }     // Bottom-left
+];
 
 // Cafe system constants
 const CAFE_POS = new THREE.Vector3(10, 0, -5);
@@ -75,6 +94,7 @@ let currentAccentColor = '#78B8FF';
 let currentHour = new Date().getHours();
 
 // currentHour = 20;
+
 
 let foliageVertexShader = null;
 let foliageFragmentShader = null;
@@ -203,40 +223,7 @@ function updateStreetLightGlows() {
 
 // Modified addStreetLightGlow to mark glows
 function addStreetLightGlow(x, z, radius, lampHeight) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
 
-    const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    gradient.addColorStop(0, 'rgba(255, 200, 100, 0.2)');
-    gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.3)');
-    gradient.addColorStop(0.6, 'rgba(255, 200, 100, 0.2)');
-    gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 256, 256);
-
-    const texture = new THREE.CanvasTexture(canvas);
-
-    const groundGlow = new THREE.Mesh(
-        new THREE.PlaneGeometry(radius * 2, radius * 2),
-        new THREE.MeshBasicMaterial({
-            map: texture,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        })
-    );
-    groundGlow.rotation.x = -Math.PI / 2;
-    groundGlow.position.set(x, 0.02, z);
-    groundGlow.userData.isStreetLightGlow = true;  // Mark for time-based updates
-    scene.add(groundGlow);
-
-    // ═══════════════════════════════════════
-    // LAMP SPHERE GLOW (radial falloff)
-    // ═══════════════════════════════════════
     const sphereCanvas = document.createElement('canvas');
     sphereCanvas.width = 128;
     sphereCanvas.height = 128;
@@ -299,6 +286,12 @@ function init() {
     const container = document.getElementById('plaza-container');
 
     scene = new THREE.Scene();
+//     const fogColor = (currentHour >= 7 && currentHour < 17) 
+//     ? 0xadd8e6  // Day: light blue
+//     : 0x2a2a4a; // Night: dark blue
+
+// scene.fog = new THREE.Fog(fogColor, 10, 30);
+// scene.background = new THREE.Color(fogColor);
 
     // === TIME-OF-DAY GRADIENT SKY ===
     function getGradientSkyColors() {
@@ -346,7 +339,7 @@ function init() {
     // const y = Math.sin(elevation) * distance;
     // const z = Math.cos(angle) * Math.cos(elevation) * distance;
 
-    camera.position.set(0, 10, 0);
+    camera.position.set(0, 10, 10);
     camera.lookAt(0, 0, 0); // Look at fountain at origin
 
     renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -469,7 +462,7 @@ function init() {
 
     // Fountain at center
     loadFountain({
-        position: { x: 0, y: 0.1, z: 0 },
+        position: { x: FOUNTAIN_POS.x, y: FOUNTAIN_POS.y, z: FOUNTAIN_POS.z },
         scale: 1.5
     });
 
@@ -483,8 +476,18 @@ function init() {
         shadowSize: 1.5,
         behavior: 'wander',
         wanderSpeed: 0.02,
-        wanderBounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
     });
+    loadCharacter({
+        path: 'models/drzero.glb',
+        position: { x: -6, y: 0, z: -3 },
+        scale: 0.6,
+        hasAnimation: true,
+        hasShadow: true,
+        shadowSize: 1.5,
+        behavior: 'wander',
+        wanderSpeed: 0.02,
+    });
+
 
     loadCharacter({
         path: 'models/ghost.glb',
@@ -495,10 +498,30 @@ function init() {
         shadowSize: 1.5,
         behavior: 'wander',
         wanderSpeed: 0.02,
-        wanderBounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
     });
 
+    loadCharacter({
+        path: 'models/vivi.glb',
+        position: { x: BENCH_POS.x - 0.5, y: 0, z: BENCH_POS.z },  // Left side of bench
+        scale: 0.6,
+        hasAnimation: true,
+        behavior: 'sitting',  // NEW behavior type
+        onLoad: (model, charData) => {
+            // Play sitting animation immediately
+            charData.playAnimation('sitting');  // or 'sitting' - check your animation name
+        }
+    });
 
+    loadCharacter({
+        path: 'models/vivi.glb',
+        position: { x: BENCH_POS.x + 0.5, y: 0, z: BENCH_POS.z },  // Right side of bench
+        scale: 0.6,
+        hasAnimation: true,
+        behavior: 'sitting',
+        onLoad: (model, charData) => {
+            charData.playAnimation('sitting');
+        }
+    });
 
 
     // loadProp({
@@ -507,6 +530,14 @@ function init() {
     //     scale: 0.6,
     //     hasShadow: false
     // });
+
+    loadProp({
+        path: 'models/boombox.glb',
+        position: { x: BOOMBOX_POS.x+0.5, y: 0, z: BOOMBOX_POS.z-1 },
+        rotation: { x: 0, y: -0.25, z: 0 }, 
+        scale: 0.5,
+        hasShadow: false
+    });
 
     loadProp({
         path: 'models/hydrangea_bush.glb',
@@ -518,7 +549,7 @@ function init() {
 
     loadProp({
         path: 'models/bench.glb',
-        position: { x: -5, y: 0, z: -4 },
+        position: { x: BENCH_POS.x, y: BENCH_POS.y, z: BENCH_POS.z },
         scale: 0.6,
         hasShadow: false
     });
@@ -533,7 +564,7 @@ function init() {
     });
 
     loadTrain();
-    loadFluffyTree(5, 0, -3); // Position near fountain
+    loadFluffyTree(6, 0, -6); // Position near fountain
 
     window.addEventListener('resize', onResize);
     onResize();
@@ -579,9 +610,102 @@ function onPointerMove(event) {
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
+// ---- Star Particle System ----
+
+
+const CONFETTI_COLORS = [
+    0xB9EEFA, // blue
+    0xDCECCE, // light green
+    0xFFB8CB, // pink
+    0xFFF7C9, // yellow
+    0xD1D2F5, // purple
+];
+
+function _spawnStarBurst(worldPosition) {
+    // console.log('🎊 confetti burst at', worldPosition);
+
+    const count = 30;
+
+    for (let i = 0; i < count; i++) {
+        // Random confetti piece: thin rectangle
+        const w = (0.03 + Math.random() * 0.08);
+        const h = (0.01 + Math.random() * 0.06);
+        const geometry = new THREE.PlaneGeometry(w, h);
+
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        const material = new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 1.0,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.renderOrder = 10;
+        mesh.position.copy(worldPosition);
+
+        // Random initial rotation
+        mesh.rotation.set(
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2
+        );
+
+        scene.add(mesh);
+
+        // Burst velocity — outward + upward
+        const theta = Math.random() * Math.PI * 2;
+        const speed = 0.004 + Math.random() * 0.008;
+        const velX = Math.cos(theta) * speed;
+        const velY = 0.008 + Math.random() * 0.01; // upward pop
+        const velZ = Math.sin(theta) * speed;
+
+        // Tumble rotation speed
+        const rotX = (Math.random() - 0.5) * 0.15;
+        const rotY = (Math.random() - 0.5) * 0.15;
+        const rotZ = (Math.random() - 0.5) * 0.15;
+
+        _starParticles.push({
+            mesh,
+            material,
+            vel: new THREE.Vector3(velX, velY, velZ),
+            rotVel: new THREE.Vector3(rotX, rotY, rotZ),
+            life: 1.0,
+            decay: 0.018 + Math.random() * 0.01,
+        });
+    }
+}
+
+function updateStarParticles() {
+    for (let i = _starParticles.length - 1; i >= 0; i--) {
+        const p = _starParticles[i];
+        p.life -= p.decay;
+
+        // Gravity
+        p.vel.y -= 0.0008;
+
+        // Move
+        p.mesh.position.add(p.vel);
+
+        // Tumble
+        p.mesh.rotation.x += p.rotVel.x;
+        p.mesh.rotation.y += p.rotVel.y;
+        p.mesh.rotation.z += p.rotVel.z;
+
+        // Fade out
+        p.material.opacity = Math.max(0, p.life);
+
+        if (p.life <= 0) {
+            scene.remove(p.mesh);
+            p.mesh.geometry.dispose();
+            p.material.dispose();
+            _starParticles.splice(i, 1);
+        }
+    }
+}
 // Update hover detection in animate loop
 function updateHoverInteraction() {
-    
     raycaster.setFromCamera(pointer, camera);
 
     let newHoveredChar = null;
@@ -596,16 +720,19 @@ function updateHoverInteraction() {
 
     // Hover ENTER - but NOT during fountain viewing or eating
     if (newHoveredChar && newHoveredChar !== hoveredCharacter) {
-        // Don't allow hover during fountain viewing or eating
         if (newHoveredChar.state !== 'fountainViewing' && newHoveredChar.state !== 'eating') {
             newHoveredChar.isHovered = true;
             newHoveredChar.rotationMode = 'hover';
-            // Save velocity BEFORE stopping
             if (!newHoveredChar.savedVelocity) {
                 newHoveredChar.savedVelocity = newHoveredChar.velocity.clone();
             }
             newHoveredChar.velocity.set(0, 0, 0);
             document.body.style.cursor = 'pointer';
+
+            // 🌟 Spawn star burst at character position (slightly above feet)
+            const burstPos = newHoveredChar.model.position.clone();
+            burstPos.y += 1.5; // adjust to character's torso height
+            _spawnStarBurst(burstPos);
         }
     }
 
@@ -620,10 +747,9 @@ function updateHoverInteraction() {
 
     hoveredCharacter = newHoveredChar;
 }
-
 function applyRotation(char) {
     const model = char.model;
-
+    if (char.config.behavior === 'sitting') return;  // ADD THIS
     // Locked = do nothing (post-hover pause)
     if (char.rotationMode === 'locked') return;
 
@@ -744,7 +870,7 @@ function loadCharacter(config) {
         shadowSize: 1.5,
         behavior: null,
         wanderSpeed: 0.02,
-        wanderBounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
+
         forwardOffset: 0, // Rotation offset in radians (e.g., -Math.PI/2 if model faces left)
         onLoad: null
         
@@ -921,35 +1047,35 @@ function loadCharacter(config) {
 }
 
 /* ------------------ CHARACTER BEHAVIORS ------------------ */
-
 function updateCharacterBehaviors() {
     loadedCharacters.forEach((char) => {
+        if (char.config.behavior === 'sitting') return;
         if (!char.config.behavior || char.config.behavior === 'idle') return;
 
         // Skip subway passenger when they're boarding
-        if (char === subwayPassenger && passengerState === 'boarding') {
-            return;
-        }
+        if (char === subwayPassenger && passengerState === 'boarding') return;
 
-        // Check if should start eating
-        checkIfShouldEat(char);  // <--- HERE
+        checkIfShouldEat(char);
+        checkBoomboxDance(char);
 
-        // Handle different states
         if (char.state === 'eating') {
             updateEatingBehavior(char);
+        } else if (char.state === 'dancing') {
+            updateDancingBehavior(char);
+        } else if (char.state === 'walkingToBoombox') {
+            updateWalkToBoomboxBehavior(char); // ⬅️ moved INSIDE forEach
         } else if (char.config.behavior === 'wander') {
             updateWanderBehavior(char);
         }
     });
 
-    // Handle subway passenger boarding separately
+    // Handle subway passenger boarding separately (this one is correctly outside)
     if (subwayPassenger && passengerState === 'boarding') {
         updatePassengerBoarding();
     }
 }
 function updateWanderBehavior(char) {
     const model = char.model;
-    const bounds = char.config.wanderBounds;
     const speed = char.config.wanderSpeed;
 
     // =========================
@@ -969,7 +1095,6 @@ function updateWanderBehavior(char) {
         if (performance.now() - char.pauseStartTime > 200) {
             char.state = 'walking';
 
-            // Resume with saved velocity direction
             if (char.savedVelocity && char.savedVelocity.lengthSq() > 0) {
                 char.velocity
                     .copy(char.savedVelocity)
@@ -978,7 +1103,7 @@ function updateWanderBehavior(char) {
 
                 char.moveDir = char.velocity.clone().normalize();
             }
-            // Clear saved velocity after using it
+
             char.savedVelocity = null;
         }
         return;
@@ -1005,6 +1130,25 @@ function updateWanderBehavior(char) {
         char.moveDir = char.velocity.clone().normalize();
 
         const nextPos = model.position.clone().add(char.velocity);
+
+        // =========================
+        // POLYGON BOUNDS CHECK
+        // =========================
+        const nextPoint = {
+            x: nextPos.x,
+            z: nextPos.z
+        };
+
+        if (!isPointInPolygon(nextPoint, WANDER_BOUNDS)) {
+
+            // Bounce back inside
+            char.velocity.multiplyScalar(-1);
+            char.velocity.normalize().multiplyScalar(speed);
+            char.moveDir = char.velocity.clone().normalize();
+
+            return;
+        }
+
         const distToFountain = nextPos.distanceTo(FOUNTAIN_POS);
 
         // =========================
@@ -1012,7 +1156,6 @@ function updateWanderBehavior(char) {
         // =========================
         if (distToFountain < FOUNTAIN_VIEW_RADIUS) {
 
-            // Stop movement when entering fountain radius
             char.velocity.set(0, 0, 0);
 
             const wasNear = char.wasNearFountain || false;
@@ -1028,7 +1171,6 @@ function updateWanderBehavior(char) {
                 return;
             }
 
-            // Didn't view → gently push away
             const away = new THREE.Vector3()
                 .subVectors(model.position, FOUNTAIN_POS)
                 .normalize();
@@ -1043,20 +1185,20 @@ function updateWanderBehavior(char) {
 
         char.wasNearFountain = false;
 
-
         if (!char.hasVisitedCafe) {
             const distToCafe = model.position.distanceTo(CAFE_POS);
+
             if (distToCafe < CAFE_RADIUS && Math.random() < CAFE_PURCHASE_CHANCE) {
-                visitCafe(char);
+                // visitCafe(char);
                 return;
             }
         }
-
 
         // =========================
         // PROP COLLISION
         // =========================
         const propCollision = checkPropCollision(nextPos);
+
         if (propCollision) {
             const away = new THREE.Vector3()
                 .subVectors(model.position, propCollision)
@@ -1072,33 +1214,6 @@ function updateWanderBehavior(char) {
         // =========================
         model.position.add(char.velocity);
 
-        // =========================
-        // BOUNDS BOUNCE (TRUE REFLECT)
-        // =========================
-        let bounced = false;
-
-        if (model.position.x < bounds.minX || model.position.x > bounds.maxX) {
-            char.velocity.x *= -1;
-            bounced = true;
-        }
-
-        if (model.position.z < bounds.minZ || model.position.z > bounds.maxZ) {
-            char.velocity.z *= -1;
-            bounced = true;
-        }
-
-        if (bounced) {
-            model.position.x = THREE.MathUtils.clamp(
-                model.position.x, bounds.minX, bounds.maxX
-            );
-            model.position.z = THREE.MathUtils.clamp(
-                model.position.z, bounds.minZ, bounds.maxZ
-            );
-
-            char.velocity.normalize().multiplyScalar(speed);
-            char.moveDir = char.velocity.clone().normalize();
-        }
-
         char.rotationMode = 'movement';
     }
 
@@ -1106,9 +1221,11 @@ function updateWanderBehavior(char) {
     // STATE: FOUNTAIN VIEWING
     // =========================
     else if (char.state === 'fountainViewing') {
+
         char.rotationMode = 'fountain';
 
         if (Date.now() - char.fountainViewStartTime > FOUNTAIN_VIEW_TIME) {
+
             char.state = 'walking';
             char.wasNearFountain = false;
 
@@ -1124,6 +1241,28 @@ function updateWanderBehavior(char) {
             char.playAnimation('shushu_walk');
         }
     }
+}
+
+function isPointInPolygon(point, polygon) {
+
+    let inside = false;
+
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+
+        const xi = polygon[i].x;
+        const zi = polygon[i].z;
+
+        const xj = polygon[j].x;
+        const zj = polygon[j].z;
+
+        const intersect =
+            ((zi > point.z) !== (zj > point.z)) &&
+            (point.x < (xj - xi) * (point.z - zi) / (zj - zi) + xi);
+
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
 }
 
 /* ------------------ COLLISION DETECTION ------------------ */
@@ -1159,6 +1298,7 @@ function loadSunfishOnDemand() {
 
         // Apply materials
         sunfishModel.traverse((child) => {
+            child.renderOrder = 11; 
             if (child.isMesh) {
                 const oldMaterial = child.material;
                 const originalTexture = oldMaterial.map;
@@ -1175,8 +1315,10 @@ function loadSunfishOnDemand() {
                     map: originalTexture,
                     color: oldMaterial.color || new THREE.Color(0xffffff),
                     transparent: true,
-                    opacity: 0,
+                    depthWrite: false,      // ⬅️ don't block things behind transparent areas
+                    alphaTest: 0.1, 
                 });
+
             }
         });
 
@@ -1260,6 +1402,276 @@ function setSunfishOpacity(opacity) {
 }
 
 
+const _debugSpheres = new Map(); // label → mesh
+
+function showDebugRadius(label, position, radius, color = 0x00ff00) {
+    // Remove existing if already shown
+    if (_debugSpheres.has(label)) {
+        scene.remove(_debugSpheres.get(label));
+    }
+
+    const geo = new THREE.SphereGeometry(radius, 16, 16);
+    const mat = new THREE.MeshBasicMaterial({
+        color,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3,
+        depthWrite: false,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(position);
+    scene.add(mesh);
+    _debugSpheres.set(label, mesh);
+}
+showDebugRadius('boombox', BOOMBOX_POS, BOOMBOX_RADIUS, 0x00ff00);
+showDebugRadius('fountain', FOUNTAIN_POS, FOUNTAIN_VIEW_RADIUS, 0x0099ff);
+
+const NOTE_COLORS = [
+    '#d2ff93ff', // pink
+    '#ff7fa1ff', // yellow
+    '#ffc549ff', // mint
+    '#ff4646ff',
+    '#76e1ffff' ,
+    '#83a8ffff' // sky blue
+];
+
+
+
+function startMusicNotes() {
+    if (_musicNoteInterval) return; // already running
+    _musicNoteInterval = setInterval(() => {
+        _spawnMusicNote();
+    }, 1000); // spawn a note every 400ms
+}
+
+function stopMusicNotes() {
+    clearInterval(_musicNoteInterval);
+    _musicNoteInterval = null;
+}
+
+function _spawnMusicNote() {
+    // Create a canvas texture with a music note character
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '40px Arial';
+    ctx.fillStyle = NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)]; // ⬅️ random color
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(
+        MUSIC_NOTE_CHARS[Math.floor(Math.random() * MUSIC_NOTE_CHARS.length)],
+        32, 32
+    );
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 1.0,
+        depthWrite: false,
+        depthTest: false,
+    });
+
+    const sprite = new THREE.Sprite(material);
+
+    // Spawn just above the boombox
+    sprite.position.set(
+        BOOMBOX_POS.x + (Math.random() - 0.5) * 1,
+        BOOMBOX_POS.y + 0.3,
+        BOOMBOX_POS.z + (Math.random() - 0.5) * 0.3
+    );
+
+    const scale = 0.3 + Math.random() * 0.2;
+    sprite.scale.set(scale, scale, 1);
+    sprite.renderOrder = 10;
+    scene.add(sprite);
+
+    _musicNotes.push({
+        sprite,
+        material,
+        life: 1.0,
+        decay: 0.008,
+        velY: 0.004 + Math.random() * 0.002,   // float upward
+        velX: (Math.random() - 0.5) * 0.003,   // slight horizontal drift
+        wobble: Math.random() * Math.PI * 2,    // wobble offset
+    });
+}
+
+function updateMusicNotes() {
+    for (let i = _musicNotes.length - 1; i >= 0; i--) {
+        const n = _musicNotes[i];
+        n.life -= n.decay;
+        n.wobble += 0.05;
+
+        n.sprite.position.y += n.velY;
+        n.sprite.position.x += n.velX + Math.sin(n.wobble) * 0.002; // gentle side wobble
+
+        // Fade out in the last 30% of life
+        n.material.opacity = n.life < 0.3 ? n.life / 0.3 : 1.0;
+
+        if (n.life <= 0) {
+            scene.remove(n.sprite);
+            n.sprite.geometry?.dispose();
+            n.material.map?.dispose();
+            n.material.dispose();
+            _musicNotes.splice(i, 1);
+        }
+    }
+}
+// ---- End Music Note Particles ----
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopMusicNotes();
+    } else {
+        // Clear any backed-up notes first
+        _musicNotes.forEach(n => {
+            scene.remove(n.sprite);
+            n.material.map?.dispose();
+            n.material.dispose();
+        });
+        _musicNotes.length = 0;
+
+        startMusicNotes(); // restart clean
+    }
+});
+
+function checkBoomboxDance(char) {
+    if (
+        char.state === 'dancing' ||
+        char.state === 'walkingToBoombox' ||
+        char.state === 'eating' ||
+        char.state === 'fountainViewing' ||
+        char.hasDancedRecently ||
+        currentDancer !== null
+    ) return;
+
+    const distToBoombox = char.model.position.distanceTo(BOOMBOX_POS);
+    if (distToBoombox < BOOMBOX_RADIUS) {
+        if (Math.random() < BOOMBOX_DANCE_CHANCE) { // ⬅️ roll the dice
+            startWalkToBoombox(char);
+        } else {
+            // Failed the roll — apply cooldown so they don't re-roll every frame
+            char.hasDancedRecently = true;
+            setTimeout(() => { char.hasDancedRecently = false; }, 8000);
+        }
+    }
+}
+
+function startWalkToBoombox(char) {
+    char.state = 'walkingToBoombox';
+    char.rotationMode = 'movement';
+    currentDancer = char;
+
+    const dir = new THREE.Vector3()
+        .subVectors(
+            new THREE.Vector3(BOOMBOX_POS.x + 0.5, BOOMBOX_POS.y, BOOMBOX_POS.z-1),
+            char.model.position
+        )
+        .setY(0)
+        .normalize();
+
+    char.moveDir = dir.clone();
+    char.velocity.copy(dir).multiplyScalar(char.config.wanderSpeed);
+    char.playAnimation('walk');
+
+    // ⬅️ failsafe — force start dancing after 5 seconds regardless
+    char._boomboxTimeout = setTimeout(() => {
+        if (char.state === 'walkingToBoombox') {
+            console.warn('⚠️ boombox walk timeout, forcing dance');
+            startDancing(char);
+        }
+    }, 5000);
+}
+
+function updateWalkToBoomboxBehavior(char) {
+    const dist = char.model.position.distanceTo(BOOMBOX_POS);
+
+    if (dist < 0.05) { // close enough — start dancing
+        startDancing(char);
+    }
+}
+
+    function updateDancingBehavior(char) {
+        // Fallback time-based stop if mixer events aren't working
+        if (char.danceDuration) {
+            const elapsed = Date.now() - char.danceStartTime;
+            if (elapsed > char.danceDuration) {
+                char.danceDuration = null;
+                stopDancing(char);
+            }
+        }
+    }
+
+    function startDancing(char) {
+        char.state = 'dancing';
+        char.isDancing = true;
+        char.danceStartTime = Date.now();
+        char.dancePlayCount = 0;
+        char.velocity.set(0, 0, 0);
+        char.rotationMode = 'locked';
+        char.model.rotation.set(0, 0, 0);
+
+        const animations = char.mixer?._actions?.map(a => a.getClip().name) || [];
+        const danceAnim = animations.find(name => name.toLowerCase().includes('dance')) || 'dance';
+        char.danceAnimName = danceAnim;
+
+        // Play dance and count completions
+        const action = char.playAnimation(danceAnim);
+        if (action) {
+            action.setLoop(THREE.LoopRepeat, 2); // play exactly twice
+            action.clampWhenFinished = true;
+
+            // Listen for when animation finishes
+            char.mixer.addEventListener('finished', function onDanceFinished(e) {
+                if (e.action === action) {
+                    char.mixer.removeEventListener('finished', onDanceFinished);
+                    stopDancing(char);
+                }
+            });
+        } else {
+            // Fallback: time-based if action not returned
+            char.danceDuration = 10000;
+        }
+
+        // Make bench sitters clap
+        loadedCharacters.forEach(benchChar => {
+            if (benchChar.config.behavior === 'sitting') {
+                benchChar.playAnimation('sitting_clapping');
+            }
+        });
+
+        console.log(`💃 ${char.config.name} dancing to: ${danceAnim}`);
+    }
+
+    function stopDancing(char) {
+        char.state = 'walking';
+        char.isDancing = false;
+        char.rotationMode = 'movement';
+        char.hasDancedRecently = true;
+        currentDancer = null; // free the slot
+
+        const newDir = new THREE.Vector3(
+            Math.random() - 0.5, 0, Math.random() - 0.5
+        ).normalize();
+        char.moveDir = newDir.clone();
+        char.velocity.copy(newDir).multiplyScalar(char.config.wanderSpeed);
+        char.playAnimation('walk');
+
+        // Stop bench sitters clapping
+        loadedCharacters.forEach(benchChar => {
+            if (benchChar.config.behavior === 'sitting') {
+                benchChar.playAnimation('sitting');
+            }
+        });
+
+        // Cooldown before this char can dance again
+        setTimeout(() => {
+            char.hasDancedRecently = false;
+        }, 15000);
+
+        console.log('🛑 stopped dancing');
+    }
 /* ------------------ MODULAR PROP LOADER ------------------ */
 
 
@@ -1540,13 +1952,13 @@ function loadTrain() {
     const trainTexture = new THREE.TextureLoader().load("models/textures/train_256.png");
     trainTexture.flipY = false;
 
-
     const trainMaterial = new THREE.ShaderMaterial({
         uniforms: {
             uMap: { value: trainTexture },
-            uFadeStart: { value: -8.0 },      // Vertices before -8 are invisible
-            uFadeEnd: { value: 8.0 },         // Vertices after 8 are invisible
-            uFadeDistance: { value: 2.0 },    // Fade over 2 units
+            uTimeTint: { value: getTimeTint() },  // ADD THIS
+            uFadeStart: { value: -8.0 },
+            uFadeEnd: { value: 8.0 },
+            uFadeDistance: { value: 2.0 },
         },
         vertexShader: `
         varying vec3 vPos;
@@ -1559,6 +1971,7 @@ function loadTrain() {
     `,
         fragmentShader: `
         uniform sampler2D uMap;
+        uniform vec3 uTimeTint;  // ADD THIS
         uniform float uFadeStart;
         uniform float uFadeEnd;
         uniform float uFadeDistance;
@@ -1568,19 +1981,19 @@ function loadTrain() {
         void main() {
             vec4 baseColor = texture2D(uMap, vUv);
 
+            // Apply time tint
+            vec3 tintedColor = baseColor.rgb * uTimeTint;  // ADD THIS
+
             float alpha = 1.0;
             
-            // Fade IN: vertices before -8 are transparent, after -8 are visible
             float fadeIn = smoothstep(uFadeStart - uFadeDistance, uFadeStart, vPos.x);
-            
-            // Fade OUT: vertices after 8 are transparent, before 8 are visible
             float fadeOut = 1.0 - smoothstep(uFadeEnd, uFadeEnd + uFadeDistance, vPos.x);
             
             alpha = fadeIn * fadeOut;
 
             if (alpha < 0.01) discard;
 
-            gl_FragColor = vec4(baseColor.rgb, alpha);
+            gl_FragColor = vec4(tintedColor, alpha);  // CHANGED from baseColor.rgb to tintedColor
         }
     `,
         transparent: true,
@@ -1634,15 +2047,14 @@ function spawnSubwayPassenger() {
     passengerState = 'spawning'; // Set immediately to prevent double-spawn
 
     loadCharacter({
-        path: 'models/vivi.glb',
-        position: { x: 0, y: 0, z: -8 }, // Near train stop
+        path: 'models/blender.glb',
+        position: { x: 0, y: 0, z: -5 }, // Near train stop
         scale: 0.6,
         hasAnimation: true,
         hasShadow: true,
         shadowSize: 1.5,
         behavior: 'wander',
         wanderSpeed: 0.015,
-        wanderBounds: { minX: -6, maxX: 6, minZ: -9, maxZ: -6 },
         forwardOffset: Math.PI,
         onLoad: (model, charData) => {
             subwayPassenger = charData;
@@ -1668,7 +2080,7 @@ function updatePassengerBoarding() {
     if (!subwayPassenger || !subwayPassenger.model || !train) return;
 
     const boardingX = trainMiddleX; // Train position
-    const boardingZ = -10;
+    const boardingZ = -8;
     const boardingRadius = 0.5; // How close they need to be
 
     const dx = boardingX - subwayPassenger.model.position.x;
@@ -1917,7 +2329,8 @@ function getTrainTimeInfo() {
 
 function animate() {
     requestAnimationFrame(animate);
-
+    updateStarParticles()
+    updateMusicNotes();
     const dt = clock.getDelta();
     if (window.trainMixer) window.trainMixer.update(dt);
     const elapsedTime = clock.getElapsedTime();
@@ -2120,6 +2533,7 @@ fetch('assets/js/character_data.json')
     .then(data => {
         characterData = data;
         console.log('Character data loaded:', characterData);
+        
     })
     .catch(error => console.error('Error loading character data:', error));
 
@@ -2137,7 +2551,7 @@ function onCharacterClick(event) {
     for (const char of loadedCharacters) {
         const intersects = raycaster.intersectObject(char.model, true);
 
-        console.log('Checking character:', char.config.path, 'Intersects:', intersects.length); // DEBUG
+        // console.log('Checking character:', char.config.path, 'Intersects:', intersects.length); // DEBUG
 
         if (intersects.length > 0) {
             console.log('Character clicked:', char.config.path);
@@ -2334,3 +2748,78 @@ document.addEventListener('click', (e) => {
         }
     });
 });
+
+const dropdownBtn = document.getElementById('character-dropdown-btn');
+const dropdownMenu = document.getElementById('character-dropdown-menu');
+
+if (dropdownBtn && dropdownMenu) {
+    // Toggle dropdown
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+
+        // Update button arrow
+        if (dropdownMenu.classList.contains('show')) {
+            dropdownBtn.textContent = 'Characters ▼';
+        } else {
+            dropdownBtn.textContent = 'Characters ▲';
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownMenu.contains(e.target) && e.target !== dropdownBtn) {
+            dropdownMenu.classList.remove('show');
+            dropdownBtn.textContent = 'Characters ▲';
+        }
+    });
+
+    // Populate dropdown with character data
+    function populateCharacterDropdown() {
+        console.log('Populating dropdown with character data');
+
+        // Temporary test data if characterData doesn't exist
+        const testData = [
+            { name: 'Alice', role: 'Resident', avatar: 'images/alice.png' },
+            { name: 'Bob', role: 'Visitor', avatar: 'images/bob.png' },
+            { name: 'Charlie', role: 'Resident', avatar: 'images/charlie.png' }
+        ];
+
+        const data = (typeof characterData !== 'undefined' && characterData) ? characterData : testData;
+
+        dropdownMenu.innerHTML = ''; // Clear existing
+
+        data.forEach(char => {
+            const card = document.createElement('div');
+            card.className = 'dropdown-character-card';
+            card.onclick = () => {
+                console.log('Clicked character:', char.name);
+                dropdownMenu.classList.remove('show');
+                dropdownBtn.textContent = 'Characters ▲';
+
+                // Call your existing card display function
+                if (typeof showIDCard === 'function') {
+                    showIDCard(char);
+                }
+            };
+
+            card.innerHTML = `
+                <div class="dropdown-char-avatar">
+                    <img src="${char.avatar || 'images/default-avatar.png'}" alt="${char.name}" onerror="this.style.display='none'">
+                </div>
+                <div class="dropdown-char-info">
+                    <div class="dropdown-char-name">${char.name}</div>
+                    <div class="dropdown-char-role">${char.role || 'Resident'}</div>
+                </div>
+            `;
+
+            dropdownMenu.appendChild(card);
+        });
+    }
+
+    // Populate immediately with test data
+    populateCharacterDropdown();
+
+    // Expose globally
+    window.populateCharacterDropdown = populateCharacterDropdown;
+}
