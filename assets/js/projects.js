@@ -200,7 +200,7 @@ function updateCharacterLighting(char) {
     char.model.traverse((child) => {
         if (child.isMesh && child.userData.baseColor) {
             const TIME_TINT = getTimeTint();
-            const brightnessMult = 1.0 + (additionalLight * streetLightIntensity);  // Modulated by time
+           const brightnessMult = 1.0 + (additionalLight * streetLightIntensity * 5.0);
 
             child.material.color
                 .copy(child.userData.baseColor)
@@ -343,6 +343,7 @@ function init() {
     camera.lookAt(0, 0, 0); // Look at fountain at origin
 
     renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.domElement.style.pointerEvents = 'none';
     renderer.setPixelRatio(1);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -469,7 +470,7 @@ function init() {
     // Shushu with wandering behavior
     loadCharacter({
         path: 'models/shushu.glb',
-        position: { x: 3, y: 0, z: 3 },
+        position: { x: -6, y: 0, z: -3 },
         scale: 0.5,
         hasAnimation: true,
         hasShadow: true,
@@ -479,7 +480,7 @@ function init() {
     });
     loadCharacter({
         path: 'models/drzero.glb',
-        position: { x: -6, y: 0, z: -3 },
+        position: { x: 3, y: 0, z: 3 },
         scale: 0.6,
         hasAnimation: true,
         hasShadow: true,
@@ -571,6 +572,8 @@ function init() {
     addStreetLight(3, 0, -5);   // Top left area
     addStreetLight(5, 0, 5);   // Bottom right area
     addStreetLight(-8, 0, 0);   // Bottom right area
+
+    renderer.domElement.style.pointerEvents = 'auto'; // ✅
 }
 
 /* ------------------ SHADOWS ------------------ */
@@ -720,7 +723,7 @@ function updateHoverInteraction() {
 
     // Hover ENTER - but NOT during fountain viewing or eating
     if (newHoveredChar && newHoveredChar !== hoveredCharacter) {
-        if (newHoveredChar.state !== 'fountainViewing' && newHoveredChar.state !== 'eating') {
+        if (newHoveredChar.state !== 'fountainViewing' && newHoveredChar.state !== 'eating' && newHoveredChar.state !== 'dancing') {
             newHoveredChar.isHovered = true;
             newHoveredChar.rotationMode = 'hover';
             if (!newHoveredChar.savedVelocity) {
@@ -739,9 +742,11 @@ function updateHoverInteraction() {
     // Hover EXIT → enter pause state
     if (!newHoveredChar && hoveredCharacter) {
         hoveredCharacter.isHovered = false;
-        hoveredCharacter.state = 'postHoverPause';
-        hoveredCharacter.pauseStartTime = performance.now();
-        hoveredCharacter.rotationMode = 'locked';
+        if (hoveredCharacter.state !== 'fountainViewing' && hoveredCharacter.state !== 'eating' && hoveredCharacter.state !== 'dancing') {
+            hoveredCharacter.state = 'postHoverPause';
+            hoveredCharacter.pauseStartTime = performance.now();
+            hoveredCharacter.rotationMode = 'locked';
+        }
         document.body.style.cursor = 'default';
     }
 
@@ -824,13 +829,11 @@ function updateMaterialTint(child) {
     if (!child.material) return;
 
     const TIME_TINT = getTimeTint();
-    const VERTEX_INTENSITY = getVertexLightIntensity();  // NEW!
+    const VERTEX_INTENSITY = getVertexLightIntensity();
 
     if (child.userData.hasVertexColors) {
-        // Vertex colors are strong at night, weak during day
-        // This is done by adjusting the base color, not vertex colors
         const adjustedColor = child.userData.baseColor.clone()
-            .multiplyScalar(1.0 - VERTEX_INTENSITY * 0.5)  // Dim during day
+            .lerp(new THREE.Color(1, 1, 1), VERTEX_INTENSITY)
             .multiply(TIME_TINT);
 
         child.material.color.copy(adjustedColor);
@@ -854,7 +857,7 @@ function getVertexLightIntensity() {
     } else if (currentHour >= 5 && currentHour < 7) {
         return 0.7;  // Sunrise: mostly visible
     } else {
-        return 1.0;  // Night: full intensity
+        return 0.0;  // Night: full intensity
     }
 }
 
@@ -1018,20 +1021,25 @@ function loadCharacter(config) {
 
             // Helper function to switch animations smoothly
             playAnimation: function (animName, fadeTime = 0.2) {
-                if (this.animations[animName]) {
-                    const newAction = this.animations[animName];
+                const resolvedName = Object.keys(this.animations).find(name =>
+                    name.toLowerCase().includes(animName.toLowerCase())
+                );
 
-                    // Only switch if it's a different animation
+                if (resolvedName) {
+                    const newAction = this.animations[resolvedName];
+
                     if (this.currentAction !== newAction) {
                         if (this.currentAction) {
                             this.currentAction.fadeOut(fadeTime);
                         }
                         newAction.reset().fadeIn(fadeTime).play();
                         this.currentAction = newAction;
-                        console.log(`Switched to: ${animName}`);
+                        console.log(`Switched to: ${resolvedName}`);
                     }
+                    return newAction; // ✅ return it
                 } else {
                     console.warn(`Animation "${animName}" not found in ${this.config.path}`);
+                    return null;
                 }
             }
         };
@@ -1140,15 +1148,32 @@ function updateWanderBehavior(char) {
         };
 
         if (!isPointInPolygon(nextPoint, WANDER_BOUNDS)) {
+            // Find direction back toward center of bounds
+            const center = WANDER_BOUNDS.reduce(
+                (acc, p) => ({ x: acc.x + p.x / WANDER_BOUNDS.length, z: acc.z + p.z / WANDER_BOUNDS.length }),
+                { x: 0, z: 0 }
+            );
 
-            // Bounce back inside
-            char.velocity.multiplyScalar(-1);
-            char.velocity.normalize().multiplyScalar(speed);
-            char.moveDir = char.velocity.clone().normalize();
+            const toCenter = new THREE.Vector3(
+                center.x - model.position.x,
+                0,
+                center.z - model.position.z
+            ).normalize();
+
+            // Add a little random angle so they don't all beeline to center
+            const angle = (Math.random() - 0.5) * Math.PI * 0.5;
+            toCenter.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+
+            char.velocity.copy(toCenter).multiplyScalar(speed);
+            char.moveDir = toCenter.clone();
+
+            // If already outside, nudge back in immediately
+            if (!isPointInPolygon({ x: model.position.x, z: model.position.z }, WANDER_BOUNDS)) {
+                model.position.add(toCenter.clone().multiplyScalar(0.2));
+            }
 
             return;
         }
-
         const distToFountain = nextPos.distanceTo(FOUNTAIN_POS);
 
         // =========================
@@ -1166,7 +1191,7 @@ function updateWanderBehavior(char) {
                 char.fountainViewStartTime = Date.now();
                 char.wasNearFountain = true;
 
-                char.playAnimation('shushu_wish');
+                char.playAnimation('wish');
                 triggerSunfishAppearance();
                 return;
             }
@@ -1189,7 +1214,7 @@ function updateWanderBehavior(char) {
             const distToCafe = model.position.distanceTo(CAFE_POS);
 
             if (distToCafe < CAFE_RADIUS && Math.random() < CAFE_PURCHASE_CHANCE) {
-                // visitCafe(char);
+                visitCafe(char);
                 return;
             }
         }
@@ -1238,7 +1263,7 @@ function updateWanderBehavior(char) {
             char.velocity.copy(dir).multiplyScalar(speed);
             char.moveDir = dir.clone();
 
-            char.playAnimation('shushu_walk');
+            char.playAnimation('walk');
         }
     }
 }
@@ -1402,29 +1427,29 @@ function setSunfishOpacity(opacity) {
 }
 
 
-const _debugSpheres = new Map(); // label → mesh
+// const _debugSpheres = new Map(); // label → mesh
 
-function showDebugRadius(label, position, radius, color = 0x00ff00) {
-    // Remove existing if already shown
-    if (_debugSpheres.has(label)) {
-        scene.remove(_debugSpheres.get(label));
-    }
+// function showDebugRadius(label, position, radius, color = 0x00ff00) {
+//     // Remove existing if already shown
+//     if (_debugSpheres.has(label)) {
+//         scene.remove(_debugSpheres.get(label));
+//     }
 
-    const geo = new THREE.SphereGeometry(radius, 16, 16);
-    const mat = new THREE.MeshBasicMaterial({
-        color,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.3,
-        depthWrite: false,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(position);
-    scene.add(mesh);
-    _debugSpheres.set(label, mesh);
-}
-showDebugRadius('boombox', BOOMBOX_POS, BOOMBOX_RADIUS, 0x00ff00);
-showDebugRadius('fountain', FOUNTAIN_POS, FOUNTAIN_VIEW_RADIUS, 0x0099ff);
+//     const geo = new THREE.SphereGeometry(radius, 16, 16);
+//     const mat = new THREE.MeshBasicMaterial({
+//         color,
+//         wireframe: true,
+//         transparent: true,
+//         opacity: 0.3,
+//         depthWrite: false,
+//     });
+//     const mesh = new THREE.Mesh(geo, mat);
+//     mesh.position.copy(position);
+//     scene.add(mesh);
+//     _debugSpheres.set(label, mesh);
+// }
+// showDebugRadius('boombox', BOOMBOX_POS, BOOMBOX_RADIUS, 0x00ff00);
+// showDebugRadius('fountain', FOUNTAIN_POS, FOUNTAIN_VIEW_RADIUS, 0x0099ff);
 
 const NOTE_COLORS = [
     '#d2ff93ff', // pink
@@ -1536,6 +1561,8 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+startMusicNotes(); // restart clean
+
 function checkBoomboxDance(char) {
     if (
         char.state === 'dancing' ||
@@ -1585,13 +1612,24 @@ function startWalkToBoombox(char) {
 }
 
 function updateWalkToBoomboxBehavior(char) {
-    const dist = char.model.position.distanceTo(BOOMBOX_POS);
+    const target = new THREE.Vector3(BOOMBOX_POS.x, BOOMBOX_POS.y, BOOMBOX_POS.z);
+    const dist = char.model.position.distanceTo(target);
 
-    if (dist < 0.05) { // close enough — start dancing
+    if (dist < 0.1) {
         startDancing(char);
+        return;
     }
-}
 
+    const dir = new THREE.Vector3()
+        .subVectors(target, char.model.position)
+        .setY(0)
+        .normalize();
+
+    char.moveDir = dir.clone();
+    char.velocity.copy(dir).multiplyScalar(char.config.wanderSpeed);
+
+    char.model.position.add(char.velocity); // ⬅️ actually move the character
+}
     function updateDancingBehavior(char) {
         // Fallback time-based stop if mixer events aren't working
         if (char.danceDuration) {
@@ -1637,7 +1675,7 @@ function updateWalkToBoomboxBehavior(char) {
         // Make bench sitters clap
         loadedCharacters.forEach(benchChar => {
             if (benchChar.config.behavior === 'sitting') {
-                benchChar.playAnimation('sitting_clapping');
+                benchChar.playAnimation('clapping');
             }
         });
 
@@ -1669,8 +1707,6 @@ function updateWalkToBoomboxBehavior(char) {
         setTimeout(() => {
             char.hasDancedRecently = false;
         }, 15000);
-
-        console.log('🛑 stopped dancing');
     }
 /* ------------------ MODULAR PROP LOADER ------------------ */
 
@@ -1716,20 +1752,37 @@ function loadProp(config) {
                     }
                 }
 
+                // child.material = new THREE.MeshBasicMaterial({
+                //     map: originalTexture,
+                //     color: materialColor,
+                //     side: THREE.DoubleSide,
+                //     transparent: true,
+                //     opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
+                // });
+                // child.userData.baseColor = materialColor.clone();
+
+                // const TIME_TINT = getTimeTint();
+                // child.material.color
+                //     .copy(child.userData.baseColor)
+                //     .multiply(TIME_TINT);
+
+                // child.material.needsUpdate = true;
+                // child.renderOrder = settings.renderOrder;
+
+                const hasVertexColors = !!child.geometry.attributes.color;
+
                 child.material = new THREE.MeshBasicMaterial({
                     map: originalTexture,
                     color: materialColor,
+                    vertexColors: hasVertexColors,
                     side: THREE.DoubleSide,
                     transparent: true,
                     opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
                 });
                 child.userData.baseColor = materialColor.clone();
+                child.userData.hasVertexColors = hasVertexColors;
 
-                const TIME_TINT = getTimeTint();
-                child.material.color
-                    .copy(child.userData.baseColor)
-                    .multiply(TIME_TINT);
-
+                updateMaterialTint(child);
                 child.material.needsUpdate = true;
                 child.renderOrder = settings.renderOrder;
 
@@ -1945,7 +1998,6 @@ function loadFluffyTree(x, y, z) {
 }
 
 /* ------------------ TRAIN ------------------ */
-
 function loadTrain() {
     const loader = new GLTFLoader();
 
@@ -1955,57 +2007,61 @@ function loadTrain() {
     const trainMaterial = new THREE.ShaderMaterial({
         uniforms: {
             uMap: { value: trainTexture },
-            uTimeTint: { value: getTimeTint() },  // ADD THIS
+            uTimeTint: { value: getTimeTint() },
             uFadeStart: { value: -8.0 },
             uFadeEnd: { value: 8.0 },
             uFadeDistance: { value: 2.0 },
         },
         vertexShader: `
-        varying vec3 vPos;
-        varying vec2 vUv;
-        void main() {
-            vPos = (modelMatrix * vec4(position, 1.0)).xyz;
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
+            #include <skinning_pars_vertex>
+            varying vec3 vPos;
+            varying vec2 vUv;
+            void main() {
+                vec3 transformed = vec3(position);
+                #include <skinbase_vertex>
+                #include <skinning_vertex>
+                vPos = (modelMatrix * vec4(transformed, 1.0)).xyz;
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+            }
+        `,
         fragmentShader: `
-        uniform sampler2D uMap;
-        uniform vec3 uTimeTint;  // ADD THIS
-        uniform float uFadeStart;
-        uniform float uFadeEnd;
-        uniform float uFadeDistance;
-        varying vec3 vPos;
-        varying vec2 vUv;
-
-        void main() {
-            vec4 baseColor = texture2D(uMap, vUv);
-
-            // Apply time tint
-            vec3 tintedColor = baseColor.rgb * uTimeTint;  // ADD THIS
-
-            float alpha = 1.0;
-            
-            float fadeIn = smoothstep(uFadeStart - uFadeDistance, uFadeStart, vPos.x);
-            float fadeOut = 1.0 - smoothstep(uFadeEnd, uFadeEnd + uFadeDistance, vPos.x);
-            
-            alpha = fadeIn * fadeOut;
-
-            if (alpha < 0.01) discard;
-
-            gl_FragColor = vec4(tintedColor, alpha);  // CHANGED from baseColor.rgb to tintedColor
-        }
-    `,
+            uniform sampler2D uMap;
+            uniform vec3 uTimeTint;
+            uniform float uFadeStart;
+            uniform float uFadeEnd;
+            uniform float uFadeDistance;
+            varying vec3 vPos;
+            varying vec2 vUv;
+            void main() {
+                vec4 baseColor = texture2D(uMap, vUv);
+                vec3 tintedColor = baseColor.rgb * uTimeTint;
+                float fadeIn = smoothstep(uFadeStart - uFadeDistance, uFadeStart, vPos.x);
+                float fadeOut = 1.0 - smoothstep(uFadeEnd, uFadeEnd + uFadeDistance, vPos.x);
+                float alpha = fadeIn * fadeOut;
+                if (alpha < 0.01) discard;
+                gl_FragColor = vec4(tintedColor, alpha);
+            }
+        `,
         transparent: true,
         depthWrite: false,
         depthTest: true,
     });
 
     loader.load("models/train.glb", (gltf) => {
+        console.log('🚂 train loaded, animations:', gltf.animations.length);
+
+        // Find armature
+        let armature = null;
+        gltf.scene.traverse(child => {
+            if (child.name === 'TrainArmature') armature = child;
+        });
+        console.log('armature:', armature?.name);
+
         train = gltf.scene;
 
         train.traverse((child) => {
-            if (child.isMesh) {
+            if (child.isMesh || child.isSkinnedMesh) {
                 child.material = trainMaterial;
             }
         });
@@ -2015,30 +2071,34 @@ function loadTrain() {
 
         const direction = new THREE.Vector3().subVectors(trainEndPos, trainStartPos);
         const baseAngle = Math.atan2(direction.x, direction.z);
-
-        train.rotation.y = baseAngle - Math.PI / 2; 
+        train.rotation.y = baseAngle - Math.PI / 2;
 
         train.visible = false;
         train.renderOrder = 8;
-        if (gltf.animations && gltf.animations.length > 0) {
-            window.trainMixer = new THREE.AnimationMixer(train);
+
+        // Setup animations
+        if (gltf.animations.length > 0) {
+            window.trainMixer = new THREE.AnimationMixer(armature || train);
             window.trainAnimations = {};
 
             gltf.animations.forEach(clip => {
-                const action = window.trainMixer.clipAction(clip);
-                window.trainAnimations[clip.name] = action;
-                console.log('Train animation:', clip.name);
+                window.trainAnimations[clip.name] = window.trainMixer.clipAction(clip);
+                console.log('✅ registered animation:', clip.name);
             });
+
+            console.log('trainMixer ready:', !!window.trainMixer);
+            console.log('trainAnimations:', Object.keys(window.trainAnimations));
+        } else {
+            console.warn('❌ no animations in GLB');
         }
 
-
         scene.add(train);
-        console.log('Train loaded with diagonal path');
+        console.log('✅ train added to scene');
+
     }, undefined, (error) => {
         console.error('Error loading train:', error);
     });
 }
-
 
 /* ------------------ SUBWAY PASSENGER SYSTEM ------------------ */
 
@@ -2091,21 +2151,44 @@ function updatePassengerBoarding() {
     const trainAtStation = train.visible && Math.abs(train.position.x - trainMiddleX) < 1;
 
     if (dist > boardingRadius) {
-        // Keep walking toward train
-        const speed = 0.04; // Faster boarding speed
-        subwayPassenger.model.position.x += (dx / dist) * speed;
-        subwayPassenger.model.position.z += (dz / dist) * speed;
+        const speed = 0.04;
+        const moveX = (dx / dist) * speed;
+        const moveZ = (dz / dist) * speed;
 
-        // Face walking direction
-        const angle = Math.atan2(-dx, -dz);
-        subwayPassenger.model.rotation.y = angle + Math.PI;
+        const nextPos = subwayPassenger.model.position.clone();
+        nextPos.x += moveX;
+        nextPos.z += moveZ;
 
-        // If train left before reaching it, missed the train!
+        // ✅ Check prop collision before moving
+        const propCollision = checkPropCollision(nextPos);
+
+        if (propCollision) {
+            // Steer around the prop
+            const away = new THREE.Vector3()
+                .subVectors(subwayPassenger.model.position, propCollision)
+                .normalize();
+
+            // Blend away direction with boarding direction so they still trend toward train
+            const boardingDir = new THREE.Vector3(dx, 0, dz).normalize();
+            const steerDir = away.clone().add(boardingDir).normalize();
+
+            subwayPassenger.model.position.x += steerDir.x * speed;
+            subwayPassenger.model.position.z += steerDir.z * speed;
+
+            const angle = Math.atan2(-steerDir.x, -steerDir.z);
+            subwayPassenger.model.rotation.y = angle + Math.PI;
+        } else {
+            subwayPassenger.model.position.x += moveX;
+            subwayPassenger.model.position.z += moveZ;
+
+            const angle = Math.atan2(-dx, -dz);
+            subwayPassenger.model.rotation.y = angle + Math.PI;
+        }
+
         if (!trainAtStation) {
             console.log('Passenger missed the train!');
             passengerState = 'wandering';
             subwayPassenger.state = 'walking';
-            // Set velocity to walk back to waiting area
             subwayPassenger.velocity.set(
                 (Math.random() - 0.5) * 0.015,
                 0,
@@ -2113,15 +2196,12 @@ function updatePassengerBoarding() {
             );
         }
     } else {
-        // Reached boarding position - remove completely
+        // Reached boarding position
         console.log('Passenger successfully boarded!');
         scene.remove(subwayPassenger.model);
 
-        // Remove from loadedCharacters array
         const index = loadedCharacters.indexOf(subwayPassenger);
-        if (index > -1) {
-            loadedCharacters.splice(index, 1);
-        }
+        if (index > -1) loadedCharacters.splice(index, 1);
 
         subwayPassenger = null;
         passengerState = 'gone';
@@ -2164,16 +2244,11 @@ updateClock(); // Initial call
 function visitCafe(char) {
     char.hasVisitedCafe = true;
 
-    // Save current velocity before stopping
-    char.savedVelocity = char.velocity.clone();
+    // Just stop movement temporarily
     char.velocity.set(0, 0, 0);
-
-    // Look at cafe
-    char.model.lookAt(CAFE_POS);
 
     console.log('Character visiting cafe...');
 
-    // Short delay for "shopping"
     setTimeout(() => {
         purchaseFood(char);
     }, 1000);
@@ -2211,37 +2286,21 @@ function purchaseFood(char) {
         foodItem.position.set(1.5 * characterScale, 1.8 * characterScale, 1.5 * characterScale); // Position also scales
         foodItem.rotation.y = Math.PI / 4;
 
-        // Attach to character
         char.model.add(foodItem);
         char.holdingFood = foodItem;
 
-        // Set random time to eat (10 seconds to 3 minutes from now)
         const timeUntilEat = Math.random() * (MAX_TIME_BEFORE_EATING - MIN_TIME_BEFORE_EATING) + MIN_TIME_BEFORE_EATING;
         char.eatTime = Date.now() + timeUntilEat;
 
         console.log(`Character purchased ${randomFood}! Will eat in ${(timeUntilEat / 1000).toFixed(1)} seconds`);
 
-        // Resume walking with NEW random direction (not saved direction)
-        // char.state = 'walking';
-        // const newDir = new THREE.Vector3(
-        //     Math.random() - 0.5,
-        //     0,
-        //     Math.random() - 0.5
-        // ).normalize();
-
-        // char.moveDir = newDir.clone();
-        // char.velocity.copy(newDir).multiplyScalar(char.config.wanderSpeed);
-        // char.rotationMode = 'movement';  // ADD THIS
+        // JUST SET STATE - let updateWanderBehavior handle the rest
+        char.state = 'walking';
+        // DON'T touch velocity, moveDir, or rotation - wander will fix it
 
     }, undefined, (error) => {
         console.error('Error loading food item:', error);
-        // Still resume walking even if food failed to load
         char.state = 'walking';
-        char.velocity.set(
-            (Math.random() - 0.5) * char.config.wanderSpeed,
-            0,
-            (Math.random() - 0.5) * char.config.wanderSpeed
-        );
     });
 }
 
@@ -2269,7 +2328,7 @@ function startEating(char) {
     char.model.rotation.y = targetAngle;
 
     // Switch to eating animation
-    char.playAnimation('shushu_eating'); // Or whatever the eating animation is named
+    char.playAnimation('eating'); // Or whatever the eating animation is named
 
     console.log('Character is eating!');
 }
@@ -2332,8 +2391,9 @@ function animate() {
     updateStarParticles()
     updateMusicNotes();
     const dt = clock.getDelta();
-    if (window.trainMixer) window.trainMixer.update(dt);
     const elapsedTime = clock.getElapsedTime();
+    if (window.trainMixer) window.trainMixer.update(dt);
+    
 
         // 1️⃣ Update animation mixers (pure animation only)
         loadedCharacters.forEach(char => {
@@ -2382,7 +2442,6 @@ function animate() {
     });
 
     // Train animation
-
     if (train) {
         const { cycleElapsedSec } = getTrainTimeInfo();
 
@@ -2390,71 +2449,101 @@ function animate() {
         const stopDuration = 10;
         const totalPhase = moveDuration + stopDuration;
 
-        if (cycleElapsedSec < totalPhase) {
+        // Visit 0: stop + open doors + spawn passenger
+        // Visit 1: pass through, no stop
+        // Visit 2: stop + close doors (passenger boards or times out)
+        const shouldStop = trainVisitCount === 0 || trainVisitCount === 2;
+
+        if (cycleElapsedSec < (shouldStop ? totalPhase : moveDuration)) {
             train.visible = true;
 
             if (cycleElapsedSec < moveDuration / 2) {
-                // Move from START to MIDDLE (diagonal)
+                // Move from START to MIDDLE
                 const t = cycleElapsedSec / (moveDuration / 2);
                 train.position.lerpVectors(trainStartPos, trainMiddlePos, t);
-                window.trainAnimations['doors_opening']
-                    .reset()
-                    .setLoop(THREE.Loop)
-                    .play();
 
-            } else if (cycleElapsedSec < moveDuration / 2 + stopDuration) {
+            } else if (shouldStop && cycleElapsedSec < moveDuration / 2 + stopDuration) {
                 // STOP at middle
                 train.position.copy(trainMiddlePos);
 
-                // Spawn passenger 0.2 seconds after train stops (first visit)
-                // Spawn passenger 0.2 seconds after train stops (first visit)
                 const timeIntoStop = cycleElapsedSec - (moveDuration / 2);
 
-                if (timeIntoStop > 0.2 && timeIntoStop < 0.3 && passengerState === 'waiting' && trainVisitCount === 0) {
-
-                    if (window.trainAnimations && window.trainAnimations['doors_opening']) {
-
-                        const action = window.trainAnimations['doors_opening'];
-
-                        window.trainMixer.stopAllAction(); // prevents other animations overriding
-
-                        action.reset();
-                        action.setLoop(THREE.LoopOnce);
-                        action.clampWhenFinished = true;
-                        action.enabled = true;
-
-                        action.play();
+                // Visit 0: open doors + spawn passenger
+                if (trainVisitCount === 0) {
+                    if (timeIntoStop > 0.2 && timeIntoStop < 0.3 && passengerState === 'waiting' && !train._doorsOpened) {
+                        train._doorsOpened = true;
+                        if (window.trainAnimations?.['doors_opening']) {
+                            const action = window.trainAnimations['doors_opening'];
+                            window.trainMixer.stopAllAction();
+                            action.reset();
+                            action.setLoop(THREE.LoopOnce);
+                            action.clampWhenFinished = true;
+                            action.enabled = true;
+                            action.play();
+                        }
+                        spawnSubwayPassenger();
                     }
 
-                    spawnSubwayPassenger();
+                    // Guaranteed close before departing (passenger didn't board this visit)
+                    if (timeIntoStop > stopDuration - 1 && train._doorsOpened && !train._doorsClosing) {
+                        train._doorsClosing = true;
+                        if (window.trainAnimations?.['doors_closing']) {
+                            const action = window.trainAnimations['doors_closing'];
+                            window.trainMixer.stopAllAction();
+                            action.reset();
+                            action.setLoop(THREE.LoopOnce);
+                            action.clampWhenFinished = true;
+                            action.enabled = true;
+                            action.play();
+                        }
+                    }
                 }
 
-                // Check if passenger should board (3rd visit)
-                if (passengerState === 'wandering' && trainVisitCount === 2) {
-                    if (window.trainAnimations && window.trainAnimations['doors_closing']) {
-                        window.trainAnimations['doors_closing'].reset().play();
+                // Visit 2: close doors when passenger boards, or force close before departing
+                if (trainVisitCount === 2) {
+                    if (passengerState === 'wandering' && !train._boardingDelay) {
+                        train._boardingDelay = true;
+                        makePassengerBoard();
                     }
-                    makePassengerBoard();
+
+                    if (timeIntoStop > stopDuration - 1 && !train._doorsClosing) {
+                        train._doorsClosing = true;
+                        if (window.trainAnimations?.['doors_closing']) {
+                            const action = window.trainAnimations['doors_closing'];
+                            window.trainMixer.stopAllAction();
+                            action.reset();
+                            action.timeScale = 0.5;
+                            action.setLoop(THREE.LoopOnce);
+                            action.clampWhenFinished = true;
+                            action.enabled = true;
+                            action.play();
+                        }
+                    }
                 }
 
             } else {
-                // Move from MIDDLE to END (diagonal)
-                const t = (cycleElapsedSec - (moveDuration / 2 + stopDuration)) / (moveDuration / 2);
+                // Move from MIDDLE to END
+                const elapsed = shouldStop ? cycleElapsedSec : cycleElapsedSec;
+                const moveStartTime = shouldStop ? moveDuration / 2 + stopDuration : moveDuration / 2;
+                const t = (cycleElapsedSec - moveStartTime) / (moveDuration / 2);
                 train.position.lerpVectors(trainMiddlePos, trainEndPos, t);
 
-                // Train leaving with passenger
                 if (t > 0.1 && passengerState === 'boarding' && subwayPassenger) {
                     subwayPassenger.model.visible = false;
                     passengerState = 'gone';
                 }
             }
+
         } else {
             train.visible = false;
-            if (cycleElapsedSec > totalPhase + 5) {
+
+            if (cycleElapsedSec > (shouldStop ? totalPhase : moveDuration) + 5) {
                 trainCycleStart = Date.now();
                 trainVisitCount++;
+                train._doorsClosing = false;
+                train._doorsOpened = false;
+                train._doorsPlayedMoving = false;
 
-                // Reset cycle after passenger leaves
                 if (trainVisitCount > 3) {
                     trainVisitCount = 0;
                     passengerState = 'waiting';
@@ -2737,89 +2826,96 @@ document.addEventListener('click', (e) => {
     // Animate
     gsap.to(transition, {
         clipPath: `circle(150% at ${x}% ${y}%)`,
-        duration: 0.7,
+        duration: 0.6,
         ease: "power2.inOut",
         onStart: () => console.log('Animation started'),
         onComplete: () => {
             console.log('Animation complete, navigating...');
-            setTimeout(() => {
-                window.location.href = link;
-            }, 300);
+            window.location.href = link;
         }
     });
 });
-
 const dropdownBtn = document.getElementById('character-dropdown-btn');
 const dropdownMenu = document.getElementById('character-dropdown-menu');
 
+
 if (dropdownBtn && dropdownMenu) {
-    // Toggle dropdown
     dropdownBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('show');
-
-        // Update button arrow
-        if (dropdownMenu.classList.contains('show')) {
-            dropdownBtn.textContent = 'Characters ▼';
-        } else {
-            dropdownBtn.textContent = 'Characters ▲';
-        }
+        dropdownBtn.textContent = dropdownMenu.classList.contains('show') ? 'Projects ▼' : 'Projects ▲';
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!dropdownMenu.contains(e.target) && e.target !== dropdownBtn) {
             dropdownMenu.classList.remove('show');
-            dropdownBtn.textContent = 'Characters ▲';
+            dropdownBtn.textContent = 'Projects ▲';
         }
     });
 
-    // Populate dropdown with character data
     function populateCharacterDropdown() {
-        console.log('Populating dropdown with character data');
+        if (!characterData) return;
+        dropdownMenu.innerHTML = '';
 
-        // Temporary test data if characterData doesn't exist
-        const testData = [
-            { name: 'Alice', role: 'Resident', avatar: 'images/alice.png' },
-            { name: 'Bob', role: 'Visitor', avatar: 'images/bob.png' },
-            { name: 'Charlie', role: 'Resident', avatar: 'images/charlie.png' }
-        ];
-
-        const data = (typeof characterData !== 'undefined' && characterData) ? characterData : testData;
-
-        dropdownMenu.innerHTML = ''; // Clear existing
-
-        data.forEach(char => {
+        Object.entries(characterData).forEach(([key, data]) => {
             const card = document.createElement('div');
             card.className = 'dropdown-character-card';
-            card.onclick = () => {
-                console.log('Clicked character:', char.name);
-                dropdownMenu.classList.remove('show');
-                dropdownBtn.textContent = 'Characters ▲';
-
-                // Call your existing card display function
-                if (typeof showIDCard === 'function') {
-                    showIDCard(char);
-                }
-            };
 
             card.innerHTML = `
                 <div class="dropdown-char-avatar">
-                    <img src="${char.avatar || 'images/default-avatar.png'}" alt="${char.name}" onerror="this.style.display='none'">
+                    <img src="${data.avatar || data.characterIcon|| 'images/default-avatar.png'}"
+                         alt="${data.name || key}"
+                         onerror="this.style.opacity='0.3'">
                 </div>
                 <div class="dropdown-char-info">
-                    <div class="dropdown-char-name">${char.name}</div>
-                    <div class="dropdown-char-role">${char.role || 'Resident'}</div>
+                    <div class="dropdown-char-name">${data.name || key}</div>
+                    <div class="dropdown-char-title">${data.projectTitle || ''}</div>
+                    <div class="dropdown-char-tags">
+                        ${(data.skills || []).map(skill => `<span class="dropdown-tag">${skill}</span>`).join('')}
+                    </div>
                 </div>
             `;
+
+            card.addEventListener('click', (e) => {
+                dropdownMenu.classList.remove('show');
+                dropdownBtn.textContent = 'Characters ▲';
+
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+
+                console.log('click coords:', e.clientX, e.clientY); // debug
+
+                const transition = document.getElementById('project-page-transition');
+
+                if (!transition) {
+                    window.location.href = data.projectLink;
+                    return;
+                }
+
+                transition.style.background = data.accentColor || '#ffffff';
+                transition.style.clipPath = `circle(0% at ${x}% ${y}%)`;
+
+                gsap.to(transition, {
+                    clipPath: `circle(150% at ${x}% ${y}%)`,
+                    duration: 0.6,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        window.location.href = data.projectLink;
+                    }
+                });
+            });
 
             dropdownMenu.appendChild(card);
         });
     }
 
-    // Populate immediately with test data
-    populateCharacterDropdown();
+    fetch('assets/js/character_data.json')
+        .then(r => r.json())
+        .then(data => {
+            characterData = data;
+            populateCharacterDropdown();
+        })
+        .catch(e => console.error('✗ Error loading character data:', e));
 
-    // Expose globally
     window.populateCharacterDropdown = populateCharacterDropdown;
 }

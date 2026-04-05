@@ -1,0 +1,400 @@
+/* ══════════════════════════════════════════
+   3D MODELING GALLERY — gallery.css
+   ══════════════════════════════════════════ */
+
+:root {
+  --blue: #78B8FF;
+  --dark: #43424C;
+  --light-grey: #E8E8EE;
+  --white: #FFFFFF;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Source Code Pro', monospace;
+  background-color: var(--white);
+  background-image:
+    linear-gradient(rgba(120, 184, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 184, 255, 0.3) 1px, transparent 1px);
+  background-size: 120px 120px;
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+#navbar {
+  position: static;
+  padding: 22px 4vw;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.nav-link {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 40px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.nav-link:hover {
+  background: #FDF4A4;
+  color: var(--dark);
+}
+
+/* ── HEADER ── */
+.page-header {
+  padding: 24px 6vw 28px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--dark);
+  text-align: center;
+  margin: 0 0 6px 0;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.page-header h1 .outline {
+  color: transparent;
+  -webkit-text-stroke: 3px var(--blue);
+}
+
+.page-header .subtitle {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+}
+
+/* ── GALLERY GRID ── */
+.gallery {
+  columns: 3;
+  column-gap: 12px;
+}
+
+.gallery-item {
+  break-inside: avoid;
+  display: block;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--light-grey);
+
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.gallery-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gallery-item:hover {
+  box-shadow: 0 12px 40px rgba(120, 184, 255, 0.25);
+  z-index: 2;
+}
+
+/* Size variants */
+.size-sm {
+  aspect-ratio: 1 / 1;
+}
+
+.size-md {
+  aspect-ratio: 3 / 4;
+}
+
+.size-lg {
+  aspect-ratio: 2 / 3;
+}
+
+.size-xl {
+  aspect-ratio: 1 / 1.4;
+}
+
+.size-wide {
+  aspect-ratio: 4 / 3;
+}
+
+.size-tall {
+  aspect-ratio: 9 / 16;
+}
+
+/* Column offset — push col 2 & 3 down for photo-strip stagger */
+.col-offset-1 {
+  margin-top: 60px;
+}
+
+.col-offset-2 {
+  margin-top: 130px;
+}
+
+/* Stagger reveal delays for each item */
+.gallery-item:nth-child(3n+1) {
+  transition-delay: 0s;
+}
+
+.gallery-item:nth-child(3n+2) {
+  transition-delay: 0.08s;
+}
+
+.gallery-item:nth-child(3n+3) {
+  transition-delay: 0.16s;
+}
+
+/* ── MEDIA ── */
+.gallery-item img,
+.gallery-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-item img.loaded {
+  opacity: 1;
+}
+
+.gallery-item:hover img,
+.gallery-item:hover video {
+  transform: scale(1.06);
+}
+
+/* ── HOVER OVERLAY ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg,
+      rgba(30, 30, 40, 0.0) 0%,
+      rgba(30, 30, 40, 0.82) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 20px 16px;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.gallery-item:hover .overlay {
+  opacity: 1;
+}
+
+.overlay-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  transform: translateY(8px);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.02s;
+}
+
+.overlay-meta {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--blue);
+  letter-spacing: 0.06em;
+  transform: translateY(8px);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.06s;
+}
+
+.overlay-tag {
+  margin-top: 4px;
+  font-size: 10px;
+  padding: 3px 10px;
+  border: 1px solid var(--blue);
+  border-radius: 20px;
+  color: var(--blue);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translateY(8px);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+.gallery-item:hover .overlay-title,
+.gallery-item:hover .overlay-meta,
+.gallery-item:hover .overlay-tag {
+  transform: translateY(0);
+}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── RESPONSIVE ── */
+
+/* Tablet landscape */
+@media (max-width: 1100px) {
+  .page-header h1 {
+    font-size: clamp(44px, 6vw, 72px);
+  }
+
+  .col-offset-2 {
+    margin-top: 90px;
+  }
+}
+
+/* Tablet portrait */
+@media (max-width: 900px) {
+  .gallery {
+    columns: 2;
+    column-gap: 10px;
+    padding: 20px 14px 60px;
+  }
+
+  .col-offset-1 {
+    margin-top: 40px;
+  }
+
+  .col-offset-2 {
+    margin-top: 0;
+  }
+
+  /* reset — only 2 cols */
+
+  /* On 2-col layout, every other item gets a small offset */
+  .gallery-item:nth-child(2n) {
+    margin-top: 28px;
+  }
+
+  /* Ease up sizes that are too extreme on smaller screens */
+  .size-tall {
+    aspect-ratio: 3 / 4;
+  }
+
+  .size-xl {
+    aspect-ratio: 1 / 1.2;
+  }
+}
+
+/* Mobile — single column, no offsets */
+@media (max-width: 560px) {
+  #navbar {
+    padding: 16px 5vw;
+  }
+
+  .nav-link {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+
+  .page-header {
+    padding: 100px 5vw 36px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(38px, 11vw, 56px);
+  }
+
+  .page-header .subtitle {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .gallery {
+    columns: 1;
+    column-gap: 0;
+    padding: 16px 12px 50px;
+  }
+
+  /* Kill all offsets on single column */
+  .col-offset-1,
+  .col-offset-2,
+  .gallery-item:nth-child(2n) {
+    margin-top: 0;
+  }
+
+  /* Natural proportions on mobile */
+  .size-tall {
+    aspect-ratio: 3 / 4;
+  }
+
+  .size-xl {
+    aspect-ratio: 1 / 1;
+  }
+
+  .size-lg {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Always show overlay text on touch (no hover) */
+  .overlay {
+    opacity: 0;
+  }
+
+  .gallery-item:active .overlay {
+    opacity: 1;
+  }
+}
+
+/* Touch devices — make overlay always slightly visible so users know to tap */
+@media (hover: none) {
+  .overlay {
+    background: linear-gradient(160deg,
+        rgba(30, 30, 40, 0.0) 40%,
+        rgba(30, 30, 40, 0.65) 100%);
+    opacity: 1;
+  }
+
+  /* Only show text on tap */
+  .overlay-title,
+  .overlay-meta,
+  .overlay-tag {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .gallery-item:active .overlay-title,
+  .gallery-item:active .overlay-meta,
+  .gallery-item:active .overlay-tag {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

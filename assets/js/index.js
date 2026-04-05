@@ -2,10 +2,21 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const loader = new GLTFLoader(); // ← top-level, accessible everywhere
+window.addEventListener('load', () => {
+    if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }, 500); // small delay lets GSAP initialize first
+        }
+    }
+});
 
 /* ═══════════════════════════════════════
    $1 UNISTROKE RECOGNIZER
    ═══════════════════════════════════════ */
+   
 (function () {
     var NumPoints = 64, SquareSize = 250, Origin = { X: 0, Y: 0 },
         Diagonal = Math.sqrt(2 * SquareSize * SquareSize), HalfDiagonal = Diagonal / 2,
@@ -201,7 +212,7 @@ const loader = new GLTFLoader(); // ← top-level, accessible everywhere
 let pileHeight = 3; // starting height for falling stars
 let starModel = null;
 const spawnedStars = [];
-loader.load('models/ghost.glb', (gltf) => {
+loader.load('models/star.glb', (gltf) => {
     starModel = gltf.scene;
     starModel.traverse((child) => {
         if (child.isMesh) {
@@ -640,11 +651,10 @@ function setExpression(index) {
     ]));
 
     recognizer.AddGesture('zigzag', pts([
-        [100, 50], [150, 70], [100, 90], [150, 110], [100, 130], [150, 150], [100, 170], [150, 190],
-        [130, 80], [100, 100], [130, 120], [100, 140], [130, 160],
-        [110, 60], [150, 80], [110, 100], [150, 120], [110, 140], [150, 160], [110, 180]
+        [50, 50], [100, 50], [150, 50], [200, 50],
+        [150, 100], [100, 150], [50, 200],
+        [50, 200], [100, 200], [150, 200], [200, 200]
     ]));
-
     let drawing = false;
     let points = [];
     let drawnPts = [];
@@ -750,6 +760,36 @@ function setExpression(index) {
 // ══════════════════════════════════════════
 // GSAP SCROLL ANIMATIONS
 // ══════════════════════════════════════════
+['exp-title', 'exp-1', 'exp-2', 'exp-3'].forEach((id) => {
+    const el = document.getElementById(id);
+    let settled = false;
+
+    ScrollTrigger.create({
+        trigger: '#experience',
+        start: 'top 10%',
+        onEnter: () => { settled = true; },
+        onLeaveBack: () => { settled = false; }
+    });
+
+    el.addEventListener('mouseenter', () => {
+        gsap.to(el, {
+            x: settled ? -20 : undefined,  // only move if settled
+            backgroundColor: '#62a9e7ff',     // always highlight
+            duration: 1,
+            ease: 'power2.out'
+        });
+    });
+
+    el.addEventListener('mouseleave', () => {
+        gsap.to(el, {
+            x: settled ? -50 : undefined,  // only move if settled
+            backgroundColor: 'transparent',
+            duration: 1,
+            ease: 'power2.out'
+        });
+    });
+});
+
 window.addEventListener('DOMContentLoaded', () => {
 
     gsap.registerPlugin(ScrollTrigger);
@@ -1051,3 +1091,12 @@ window.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(w, h);
     });
 })();
+
+document.querySelector(".email-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText("emileemeng@gmail.com");
+    const btn = document.querySelector(".email-btn");
+    btn.textContent = "Copied!";
+    setTimeout(() => {
+        btn.innerHTML = '<img src="images/email_icon.png" alt=""> Email';
+    }, 2000);
+});

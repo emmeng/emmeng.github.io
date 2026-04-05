@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huh!? I've Been Hired By Alien Researchers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/project-page.css" />
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="projects.html">Projects</a>
+    <a class="nav-link" href="index.html#about">Contact</a>
+    <a class="nav-link" href="blog.html">Blog</a>
+  </nav>
+
+  <!-- FULL WIDTH HERO IMAGE -->
+  <!--
+    TO ADD IMAGE: replace the div contents with just <img src="images/niantic_thumbnail.png" alt="">
+    The .hero-image-placeholder handles sizing automatically.
+  -->
+  <div class="hero-image-placeholder">
+    <video autoplay loop muted playsinline>
+    <source src="images/niantic_header_2.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- HERO -->
+  <div class="section-wrap">
+    <div class="hero">
+      <div class="award-tag">★ Grand Prize — Niantic Lightship Real-World AR Challenge 2023</div>
+      <h1>Huh!? I've Been Hired By Alien Researchers</h1>
+      <p class="hero-hook">An AR mobile game for language learning through real-world exploration. Players collect
+        vocabulary by walking to GPS-anchored waypoints placed around them in the environment.</p>
+
+      <!-- 4-COLUMN META BAR -->
+      <div class="meta-bar">
+
+        <div class="meta-col">
+          <div class="meta-col-label">Details</div>
+          <div class="meta-col-row">
+            <span class="meta-col-key">Timeline</span>
+            <span class="meta-col-val">OCT – DEC 2023</span>
+          </div>
+          <div class="meta-col-row">
+            <span class="meta-col-key">Platform</span>
+            <span class="meta-col-val">iOS / Android</span>
+          </div>
+          <div class="meta-col-row">
+            <span class="meta-col-key">My Roles</span>
+            <span class="meta-col-val">PM · Dev · Technical Art</span>
+          </div>
+        </div>
+
+        <div class="meta-col">
+          <div class="meta-col-label">Collaborators</div>
+          <div class="meta-col-row">
+            <span class="meta-col-val">Xinying Chew</span>
+          </div>
+          <div class="meta-col-row">
+            <span class="meta-col-val">Sonia Lin</span>
+          </div>
+          <div class="meta-col-row">
+            <span class="meta-col-val">Ruifeng Xu</span>
+          </div>
+        </div>
+
+        <div class="meta-col">
+          <div class="meta-col-label">Development Stack</div>
+          <div class="stack-categories">
+            <div class="stack-cat">
+              <span class="stack-cat-name">Engine</span>
+              <div class="stack-chips">
+                <span class="stack-chip">Unity / C#</span>
+                <span class="stack-chip">Niantic ARDK 3.0</span>
+              </div>
+            </div>
+            <div class="stack-cat">
+              <span class="stack-cat-name">3D / Art</span>
+              <div class="stack-chips">
+                <span class="stack-chip">Blender</span>
+                <span class="stack-chip">Mixamo</span>
+                <span class="stack-chip">Procreate</span>
+              </div>
+            </div>
+            <div class="stack-cat">
+              <span class="stack-cat-name">Design</span>
+              <div class="stack-chips">
+                <span class="stack-chip">Figma</span>
+              </div>
+            </div>
+            <div class="stack-cat">
+              <span class="stack-cat-name">Video</span>
+              <div class="stack-chips">
+                <span class="stack-chip">Premiere Pro</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="meta-col meta-col-links">
+          <div class="meta-col-label">Links</div>
+          <div class="sidebar-links">
+            <!--
+              featured class = solid blue button, stands out
+              remove featured for a regular outlined link
+            -->
+            <a href="https://itch.io/jam/lightship-real-world-ar/rate/2403315" class="sidebar-link featured">
+              <span class="link-icon">◎</span>
+              <span class="link-text">Itch Submission</span>
+              <span class="link-arrow">↗</span>
+            </a>
+            <!-- Add more links here as needed -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OVERVIEW -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Overview</div>
+      <h2 class="section-heading"> Foreign Vocabulary Learning Through Movement</h2>
+      <p class="body-text">The game is structured around a fictional organization — the ICRC, the Interplanetary
+        Communications Research Company — whose goal is to study how human brains memorize foreign words. Players are hired by
+        Dr. Zero to assist with fieldwork, which in practice means walking around while memorizing vocabulary with interactive challenge spots in AR.</p>
+      <div class="callout">
+        <div class="callout-label">Research motivation</div>
+        <p>Multiple studies indicate that information retention increases during light-to-moderate aerobic exercise,
+          with additional gains from spaced repetition across sessions. The game mechanic is designed around both
+          findings. </p>
+          <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177624" class="read-more">Physical Activity and Language Learning <span class="rm-arrow">↗</span></a>
+          ||
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4942640/" class="read-more">Physical Exercise and Neuroplasticity <span class="rm-arrow">↗</span></a>
+      </div>
+
+      
+     
+
+      <!-- RESPONSIVE VIDEO EMBED -->
+      <!--
+        MEDIA HOLDER GUIDE:
+          Image:   <div class="media-holder"><img src="..." alt=""></div>
+          Video:   <div class="media-holder video"><iframe src="..."></iframe></div>
+          Empty:   <div class="media-holder empty" data-hint="Description of what goes here"></div>
+      -->
+      <div class="media-holder video">
+        <iframe src="https://www.youtube.com/embed/p7zyFa7Ndis?si=jA-uJWP2ECGBmudJ" title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- MY ROLE -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">My Role</div>
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-tag">PM</div>
+          <div class="role-name">Project Management</div>
+          <ul class="role-bullets">
+            <li>Deadlines and milestone tracking</li>
+            <li>Team meetings and task allocation</li>
+            <li>Concept direction</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <div class="role-tag">Dev</div>
+          <div class="role-name">Development</div>
+          <ul class="role-bullets">
+            <li>Waypoint query and placement system</li>
+            <li>Pedometer implementation</li>
+            <li>Contact book system</li>
+            <li>AR occlusion and meshing</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <div class="role-tag">Art</div>
+          <div class="role-name">Technical Art</div>
+          <ul class="role-bullets">
+            <li>Concept and UX design</li>
+            <li>2D and 3D asset creation</li>
+            <li>Texturing and AR optimization</li>
+            <li>Release trailer</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- TECHNICAL -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Technical</div>
+      <h2 class="section-heading">System Highlights</h2>
+
+      <!-- 01 — image bottom -->
+      <div class="tech-block">
+        <div class="tech-header">
+          <div class="tech-num">01</div>
+          <div>
+            <div class="tech-title">Waypoint Placement System</div>
+            <div class="tech-subtitle">Niantic VPS · spatial querying · C#</div>
+          </div>
+        </div>
+        <div class="tech-body">
+          <p>Niantic's Lightship platform maintains a database of real-world "Wayspots" — GPS-tagged locations built
+            from their existing player network. The system queries this database within a configurable radius of the
+            player's position and randomly selects from the returned candidates to place vocabulary waypoints.</p>
+          <p>One edge case: Wayspots can be indoors or behind access-restricted areas. We filtered by distance and
+            cross-referenced with the device's heading to deprioritize waypoints behind the player.</p>
+          <div class="code-block">
+            <pre><span class="cm">// Query Niantic Wayspot database within radius,</span>
+<span class="cm">// then randomly select from returned candidates</span>
+<span class="kw">var</span> query = WayspotAnchorService
+    .GetWayspots(playerPosition, radiusMeters);
+<span class="kw">var</span> selected = query
+    .OrderBy(_ => Random.value)
+    .Take(waypointCount).ToList();</pre>
+          </div>
+          <!-- Image at bottom: use media-holder inside tech-body -->
+          <div class="media-holder tech-img-bottom empty" data-hint="Map view — waypoints around a player"></div>
+        </div>
+      </div>
+
+      <!-- 02 — image right -->
+      <div class="tech-block">
+        <div class="tech-header">
+          <div class="tech-num">02</div>
+          <div>
+            <div class="tech-title">Top-Down Dissolve Shader</div>
+            <div class="tech-subtitle">ShaderGraph · world-space Y clip</div>
+          </div>
+        </div>
+        <div class="tech-body-right">
+          <div class="tech-text">
+            <p>Objects dissolve in and out based on world-space Y position — revealing from the ground up on spawn,
+              collapsing downward on dismiss. The clip threshold is a single animated float.</p>
+            <p>Used world-space Y rather than object-space because ARDK anchors objects at varying elevations.
+              Object-space would have made the effect inconsistent across anchor heights.</p>
+            <div class="code-block">
+    <pre><span class="cm">// _t: 0 = fully hidden, 1 = fully revealed</span>
+    <span class="cm">// clip plane rises from object base to top in world space</span>
+    <span class="kw">float</span> baseY  = transform.position.y - objectHalfHeight;
+    <span class="kw">float</span> topY   = transform.position.y + objectHalfHeight;
+    _t = Mathf.MoveTowards(_t, <span class="nu">1f</span>, Time.deltaTime * dissolveSpeed);
+    
+    <span class="kw">float</span> cutoff = Mathf.Lerp(baseY, topY, _t);
+    material.SetFloat(<span class="st">"_CutoffHeight"</span>,  cutoff);
+    material.SetFloat(<span class="st">"_NoiseStrength"</span>, noiseStrength);</pre>
+</div>
+          </div>
+          <div class="media-holder" style="min-height:180px;margin:0;" data-hint="Dissolve shader gif">
+            <img src="images/obi_shader.gif" alt="Dissolve shader gif">
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 — image left -->
+      <div class="tech-block">
+        <div class="tech-header">
+          <div class="tech-num">03</div>
+          <div>
+            <div class="tech-title">AR Depth Occlusion + Environment Meshing</div>
+            <div class="tech-subtitle">ARDK 3.0 · depth buffer · real-time mesh generation</div>
+          </div>
+        </div>
+        <div class="tech-body-left">
+          <!-- Image on left: media-holder comes first -->
+          <div class="media-holder empty" style="min-height:180px;margin:0;" data-hint="Occlusion demo screenshot">
+          </div>
+          <div class="tech-text">
+            <p>ARDK 3.0 generates a real-time mesh of the environment from the device camera, enabling depth occlusion
+              — game objects are correctly hidden behind real-world surfaces rather than rendering on top of everything.
+            </p>
+            <p>The mesh takes a few seconds to reach usable confidence on session start. We gated object visibility on
+              mesh confidence crossing a threshold, then used the dissolve shader to bring objects in once ready —
+              avoiding the pop from premature spawning.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OPTIMIZATION -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Optimization</div>
+      <h2 class="section-heading">Mobile Constraints</h2>
+      <p class="body-text">ARDK's camera processing, meshing, and the game renderer all run concurrently on mobile
+        hardware. A few things we did to stay within budget:</p>
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-val">Polygon budgets</div>
+          <div class="perf-desc">All 3D assets modeled to mobile AR limits from the start</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">Texture atlasing</div>
+          <div class="perf-desc">Combined textures to reduce draw calls and GPU memory use</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">Mesh confidence gating</div>
+          <div class="perf-desc">Object spawning held until ARDK mesh quality met minimum threshold</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">Rig optimization</div>
+          <div class="perf-desc">Mixamo rigs retargeted and keyframes reduced for real-time mobile playback</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- REFLECTION -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Reflection</div>
+      <h2 class="section-heading">What I'd Change</h2>
+      <div class="reflection-grid">
+        <div class="reflection-card went-well">
+          <div class="reflection-header">Went well</div>
+          <ul>
+            <li>Mesh gating and dissolve shader solving the same problem from different angles</li>
+            <li>World-space Y caught before terrain bugs appeared</li>
+            <li>Shipped on deadline across a wide scope</li>
+          </ul>
+        </div>
+        <div class="reflection-card change">
+          <div class="reflection-header">Would do differently</div>
+          <ul>
+            <li>Test waypoint density in low-Wayspot areas earlier — coverage varies significantly by location</li>
+            <li>Profile on low-end devices earlier in development</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 48px;"></div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.section').forEach(s => observer.observe(s));
+  </script>
+
+</body>
+
+</html>

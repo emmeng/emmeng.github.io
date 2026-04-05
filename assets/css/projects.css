@@ -415,63 +415,67 @@
 
 #character-dropdown-container {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  /* Changed from left to right */
+  bottom: 24px;
+  right: 24px;
   z-index: 1000;
   font-family: 'Source Code Pro', monospace;
 }
 
 #character-dropdown-btn {
-  background: #78B8FF;
-  color: white;
-  border: 3px solid #333;
-  padding: 12px 24px;
-  font-size: 16px;
+  background: #fff;
+  color: #222;
+  border: 2.5px solid #222;
+  padding: 10px 20px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
+  border-radius: 6px;
+  box-shadow: 3px 3px 0px #222;
+  transition: transform 0.12s, box-shadow 0.12s;
+  display: block;
+  margin-left: auto;
+  width: 100%;
 }
 
 #character-dropdown-btn:hover {
-  background: #333;
-  transform: translateY(-2px);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #222;
+}
+
+#character-dropdown-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #222;
 }
 
 #character-dropdown-menu {
   position: absolute;
-  bottom: 60px;
-  /* Appears above button */
+  bottom: 52px;
   right: 0;
-  /* Changed from left: 0 */
-  width: 30vw;
-  max-height: 70vh;
-  background: white;
-  border: 3px solid #333;
-  border-radius: 8px;
+  width: 280px;
+  max-height: 60vh;
+  background: #fff;
+  border: 2.5px solid #222;
+  border-radius: 10px;
   overflow-y: auto;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 5px 5px 0px #222;
   display: none;
-  /* Hidden by default */
+  box-sizing: border-box;
 }
 
 #character-dropdown-menu.show {
   display: block;
-  /* Show when active */
 }
 
-/* Character card in dropdown */
 .dropdown-character-card {
-  padding: 16px;
+  padding: 10px 12px;
   border-bottom: 2px solid #f0f0f0;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .dropdown-character-card:last-child {
@@ -479,50 +483,108 @@
 }
 
 .dropdown-character-card:hover {
-  background: #f0f0f0;
+  background: #f7f7f7;
 }
 
 .dropdown-char-avatar {
-  width: 60px;
-  height: 60px;
-  background: #f0f0f0;
-  border-radius: 8px;
-  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  border: 2px solid #222;
   overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+  box-shadow: 2px 2px 0px #222;
 }
 
 .dropdown-char-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  image-rendering: pixelated;
 }
 
 .dropdown-char-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .dropdown-char-name {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 700;
-  color: #333;
-  margin-bottom: 4px;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.dropdown-char-role {
-  font-size: 14px;
+.dropdown-char-title {
+  font-size: 11px;
   color: #888;
+  font-style: italic;
 }
 
-/* Scrollbar styling */
+.dropdown-char-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.dropdown-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1.5px solid #222;
+  color: #222;
+  background: #fff;
+}
+
 #character-dropdown-menu::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 #character-dropdown-menu::-webkit-scrollbar-track {
-  background: #f0f0f0;
+  background: transparent;
 }
 
 #character-dropdown-menu::-webkit-scrollbar-thumb {
-  background: #78B8FF;
+  background: #ccc;
   border-radius: 4px;
+}
+#top-nav {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 22px 4vw;
+  display: flex;
+  gap: 12px;
+  pointer-events: all;
+}
+
+.nav-button {
+  font-family: 'Source Code Pro', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 40px;
+  transition: background 0.18s ease, color 0.18s ease;
+  cursor: pointer;
+  background: #ffff;
+  opacity: 70%;
+}
+
+.nav-button:hover {
+  background: #FDF4A4;
+  color: var(--dark);
 }

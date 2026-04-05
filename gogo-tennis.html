@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGo Tennis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/project-page.css">
+  <link rel="stylesheet" href="assets/css/gogo-tennis.css">
+</head>
+
+<body>
+
+  <nav id="navbar">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="projects.html">Projects</a>
+    <a class="nav-link" href="index.html#about">Contact</a>
+    <a class="nav-link" href="blog.html">Blog</a>
+  </nav>
+
+  <!-- HERO IMAGE — swaps per tab -->
+  <div class="hero-image-placeholder" id="hero-img">
+    <img src="images/gogo_tennis_title.png" alt="GoGo Tennis">
+  </div>
+
+  <!-- SHARED HERO -->
+  <div class="section-wrap">
+    <div class="hero">
+      <div class="award-tag">🎾 University Capstone Project</div>
+      <h1>GoGo Tennis</h1>
+      <p class="hero-hook">A fitness-based multiplayer tennis game controlled by your phone's motion sensors.
+        Swing your phone like a racket — physics, scoring, and multiplayer sync across devices in real time.</p>
+
+      <!-- VERSION TABS -->
+      <div class="version-tabs">
+        <button class="version-tab active" data-version="v1">
+          <span class="tab-label">V1</span>
+          <span class="tab-sub">Original build</span>
+        </button>
+        <button class="version-tab" data-version="v2">
+          <span class="tab-label">V2</span>
+          <span class="tab-sub">Reimagined</span>
+        </button>
+      </div>
+
+      <!-- V1 META -->
+      <div class="version-content" id="meta-v1">
+        <div class="meta-bar">
+          <div class="meta-col">
+            <div class="meta-col-label">Details</div>
+            <div class="meta-col-row"><span class="meta-col-key">Type</span><span class="meta-col-val">Multiplayer
+                Mobile Game</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">Engine</span><span class="meta-col-val">Unity</span>
+            </div>
+            <div class="meta-col-row"><span class="meta-col-key">Platform</span><span class="meta-col-val">iOS / Android
+                + Desktop</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">My Roles</span><span class="meta-col-val">Dev ·
+                Technical Art</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Collaborators</div>
+            <div class="meta-col-row"><span class="meta-col-val">Chairie Faris</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Sonia Lin</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Zalifah Zarim</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Erik Zhou</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Development Stack</div>
+            <div class="stack-categories">
+              <div class="stack-cat"><span class="stack-cat-name">Engine</span>
+                <div class="stack-chips"><span class="stack-chip">Unity / C#</span><span class="stack-chip">Unity
+                    Netcode</span></div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">3D / Art</span>
+                <div class="stack-chips"><span class="stack-chip">Blender</span><span class="stack-chip">Mixamo</span>
+                </div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Sensors</span>
+                <div class="stack-chips"><span class="stack-chip">Accelerometer</span><span
+                    class="stack-chip">Gyroscope</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="meta-col meta-col-links">
+            <div class="meta-col-label">Links</div>
+            <div class="sidebar-links">
+              <a href="#" class="sidebar-link featured"><span class="link-icon">▶</span><span class="link-text">Demo
+                  Video</span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V2 META -->
+      <div class="version-content hidden" id="meta-v2">
+        <div class="meta-bar">
+          <div class="meta-col">
+            <div class="meta-col-label">Details</div>
+            <div class="meta-col-row"><span class="meta-col-key">Type</span><span class="meta-col-val">Multiplayer
+                Mobile Game</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">Engine</span><span class="meta-col-val">Unity</span>
+            </div>
+            <div class="meta-col-row"><span class="meta-col-key">Platform</span><span class="meta-col-val">iOS / Android
+                + Desktop</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">My Roles</span><span class="meta-col-val">Dev ·
+                Technical Art</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Collaborators</div>
+            <div class="meta-col-row"><span class="meta-col-val">Xinying Chew</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Sonia Lin</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Selina Lu</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Erik Zhou</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Development Stack</div>
+            <div class="stack-categories">
+              <div class="stack-cat"><span class="stack-cat-name">Engine</span>
+                <div class="stack-chips"><span class="stack-chip">Unity / C#</span><span class="stack-chip">Unity
+                    Netcode</span></div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Sensors</span>
+                <div class="stack-chips"><span class="stack-chip">Accelerometer</span><span class="stack-chip">Gyroscope</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="meta-col meta-col-links">
+            <div class="meta-col-label">Links</div>
+            <div class="sidebar-links">
+              <a href="#" class="sidebar-link featured"><span class="link-icon">▶</span><span class="link-text">Demo
+                  Video</span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- V1 CONTENT                              -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="content-v1">
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Problem</div>
+        <h2 class="section-heading">Three problems, one game</h2>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="problem-num">01</div>
+            <div class="problem-title">Socializing takes energy</div>
+            <p class="problem-desc">After a long day of work or school, leaving the house to socialize requires time and
+              energy most people don't have. There should be more ways to hang out without commuting anywhere.</p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-num">02</div>
+            <div class="problem-title">Home exercise is boring</div>
+            <p class="problem-desc">Exercising in public is intimidating, but exercising at home alone is discouraging.
+              There are few interactive, engaging options within the comfort of your own space.</p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-num">03</div>
+            <div class="problem-title">Active games need expensive hardware</div>
+            <p class="problem-desc">Apps that encourage movement with friends usually require a separate console
+              purchase. GoGo Tennis only needs a phone and a screen people already own.</p>
+          </div>
+        </div>
+        <div class="callout">
+          <div class="callout-label">The solution</div>
+          <p>A fitness tennis game controlled by phone motion sensors — playable at home, with friends, using only
+            devices you already own. Phone = racket. Desktop = the court. No extra hardware.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">How It Works</div>
+        <h2 class="section-heading">Phone as racket</h2>
+        <p class="body-text">The desktop renders the full 3D tennis court. Each player's phone acts as their racket —
+          motion data from the phone's accelerometer and gyroscope is read every frame and translated into racket
+          position, orientation, and swing force in the game world.</p>
+        <div class="flow-row">
+          <div class="flow-step">
+            <div class="flow-icon">📱</div>
+            <div class="flow-label">Phone (client)</div>
+            <div class="flow-detail">Reads accelerometer + gyroscope, sends motion data to server</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🖥</div>
+            <div class="flow-label">Desktop (host)</div>
+            <div class="flow-detail">Renders court, physics, characters — syncs state to all clients</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">📱</div>
+            <div class="flow-label">Phone (client 2)</div>
+            <div class="flow-detail">Second player connects and joins the same session</div>
+          </div>
+        </div>
+        <p class="body-text">Swing speed maps to ball speed. Racket orientation maps to ball direction. A gentle shake
+          barely moves the ball — a fast forward swing sends it flying.</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Multiplayer Architecture</div>
+        <h2 class="section-heading">Getting two phones to agree</h2>
+        <p class="body-text">Multiplayer was the most architecturally complex part of the project. The game needed to
+          sync physics, scoring, player state, and motion data in real time across iOS, Android, and desktop
+          simultaneously.</p>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">01</div>
+            <div>
+              <div class="tech-title">Unity Netcode + server authority</div>
+              <div class="tech-subtitle">Client RPC · Server RPC · state sync</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>We used Unity Netcode for GameObjects and built with server authority throughout. The desktop host owns
+              the physics simulation; phones are clients that send input and receive authoritative game state back.
+              ClientRpc and ServerRpc handle the two directions — phones send motion data up, server sends ball
+              position, scoring events, and animation triggers back down.</p>
+            <div class="code-block">
+              <pre><span class="cm">// Server receives swing input, applies physics, syncs result</span>
+<span class="kw">[ServerRpc]</span>
+<span class="kw">void</span> SwingServerRpc(Vector3 racketVelocity, Quaternion racketRotation)
+{
+    HitBall(racketVelocity, racketRotation);
+    UpdateBallStateClientRpc(ball.position, ball.velocity);
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">02</div>
+            <div>
+              <div class="tech-title">Character selection sync</div>
+              <div class="tech-subtitle">Lobby state · cross-device sync · lock-in system</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>Character state lives on the server. When a player selects a character their client sends a ServerRpc —
+              the server updates shared lobby state and broadcasts back to all clients. The start button only activates
+              once both players have locked in. Changes are visible to both players in real time.</p>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">03</div>
+            <div>
+              <div class="tech-title">IP join (current) → lobby codes (planned)</div>
+              <div class="tech-subtitle">Network architecture · stretch goal</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>Currently players join by entering the host's IP address directly. This works over local WiFi but only
+              one game can be hosted per IP, and IP addresses are clunky to share. The planned upgrade is a backend
+              session server — players share a short lobby code instead of an IP.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Physics + Motion Controls</div>
+        <h2 class="section-heading">Making the swing feel real</h2>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">01</div>
+            <div>
+              <div class="tech-title">Accelerometer for swing force</div>
+              <div class="tech-subtitle">Gravity-corrected readings · speed mapping</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>Raw accelerometer data includes gravity as a constant downward force. We subtract gravitational influence
+              before processing so only intentional motion contributes to swing force.</p>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">02</div>
+            <div>
+              <div class="tech-title">Gyroscope drift correction</div>
+              <div class="tech-subtitle">Threshold filtering · relative delta · sensor bias</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>Gyroscopes drift — even a stationary phone slowly rotates the in-game racket. We fixed this by only
+              applying rotation when input exceeds a movement threshold. Some phones also have a fixed sensor bias, so
+              we track relative change per frame rather than absolute orientation.</p>
+            <div class="code-block">
+              <pre><span class="cm">// Only move racket if motion exceeds drift threshold</span>
+<span class="kw">if</span> (gyroscopeDelta.magnitude > driftThreshold)
+    racket.rotation *= Quaternion.Euler(gyroscopeDelta * sensitivity);</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">03</div>
+            <div>
+              <div class="tech-title">Aimbot assist system</div>
+              <div class="tech-subtitle">Velocity correction · skill scaling · accessibility</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>A slight orientation error shouldn't send the ball out of bounds for new players. The aimbot corrects the
+              player's velocity toward a valid court position. Strength is adjustable — dial it down for experienced
+              players who want precise directional control. The opponent bot uses the same calculation.</p>
+            <div class="code-block">
+              <pre><span class="cm">// Correct ball velocity toward valid court target</span>
+<span class="kw">private</span> Vector3 AimBot()
+{
+    Vector3 aim = Vector3.Normalize(
+        Vector3.MoveTowards(-ball.position, targetPosition, 1));
+    aim = Vector3.ProjectOnPlane(aim, Vector3.up);
+    aim *= ball.velocity.magnitude
+        + Mathf.Max(speedCap - ball.velocity.magnitude, 0) * force / speedCap;
+    aim.y = Mathf.Sqrt((2 * targetHeight - ball.position.y)
+        * Mathf.Abs(Physics.gravity.y));
+    <span class="kw">return</span> aim - ball.velocity;
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Game Systems</div>
+        <h2 class="section-heading">Real tennis rules</h2>
+        <p class="body-text">We implemented accurate tennis scoring rather than a simplified version — Love / 15 / 30 /
+          40, deuce, advantage, best-of-three, correct win conditions under every score combination.</p>
+        <div class="scoring-states">
+          <div class="score-state">
+            <div class="score-state-name">Love → 15 → 30 → 40</div>
+            <div class="score-state-desc">Standard point progression</div>
+          </div>
+          <div class="score-state">
+            <div class="score-state-name">Deuce</div>
+            <div class="score-state-desc">Triggered at 40-40, must win by two</div>
+          </div>
+          <div class="score-state">
+            <div class="score-state-name">Advantage</div>
+            <div class="score-state-desc">One ahead after deuce</div>
+          </div>
+          <div class="score-state">
+            <div class="score-state-name">Match point</div>
+            <div class="score-state-desc">Announced one point from game win</div>
+          </div>
+          <div class="score-state">
+            <div class="score-state-name">Best of three</div>
+            <div class="score-state-desc">Round animations between games</div>
+          </div>
+          <div class="score-state">
+            <div class="score-state-name">Win / lose emotes</div>
+            <div class="score-state-desc">Correct player animation per outcome</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:20px;">
+          <div class="callout-label">Design decision</div>
+          <p>Wii Sports Tennis uses simplified scoring. We chose full tennis rules deliberately — it raises legitimacy
+            as a real sport simulation and gives players something to learn, extending replay value beyond casual
+            novelty.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Challenges</div>
+        <h2 class="section-heading">What was actually hard</h2>
+
+        <div class="challenge-block">
+          <div class="challenge-header">
+            <div class="challenge-tag technical">Technical</div>
+            <div class="challenge-title">System architecture for an uncommon use case</div>
+          </div>
+          <p class="body-text">Phone-as-controller networked to a desktop Unity game isn't a common pattern. Most guides
+            assume either pure mobile or pure desktop. We pieced together the architecture from first principles across
+            iOS, Android, and desktop simultaneously.</p>
+        </div>
+        <div class="challenge-block">
+          <div class="challenge-header">
+            <div class="challenge-tag technical">Technical</div>
+            <div class="challenge-title">Merging single-player and multiplayer branches</div>
+          </div>
+          <p class="body-text">Single-player and multiplayer were developed in parallel branches. After merging, motion
+            controls conflicted with the networked physics. Rebalancing the aimbot, physics, and swing detection in a
+            server-authoritative context required significant additional work.</p>
+        </div>
+        <div class="challenge-block">
+          <div class="challenge-header">
+            <div class="challenge-tag nontechnical">Non-technical</div>
+            <div class="challenge-title">Deprecated libraries and outdated guides</div>
+          </div>
+          <p class="body-text">Unity's multiplayer ecosystem has changed significantly across versions. Many guides
+            referenced deprecated packages that no longer worked as documented. We spent significant time validating
+            solutions before integrating them.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Reflection</div>
+        <h2 class="section-heading">What I'd change</h2>
+        <div class="reflection-grid">
+          <div class="reflection-card went-well">
+            <div class="reflection-header">Went well</div>
+            <ul>
+              <li>Full tennis scoring — deuce, advantage, best-of-three all correct</li>
+              <li>Gyroscope drift fixed cleanly without affecting feel</li>
+              <li>Aimbot velocity correction felt more natural than hardcoded targets</li>
+              <li>Character sync worked reliably across iOS and Android</li>
+            </ul>
+          </div>
+          <div class="reflection-card change">
+            <div class="reflection-header">Would do differently</div>
+            <ul>
+              <li>Single-player and multiplayer in one branch from the start</li>
+              <li>Validate Unity Netcode version compatibility earlier</li>
+              <li>Lobby codes instead of IP join from day one</li>
+              <li>More new-user playtesting earlier — aimbot issues showed up late</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-v1 -->
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- V2 CONTENT                              -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="content-v2" class="hidden">
+
+    <div class="divider"></div>
+
+    <!-- LORE -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">The World</div>
+        <h2 class="section-heading">Tennis as a peace treaty</h2>
+        <p class="body-text">V2 reimagines GoGo Tennis with a full lore foundation — the game is no longer just a
+          fitness app, it's a sport with cosmic stakes.</p>
+
+        <div class="lore-block">
+          <div class="lore-quote">"Settle your war not with weapons, but with the purity of the game."</div>
+          <div class="lore-attr">— The Ethereal Umpire</div>
+        </div>
+
+        <p class="body-text">Long ago, two warring empires — the Arkan Dominion and the Syphari Coalition — were locked
+          in a brutal conflict spanning millennia. Just as both sides neared planetary annihilation, a mysterious cosmic
+          entity known as the Ethereal Umpire appeared and issued a challenge. Thus began the first Cosmic Tennis War,
+          where entire star systems watched as the greatest champions of both factions battled in a match that lasted
+          100 years.</p>
+        <p class="body-text">The Syphari emerged victorious, and the Arkan Dominion honored their defeat — integrating
+          into a new era of peaceful governance. Now, whenever two factions have a dispute, they send a player to the
+          courts instead of to the battlefield. Tennis is not a sport in this universe. It is diplomacy.</p>
+
+        <div class="lore-factions">
+          <div class="lore-faction">
+            <div class="lore-faction-name">The Arkan Dominion</div>
+            <div class="lore-faction-role">Former aggressor · now integrated</div>
+            <p class="lore-faction-desc">A once-militaristic empire that learned to channel its competitive drive into
+              sport after their defeat in the first Cosmic Tennis War.</p>
+          </div>
+          <div class="lore-faction-divider">vs</div>
+          <div class="lore-faction">
+            <div class="lore-faction-name">The Syphari Coalition</div>
+            <div class="lore-faction-role">Victor of the first war</div>
+            <p class="lore-faction-desc">A coalition built on unity and strategy — their tennis victory established the
+              current era of governance where sport replaces conflict.</p>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:20px;">
+          <div class="callout-label">The Ethereal Umpire</div>
+          <p>The mysterious cosmic entity who issued the original challenge. Now serves as the referee of all
+            inter-faction disputes — present at every match, enforcing the rules that keep the universe from war.</p>
+        </div>
+
+        <div class="media-holder empty" data-hint="Ethereal Umpire concept art / referee character design"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SETTING -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Setting</div>
+        <h2 class="section-heading">The Bunny Galaxy</h2>
+        <p class="body-text">The courts exist within the Bunny Galaxy — a cosmic region where star systems are shaped
+          like constellations of rabbits, and the courts float between nebulae. The aesthetic is soft sci-fi: pastel
+          cosmic skies, geometric court surfaces, and character designs that blend the warmth of animal characters with
+          galactic grandeur.</p>
+
+        <div class="design-two-col-tennis">
+          <div class="design-block-tennis">
+            <div class="design-block-label-tennis">Court environment</div>
+            <div class="media-holder empty" style="height:160px;" data-hint="Bunny Galaxy court concept art"></div>
+            <p style="font-size:12px;color:var(--dark);opacity:0.7;margin-top:8px;line-height:1.5;">Floating court
+              platform in open space. Nebulae visible in the background. Crowd of galactic species watching from orbital
+              platforms.</p>
+          </div>
+          <div class="design-block-tennis">
+            <div class="design-block-label-tennis">UI redesign</div>
+            <div class="media-holder empty" style="height:160px;" data-hint="V2 UI screens — menus, HUD, score display">
+            </div>
+            <p style="font-size:12px;color:var(--dark);opacity:0.7;margin-top:8px;line-height:1.5;">Redesigned interface
+              that reflects the cosmic setting — score displays, menus, and HUD elements reimagined in the Bunny Galaxy
+              aesthetic.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CHARACTERS -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Characters</div>
+        <h2 class="section-heading">New cast</h2>
+        <p class="body-text">V1 had a polar bear and a penguin. V2 has characters with backstories, faction allegiances,
+          and roles in the Cosmic Tennis universe.</p>
+
+        <div class="char-v2-grid">
+          <div class="char-v2-card">
+            <div class="media-holder empty char-v2-art" data-hint="Vivi character art / 3D model"></div>
+            <div class="char-v2-body">
+              <div class="char-v2-name">Vivi</div>
+              <div class="char-v2-faction">Syphari Coalition</div>
+              <p class="char-v2-desc">Replace with Vivi's backstory and role in the Cosmic Tennis world. What drives her
+                to compete? What faction does she represent? What's her playing style?</p>
+            </div>
+          </div>
+          <div class="char-v2-card">
+            <div class="media-holder empty char-v2-art" data-hint="One and Two twin characters art / 3D model"></div>
+            <div class="char-v2-body">
+              <div class="char-v2-name">One & Two</div>
+              <div class="char-v2-faction">The Twins · faction TBD</div>
+              <p class="char-v2-desc">Replace with the twins' backstory. Are they playing together or against each
+                other? What makes them unique as a duo in a singles sport?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:20px;">
+          <div class="callout-label">3D remodel</div>
+          <p>Both characters were modeled from scratch in Blender for V2 — replacing the V1 polar bear and penguin. The
+            new designs are built to reflect their faction and the Bunny Galaxy aesthetic.</p>
+        </div>
+
+        <div class="media-holder empty" style="margin-top:16px;"
+          data-hint="Side by side — V1 characters vs V2 characters"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- WHAT WAS REDESIGNED -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">What Changed</div>
+        <h2 class="section-heading">V1 → V2 redesign scope</h2>
+        <p class="body-text">V2 is a visual and conceptual reimagination — the core code and physics from V1 carry
+          forward. The redesign focused on three areas:</p>
+
+        <div class="roadmap">
+          <div class="roadmap-item">
+            <span class="roadmap-status done">Done</span>
+            <div>
+              <div class="roadmap-label">World and lore</div>
+              <div class="roadmap-detail">Bunny Galaxy setting, Arkan vs Syphari factions, Ethereal Umpire,
+                tennis-as-diplomacy concept</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-status done">Done</span>
+            <div>
+              <div class="roadmap-label">Character redesign</div>
+              <div class="roadmap-detail">Vivi and the One/Two twins — new 3D models, faction identities, character
+                backstories</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-status done">Done</span>
+            <div>
+              <div class="roadmap-label">UI redesign</div>
+              <div class="roadmap-detail">Menus, HUD, score display, and character select screen rebuilt in the Bunny
+                Galaxy aesthetic</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-status wip">Not yet</span>
+            <div>
+              <div class="roadmap-label">Environment redesign</div>
+              <div class="roadmap-detail">Court, crowd, and galactic backdrop — concept exists, full implementation
+                pending</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-status next">Planned</span>
+            <div>
+              <div class="roadmap-label">Full gameplay integration</div>
+              <div class="roadmap-detail">V2 assets and lore integrated with V1 physics and multiplayer architecture
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content-v2 -->
+
+  <div style="height:48px;"></div>
+
+  <script src="assets/js/gogo-tennis.js"></script>
+</body>
+
+</html>
+<script>
+  // ── VERSION TABS ──
+  const tabs = document.querySelectorAll('.version-tab');
+  const contentV1 = document.getElementById('content-v1');
+  const contentV2 = document.getElementById('content-v2');
+  const metaV1 = document.getElementById('meta-v1');
+  const metaV2 = document.getElementById('meta-v2');
+  const heroImg = document.getElementById('hero-img').querySelector('img');
+
+  const v2HeroSrc = 'images/gogotennis_v2_thumbnail.png';
+  const v1HeroSrc = 'images/gogotennis_thumbnail.png';
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const version = tab.dataset.version;
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      if (version === 'v1') {
+        contentV1.classList.remove('hidden');
+        contentV2.classList.add('hidden');
+        metaV1.classList.remove('hidden');
+        metaV2.classList.add('hidden');
+        heroImg.src = v1HeroSrc;
+      } else {
+        contentV2.classList.remove('hidden');
+        contentV1.classList.add('hidden');
+        metaV2.classList.remove('hidden');
+        metaV1.classList.add('hidden');
+        heroImg.src = v2HeroSrc;
+        // Trigger scroll reveal for newly visible sections
+        document.querySelectorAll('#content-v2 .section').forEach(s => {
+          if (!s.classList.contains('visible')) observer.observe(s);
+        });
+      }
+    });
+  });
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('#content-v1 .section').forEach(s => observer.observe(s));
+  // V2 sections observed on tab switch
+</script>

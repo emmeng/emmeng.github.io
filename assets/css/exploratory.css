@@ -1,0 +1,407 @@
+/* ══════════════════════════════════════════
+   3D MODELING GALLERY — gallery.css
+   ══════════════════════════════════════════ */
+
+:root {
+  --blue: #78B8FF;
+  --dark: #43424C;
+  --light-grey: #E8E8EE;
+  --white: #FFFFFF;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Source Code Pro', monospace;
+  background-color: var(--white);
+  background-image:
+    linear-gradient(rgba(120, 184, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 184, 255, 0.3) 1px, transparent 1px);
+  background-size: 120px 120px;
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+#navbar {
+  position: static;
+  padding: 22px 4vw;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.nav-link {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 40px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.nav-link:hover {
+  background: #FDF4A4;
+  color: var(--dark);
+}
+
+/* ── HEADER ── */
+.page-header {
+  padding: 24px 6vw 28px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--dark);
+  text-align: center;
+  margin: 0 0 6px 0;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.page-header h1 .outline {
+  color: transparent;
+  -webkit-text-stroke: 3px var(--blue);
+}
+
+.page-header .subtitle {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+}
+/* ── PROJECTS LIST ── */
+.projects-list {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0px 6vw 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── PROJECT ROW ── */
+.project-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+  padding: 60px 60px;
+  border-bottom: 1px solid var(--light-grey);
+
+  /* scroll reveal */
+  opacity: 0;
+  transform: translateY(40px);
+  background-color: #ffffffaf;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* .project-row:first-child {
+  border-top: 1px solid var(--light-grey);
+} */
+.project-row:last-child {
+  border-bottom: 1px solid var(--white);
+}
+
+.project-row.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* flip image to right */
+.project-row.reverse {
+  direction: rtl;
+}
+
+.project-row.reverse>* {
+  direction: ltr;
+}
+
+/* ── MEDIA ── */
+.project-media {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--light-grey);
+  aspect-ratio: 16 / 10;
+  position: relative;
+}
+
+.project-media img,
+.project-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.4s ease;
+}
+
+.project-media img.loaded {
+  opacity: 1;
+}
+
+.project-row:hover .project-media img,
+.project-row:hover .project-media video {
+  transform: scale(1.03);
+}
+
+/* ── INFO ── */
+.project-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── BADGES ── */
+.project-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-award {
+  background: #FDF4A4;
+  color: var(--dark);
+}
+
+.badge-tag {
+  background: var(--light-grey);
+  color: var(--dark);
+}
+
+.badge-blue {
+  background: var(--blue);
+  color: var(--white);
+}
+
+/* ── TITLE ── */
+.project-title {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark);
+  line-height: 1.15;
+  margin: 0;
+  text-align: left;
+}
+
+/* ── DESC ── */
+.project-desc {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--dark);
+  opacity: 0.8;
+  max-width: 480px;
+}
+
+/* ── LINKS ── */
+.project-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.project-link {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 7px 16px;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.project-link:hover {
+  background: var(--blue);
+  color: var(--white);
+}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── RESPONSIVE ── */
+
+/* Large screens — give more breathing room */
+@media (min-width: 1400px) {
+  .projects-list {
+    max-width: 1300px;
+  }
+
+  .project-row {
+    gap: 80px;
+    padding: 70px 0;
+  }
+
+  .project-title {
+    font-size: 32px;
+  }
+
+  .project-desc {
+    font-size: 16px;
+  }
+}
+
+/* Tablet landscape */
+@media (max-width: 1100px) {
+  .projects-list {
+    padding: 50px 5vw 80px;
+  }
+
+  .project-row {
+    gap: 40px;
+  }
+
+  .project-title {
+    font-size: 22px;
+  }
+}
+
+/* Tablet portrait — stack to single column */
+@media (max-width: 860px) {
+  .project-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 48px 0;
+  }
+
+  /* reset reverse so image always comes first on tablet/mobile */
+  .project-row.reverse {
+    direction: ltr;
+  }
+
+  .project-media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .page-header h1 {
+    font-size: clamp(36px, 8vw, 60px);
+  }
+
+  .project-desc {
+    max-width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 560px) {
+  #navbar {
+    padding: 16px 5vw;
+  }
+
+  #navbar .nav-link {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+
+  .page-header {
+    padding: 16px 5vw 0px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(32px, 10vw, 48px);
+  }
+
+  .page-header .subtitle {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  .projects-list {
+    padding: 30px 5vw 80px;
+  }
+
+  .project-row {
+    gap: 16px;
+    padding: 36px 0;
+  }
+
+  .project-title {
+    font-size: 17px;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
+
+  .project-link {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+
+  /* touch — always show links clearly */
+  .project-links {
+    gap: 8px;
+  }
+}
+
+/* Touch devices — disable hover scale on media */
+@media (hover: none) {
+
+  .project-row:hover .project-media img,
+  .project-row:hover .project-media video {
+    transform: none;
+  }
+
+  .project-link:hover {
+    background: transparent;
+    color: var(--blue);
+  }
+}
