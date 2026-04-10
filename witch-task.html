@@ -14,8 +14,9 @@
     :root {
       --blue: #a68df4;
       --yellow: #e8ddff;
-      --dark: #3B3648;
-      --light-grey: #EDE8F5;
+      --dark: #1e1b27;
+      --light-grey: #faf8f4;
+      --white: #ffffff;
     }
 
     /* Status badge — replaces award tag for in-dev projects */
@@ -259,7 +260,7 @@
     .devlog-thumb {
       width: 100%;
       aspect-ratio: 16/9;
-      background: rgba(177, 151, 252, 0.08);
+      background: #f0ecf8;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -268,7 +269,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--blue);
-      opacity: 0.6;
+      overflow: hidden;
     }
 
     .devlog-thumb img {
@@ -276,6 +277,8 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      opacity: 1;
+      mix-blend-mode: normal;
     }
 
     .devlog-info {
@@ -351,6 +354,291 @@
       color: var(--blue);
       font-weight: 700;
     }
+
+
+    /* ── PRODUCT RATIONALE ── */
+    .rationale-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .rationale-card {
+      border: 1px solid rgba(177, 151, 252, 0.22);
+      border-radius: 4px;
+      padding: 20px;
+      background: var(--white);
+      transition: box-shadow 0.2s;
+    }
+
+    .rationale-card:hover {
+      box-shadow: 0 6px 24px rgba(177, 151, 252, 0.18);
+    }
+
+    .rationale-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .rationale-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--dark);
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+
+    .rationale-body {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--dark);
+      opacity: 0.78;
+      margin: 0;
+    }
+
+    /* ── COMPETITOR CHART IMAGE UPLOAD ── */
+    .competitor-grid {
+      position: relative;
+    }
+
+    .comp-image-upload-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .comp-upload-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dark);
+      opacity: 0.45;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    .comp-upload-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .comp-upload-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 40px;
+      border: 1px solid rgba(177, 151, 252, 0.3);
+      background: rgba(177, 151, 252, 0.06);
+      color: var(--dark);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .comp-upload-chip input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      font-size: 0;
+    }
+
+    .comp-upload-chip:hover {
+      border-color: var(--blue);
+      background: rgba(177, 151, 252, 0.12);
+    }
+
+    .comp-upload-chip.has-image {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Custom image nodes on the chart */
+    .comp-img-node {
+      pointer-events: none;
+    }
+
+    /* Feature icon as numbered label */
+    .feature-icon {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.12em;
+      color: var(--blue) !important;
+      opacity: 0.6;
+      font-family: 'Source Code Pro', monospace;
+      flex-shrink: 0;
+      margin-top: 2px;
+      width: 22px;
+    }
+
+
+    .qw {
+      padding: 1rem 0;
+      background: transparent;
+    }
+
+    .ql {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .ql-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #3B3648;
+    }
+
+    .ql-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      border-radius: 4px;
+      padding: 16px;
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .q-tt {
+      position: absolute;
+      background: #fff;
+      border: 1px solid rgba(177, 151, 252, 0.35);
+      border-radius: 4px;
+      padding: 12px 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 10;
+      width: 330px;
+      font-family: 'Source Code Pro', monospace;
+    }
+
+    .q-tt.show {
+      opacity: 1;
+    }
+
+    .q-tt-name {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #3B3648;
+      margin-bottom: 2px;
+    }
+
+    .q-tt-type {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a68df4;
+      margin-bottom: 8px;
+    }
+
+    .q-tt-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 40px;
+      margin-bottom: 10px;
+    }
+
+    .q-tt-badge.yes {
+      background: rgba(177, 151, 252, 0.15);
+      color: #a68df4;
+      border: 1px solid rgba(177, 151, 252, 0.4);
+    }
+
+    .q-tt-badge.no {
+      background: rgba(59, 54, 72, 0.06);
+      color: #3B3648;
+      border: 1px solid rgba(59, 54, 72, 0.15);
+      opacity: 0.6;
+    }
+
+    .q-tt-section {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #3B3648;
+      opacity: 0.4;
+      margin-bottom: 5px;
+      margin-top: 8px;
+    }
+
+    .q-tt-list {
+      list-style: none;
+    }
+
+    .q-tt-list li {
+      font-size: 11px;
+      line-height: 1.6;
+      color: #3B3648;
+      padding-left: 10px;
+      position: relative;
+      opacity: 0.85;
+    }
+
+    .q-tt-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: #a68df4;
+      font-weight: 700;
+    }
+
+    .q-tt-hr {
+      border: none;
+      border-top: 1px solid rgba(177, 151, 252, 0.18);
+      margin: 8px 0;
+    }
   </style>
 </head>
 
@@ -376,7 +664,7 @@
         <span class="status-dot"></span>
         In development — OPEN TEST FLIGHT DEMO 2026 SUMMER
       </div>
-      <h1>Witch Task</h1>
+      <h1>Witch <span class="outline">Task</span></h1>
       <p class="hero-hook">A cozy gamified productivity app where you play as a witch running a potion business.
         Real-life tasks become potion orders from charming mushroom townspeople — complete them to earn coins,
         unlock customizations, and grow your shop.</p>
@@ -484,468 +772,464 @@
 
   <div class="divider"></div>
 
-    <!-- ─────────────────────────────────────────────── -->
-    <!-- USER RESEARCH                                   -->
-    <!-- ─────────────────────────────────────────────── -->
-    <div class="section-wrap">
-      <div class="section">
-        <div class="section-eyebrow">User Research</div>
-        <h2 class="section-heading">Designing From Real Feedback</h2>
-        <p class="body-text">A pre-build survey results from students and viewers shaped the task ordering and personality
-          systems. Two findings stood out: feeling
-          overwhelmed was the #1 reason people procrastinate, and breaking tasks into smaller pieces was the most-wanted
-          solution</p>
-    
-        <div class="perf-grid">
-          <div class="perf-card">
-            <div class="perf-val">92%</div>
-            <div class="perf-desc">Regularly experience anxiety or worry</div>
-          </div>
-          <div class="perf-card">
-            <div class="perf-val">69%</div>
-            <div class="perf-desc">Cite feeling overwhelmed as top procrastination cause</div>
-          </div>
-          <div class="perf-card">
-            <div class="perf-val">28%</div>
-            <div class="perf-desc">Prefer breaking tasks into small pieces over any other approach</div>
-          </div>
-          <div class="perf-card">
-            <div class="perf-val">33%</div>
-            <div class="perf-desc">Naturally sequence easy tasks first — informing personality-based ordering</div>
-          </div>
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- USER RESEARCH                                   -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">User Research</div>
+      <h2 class="section-heading">Designing From Real Feedback</h2>
+      <p class="body-text">A pre-build survey results from students and viewers shaped the task ordering and personality
+        systems. Two findings stood out: feeling
+        overwhelmed was the #1 reason people procrastinate, and breaking tasks into smaller pieces was the most-wanted
+        solution</p>
+
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-val">92%</div>
+          <div class="perf-desc">Regularly experience anxiety or worry</div>
         </div>
-    
-        <div class="research-block-label">Why people procrastinate</div>
-        <div class="bar-chart">
-          <div class="bar-row"><span class="bar-label">Feeling overwhelmed</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:69%"></div>
-            </div><span class="bar-pct">69%</span>
-          </div>
-          <div class="bar-row"><span class="bar-label">Distractions</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:58%"></div>
-            </div><span class="bar-pct">58%</span>
-          </div>
-          <div class="bar-row"><span class="bar-label">Lack of motivation</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:56%"></div>
-            </div><span class="bar-pct">56%</span>
-          </div>
-          <div class="bar-row"><span class="bar-label">Avoiding discomfort</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:47%"></div>
-            </div><span class="bar-pct">47%</span>
-          </div>
-          <div class="bar-row"><span class="bar-label">Fear of failure</span>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:25%"></div>
-            </div><span class="bar-pct">25%</span>
-          </div>
+        <div class="perf-card">
+          <div class="perf-val">69%</div>
+          <div class="perf-desc">Cite feeling overwhelmed as top procrastination cause</div>
         </div>
-    
-        <div class="callout">
-          <div class="callout-label">Big Five findings</div>
-          <p>The sample skewed toward high Openness (92%), high Neuroticism (92% frequently anxious), and high
-            Agreeableness
-            (72%) — a typical student profile. Anxiety-aware design is not optional for this audience.</p>
+        <div class="perf-card">
+          <div class="perf-val">28%</div>
+          <div class="perf-desc">Prefer breaking tasks into small pieces over any other approach</div>
         </div>
+        <div class="perf-card">
+          <div class="perf-val">33%</div>
+          <div class="perf-desc">Naturally sequence easy tasks first — informing personality-based ordering</div>
+        </div>
+      </div>
+
+      <div class="research-block-label">Why people procrastinate</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Feeling overwhelmed</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:69%"></div>
+          </div><span class="bar-pct">69%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Distractions</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:58%"></div>
+          </div><span class="bar-pct">58%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Lack of motivation</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:56%"></div>
+          </div><span class="bar-pct">56%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Avoiding discomfort</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:47%"></div>
+          </div><span class="bar-pct">47%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Fear of failure</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:25%"></div>
+          </div><span class="bar-pct">25%</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Big Five findings</div>
+        <p>The sample skewed toward high Openness (92%), high Neuroticism (92% frequently anxious), and high
+          Agreeableness
+          (72%) — a typical student profile. Anxiety-aware design is important for this audience.</p>
       </div>
     </div>
-    
-    
-<!-- ─────────────────────────────────────────────── -->
-<!-- 1. MARKET ANALYSIS (new — insert after Concept) -->
-<!-- ─────────────────────────────────────────────── -->
-
-<div class="divider"></div>
-
-<div class="section-wrap">
-  <div class="section">
-    <div class="section-eyebrow">Market Analysis</div>
-    <h2 class="section-heading">The Cozy Game Boom</h2>
-    <p class="body-text">Cozy games have had a sustained commercial moment since 2020. Animal Crossing: New
-      Horizons sold 13 million copies in its first six weeks. Stardew Valley has crossed 30 million lifetime.
-      Unpacking, A Short Hike, Spiritfarer, and others have built devoted audiences without violence, urgency,
-      or competition. The genre is no longer niche.</p>
-
-    <div class="perf-grid">
-      <div class="perf-card">
-        <div class="perf-val">13M copies</div>
-        <div class="perf-desc">Animal Crossing: New Horizons in first 6 weeks (2020)</div>
-      </div>
-      <div class="perf-card">
-        <div class="perf-val">30M+ copies</div>
-        <div class="perf-desc">Stardew Valley lifetime sales as of 2023</div>
-      </div>
-      <div class="perf-card">
-        <div class="perf-val">$6.1B</div>
-        <div class="perf-desc">Global productivity app market size (2023)</div>
-      </div>
-      <div class="perf-card">
-        <div class="perf-val">Underlapped</div>
-        <div class="perf-desc">No dominant cozy mobile app that doubles as a real productivity tool</div>
-      </div>
-    </div>
-
-    <div class="market-two-col">
-      <div class="market-block">
-        <div class="market-block-label">Where cozy games are</div>
-        <div class="market-list">
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Dominated by PC and Nintendo Switch</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Mobile cozy is underserved — dominated by gacha and idle</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Audience skews anxious, creative, introverted</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Strong community engagement through YouTube and Discord</span>
-          </div>
-        </div>
-      </div>
-      <div class="market-block">
-        <div class="market-block-label">Where productivity apps are</div>
-        <div class="market-list">
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Saturated market competing on features, not feeling</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>No emotional hook — nothing that makes you want to open them</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>Designed for optimizers, not overwhelmed students</span>
-          </div>
-          <div class="market-item">
-            <span class="market-dot filled"></span>
-            <span>High abandonment rates — apps get deleted within weeks</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="callout" style="margin-top: 20px;">
-      <div class="callout-label">The overlap</div>
-      <p>The cozy game audience and the "person who struggles with productivity" audience are probably the same
-        people. Both skew toward anxious, creative individuals who respond to warmth and low-stakes environments.
-        Witch Task is built for that overlap — a game that earns daily opens through genuine emotional engagement,
-        not notification pressure.</p>
-    </div>
-
   </div>
-</div>
 
 
-<!-- ─────────────────────────────────────────────── -->
-<!-- 2. COMPETITOR ANALYSIS (replace existing)       -->
-<!-- ─────────────────────────────────────────────── -->
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- PRODUCT RATIONALE — designer framing           -->
+  <!-- ─────────────────────────────────────────────── -->
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<div class="section-wrap">
-  <div class="section">
-    <div class="section-eyebrow">Competitor Analysis</div>
-    <h2 class="section-heading">What We Learned From The Space</h2>
-    <p class="body-text">Rather than starting from scratch, we spent time with the apps and games that come
-      closest to what we're building — studying what makes each one work, and where the opportunity for
-      something different sits.</p>
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Product Rationale</div>
+      <h2 class="section-heading">Why This Works</h2>
+      <p class="body-text">People download productivity apps because they already know they need help — they're
+        self-aware enough to seek structure, but something keeps them from sustaining it. Witch Task is built around
+        what that something actually is.</p>
 
-    <div class="competitor-grid">
+      <div class="rationale-grid">
 
-      <div class="competitor-card">
-        <div class="competitor-header">
-          <div class="competitor-name">Habitica</div>
-          <div class="competitor-type">Productivity RPG · closest concept</div>
+        <div class="rationale-card">
+          <div class="rationale-num">01</div>
+          <div class="rationale-title">Feeling types need emotional hooks</div>
+          <p class="rationale-body">The mushroom customers aren't decoration. They exist because caring about something
+            — even a small fictional thing — changes your relationship to the work attached to it. When you complete a
+            task, a villager gets their potion and leaves happy. That small moment of resolution is the point. Emotions
+            are a strong motivational system, and cozy games have proven this at scale.</p>
         </div>
-        <div class="competitor-body">
-          <div class="competitor-section-label">What works</div>
-          <ul class="competitor-list">
-            <li>Proves people want gamified task management</li>
-            <li>Social accountability through party system</li>
-            <li>Deep gear-based customization</li>
-          </ul>
-          <div class="competitor-section-label" style="margin-top:10px;">What we do differently</div>
-          <ul class="competitor-list">
-            <li>Narrative world instead of stats screen</li>
-            <li>Cozy tone — no punishment for missing tasks</li>
-            <li>Lower barrier to entry, mobile-first</li>
-          </ul>
+
+        <div class="rationale-card">
+          <div class="rationale-num">02</div>
+          <div class="rationale-title">Real-time anchoring creates daily ritual</div>
+          <p class="rationale-body">The game world is synchronized to your actual life — real-time weather affects the
+            shop atmosphere, portrait lighting shifts with the time of day, and special events tie to real calendar
+            moments like birthdays and seasonal changes. When your in-game world mirrors the outside one, the app
+            becomes part of your day rather than something you have to remember to open.</p>
         </div>
-        <div class="competitor-diff">Borrowed: gamification proof-of-concept</div>
-      </div>
 
-      <div class="competitor-card">
-        <div class="competitor-header">
-          <div class="competitor-name">Todoist / Things</div>
-          <div class="competitor-type">Productivity apps · utility benchmark</div>
+        <div class="rationale-card">
+          <div class="rationale-num">03</div>
+          <div class="rationale-title">Small systems build investment</div>
+          <p class="rationale-body">Interactivity is the mechanism of care. The shop refreshes. Silk has new items.
+            DanDan is waiting for a rematch. These small systems aren't filler — they are the reason to return. When
+            users engage with these loops, they build genuine investment in a world that grows alongside their real-life
+            progress. Motivation follows investment, not the other way around.</p>
         </div>
-        <div class="competitor-body">
-          <div class="competitor-section-label">What works</div>
-          <ul class="competitor-list">
-            <li>Fast, frictionless task entry</li>
-            <li>Reliable cross-platform sync</li>
-            <li>Clean information hierarchy</li>
-          </ul>
-          <div class="competitor-section-label" style="margin-top:10px;">What we do differently</div>
-          <ul class="competitor-list">
-            <li>Engagement loop that brings you back daily</li>
-            <li>Emotional connection to your tasks through characters</li>
-            <li>Reward system beyond the checkbox</li>
-          </ul>
+
+        <div class="rationale-card">
+          <div class="rationale-num">04</div>
+          <div class="rationale-title">Story progression is unlocked by doing</div>
+          <p class="rationale-body">The mushroom customers are unassuming creatures — they show up, order a potion, and
+            wait. But completing tasks advances their stories. ShuShu returning enough times is what introduces DanDan.
+            The world expands through use. This makes the act of finishing your real tasks the mechanism of narrative
+            discovery, not just a checkbox.</p>
         </div>
-        <div class="competitor-diff">Borrowed: task entry UX patterns</div>
-      </div>
 
-      <div class="competitor-card">
-        <div class="competitor-header">
-          <div class="competitor-name">Animal Crossing</div>
-          <div class="competitor-type">Cozy game · tone reference</div>
+        <div class="rationale-card">
+          <div class="rationale-num">05</div>
+          <div class="rationale-title">Design is the differentiator</div>
+          <p class="rationale-body">In a saturated mobile market, cozy aesthetics remain underlapped — particularly in
+            the productivity space, which has historically competed on features rather than feeling. We believe the
+            niche has been growing for years and is not yet dominated. A beautifully designed, character-driven
+            productivity app targeted at anxious, creative users is a product category that doesn't fully exist yet.</p>
         </div>
-        <div class="competitor-body">
-          <div class="competitor-section-label">What works</div>
-          <ul class="competitor-list">
-            <li>Real-time clock creates genuine daily rituals</li>
-            <li>NPCs feel like real relationships over time</li>
-            <li>Customization that feels personally expressive</li>
-          </ul>
-          <div class="competitor-section-label" style="margin-top:10px;">What we do differently</div>
-          <ul class="competitor-list">
-            <li>The daily loop is tied to your real tasks</li>
-            <li>Opening the app is productive, not just pleasant</li>
-          </ul>
-        </div>
-        <div class="competitor-diff">Borrowed: daily ritual, NPC warmth, customization depth</div>
-      </div>
 
-      <div class="competitor-card">
-        <div class="competitor-header">
-          <div class="competitor-name">Forest</div>
-          <div class="competitor-type">Focus timer · mechanic reference</div>
-        </div>
-        <div class="competitor-body">
-          <div class="competitor-section-label">What works</div>
-          <ul class="competitor-list">
-            <li>Visual metaphor makes focus feel meaningful</li>
-            <li>Simple enough to use without thinking</li>
-            <li>Gentle positive reinforcement, no punishment</li>
-          </ul>
-          <div class="competitor-section-label" style="margin-top:10px;">What we do differently</div>
-          <ul class="competitor-list">
-            <li>Full task management, not just a timer</li>
-            <li>Persistent world that grows alongside your productivity</li>
-          </ul>
-        </div>
-        <div class="competitor-diff">Borrowed: positive reinforcement loop, visual reward</div>
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-
-<!-- ─────────────────────────────────────────────── -->
-<!-- 3. FEATURES (replace existing — L/R layout)    -->
-<!-- ─────────────────────────────────────────────── -->
-
-<div class="divider"></div>
-
-<div class="section-wrap">
-  <div class="section">
-    <div class="section-eyebrow">Features</div>
-    <h2 class="section-heading">Current Development State</h2>
-
-    <!-- 01 — text left, image right -->
-    <div class="feature-block">
-      <div class="feature-header">
-        <div class="feature-icon">📋</div>
-        <div>
-          <div class="feature-title">Task journal + order system</div>
-          <div class="feature-subtitle">Weekly planner · order numbering · binary serialization</div>
-        </div>
-      </div>
-      <div class="feature-body-lr">
-        <div class="feature-text">
-          <p>At the start of each week users fill out a weekly planner — task name, description, difficulty, and
-            deadline. Each task is assigned a unique order number and converted into a potion request from a mushroom
-            inhabitant. Task data is saved locally via binary serialization across sessions.</p>
-          <p>When a task is completed, a stamp marks it done, the entry collapses, coins are awarded, and the
-            mushroom customer collects their potion and leaves.</p>
-        </div>
-        <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Journal UI + order screen"></div>
-      </div>
-    </div>
-
-    <!-- 02 — image left, text right -->
-    <div class="feature-block">
-      <div class="feature-header">
-        <div class="feature-icon">⏱</div>
-        <div>
-          <div class="feature-title">Pomodoro-style task timer</div>
-          <div class="feature-subtitle">Difficulty-based estimates · pause / resume / cancel · cross-session sync</div>
-        </div>
-      </div>
-      <div class="feature-body-rl">
-        <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Timer UI screenshot"></div>
-        <div class="feature-text">
-          <p>Timer opens pre-filled based on task difficulty — 15 min easy, 30 medium, 60 hard — freely adjustable
-            from 5 to 120 minutes. Runs at the top of the screen while the customer waits on the bench.</p>
-          <p>If the user exits mid-session, the timer subtracts elapsed time on next open. Pause, resume, and cancel
-            are accessible from an expandable task detail panel.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 03 — text left, image right -->
-    <div class="feature-block">
-      <div class="feature-header">
-        <div class="feature-icon">🎨</div>
-        <div>
-          <div class="feature-title">Character customization</div>
-          <div class="feature-subtitle">Shader-based color replacement · runtime updates · 4 categories</div>
-        </div>
-      </div>
-      <div class="feature-body-lr">
-        <div class="feature-text">
-          <p>Rather than maintaining separate PNGs per color option, a ShaderGraph shader uses the ReplaceColor node
-            to swap designated sprite colors at runtime. Material property blocks let skin, hair, and hat share one
-            shader instance.</p>
-          <p>Long hair is split into bangs and back layers for correct compositing. Categories: skin tone, hairstyle,
-            hair color, shirt, and hat.</p>
-        </div>
-        <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Customization screen"></div>
-      </div>
-    </div>
-
-    <!-- 04 — image left, text right -->
-    <div class="feature-block">
-      <div class="feature-header">
-        <div class="feature-icon">🏪</div>
-        <div>
-          <div class="feature-title">Shop + Silk's item store</div>
-          <div class="feature-subtitle">Scriptable Objects · daily refresh · dialogue-based shopping</div>
-        </div>
-      </div>
-      <div class="feature-body-rl">
-        <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Silk's shop + dialogue"></div>
-        <div class="feature-text">
-          <p>Silk's shop resets every day at 7am. Items are Unity Scriptable Objects loaded into template prefabs —
-            flexible for 100+ planned items across furniture, consumables, stationery, and miscellaneous.</p>
-          <p>Daily refresh avoids duplicates via a UID dictionary saved in binary serialization. Tapping an item
-            triggers Silk's dialogue — a deliberate choice over a generic shop UI.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 05 — Forest Fighter, full width -->
-    <div class="feature-block">
-      <div class="feature-header">
-        <div class="feature-icon">🥊</div>
-        <div>
-          <div class="feature-title">Forest Fighter 7 minigame</div>
-          <div class="feature-subtitle">2D fighter · enemy AI · pixel art in Aseprite · landscape mode</div>
-        </div>
-      </div>
-      <div class="tech-body">
-        <p>A 2D fighting minigame unlocked by challenging part-timer DanDan for a free work week. Best-of-three
-          rounds with normal attacks, blocks, and burst attacks requiring three energy charges. Enemy AI manages
-          movement, range-based attack decisions, and a randomized block chance.</p>
-        <p>Little Witch's burst fires five laser beams from spatial rifts. Mushroom Man's ground-smash requires
-          dodge or block. All pixel art and animations were made in Aseprite. Loads in landscape mode with a
-          rotation prompt.</p>
-        <div class="media-holder empty tech-img-bottom" data-hint="Forest Fighter 7 screenshot"></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- CHARACTERS — replace existing section -->
-<div class="divider"></div>
-
-<div class="section-wrap">
-  <div class="section">
-    <div class="section-eyebrow">Characters</div>
-    <h2 class="section-heading">Characters Introduced So Far</h2>
-
-    <div class="char-layout">
-
-      <div class="char-carousel-col">
-        <div class="char-track-wrap">
-          <div class="char-track">
-
-            <div class="char-card">
-              <div class="media-holder empty char-art" data-hint="Mushroom customer art"></div>
-              <div class="char-card-body">
-                <div class="char-name">Mushroom Customers</div>
-                <div class="char-role">Task requesters</div>
-                <p class="char-desc">The town inhabitants who order potions — each one corresponds to a real-life task.
-                  Up to two can be in the shop at once. They wander until tapped, then wait patiently on the bench while
-                  you work.</p>
-              </div>
-            </div>
-
-            <div class="char-card">
-              <div class="media-holder empty char-art" data-hint="Silk character art"></div>
-              <div class="char-card-body">
-                <div class="char-name">Silk</div>
-                <div class="char-role">Wandering merchant</div>
-                <p class="char-desc">A forest merchant who carries an infinitely expanding shadow bag. Silk's
-                  understanding of human item value is poor — occasional overpricing may occur. Shop resets daily at 7am
-                  after a new border stroll.</p>
-              </div>
-            </div>
-
-            <div class="char-card">
-              <div class="media-holder empty char-art" data-hint="DanDan character art"></div>
-              <div class="char-card-body">
-                <div class="char-name">DanDan</div>
-                <div class="char-role">Part-timer</div>
-                <p class="char-desc">Introduced through ShuShu after a leaf-cleaning event. Available for hire at 10
-                  coins/week. Can be challenged to Forest Fighter 7 to work an extra week for free. Dialogue updates as
-                  events progress.</p>
-              </div>
-            </div>
-
-            <div class="char-card">
-              <div class="media-holder empty char-art" data-hint="ShuShu character art"></div>
-              <div class="char-card-body">
-                <div class="char-name">ShuShu</div>
-                <div class="char-role">Regular customer</div>
-                <p class="char-desc">A returning mushroom customer who triggers the DanDan introduction event after
-                  enough leaves are cleaned. Acts as the social connector between the player and new characters.</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="char-dots">
-          <span class="char-dot active"></span>
-          <span class="char-dot"></span>
-          <span class="char-dot"></span>
-          <span class="char-dot"></span>
-        </div>
-      </div>
-
-      <div class="char-description">
-        <p>NPC personality is central to the game — the goal is for users to genuinely look forward to interacting with
-          them the same way Animal Crossing villagers make you want to log in daily.</p>
-        <p>Each character has a distinct personality, a role in the shop ecosystem, and dialogue that updates as the
-          story progresses. More characters are planned as the village expands.</p>
       </div>
 
     </div>
   </div>
-</div>
+
+
+
+  <div class="divider"></div>
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Market Analysis</div>
+      <h2 class="section-heading">The Cozy Game Boom</h2>
+      <p class="body-text">Cozy games have had a sustained commercial moment since 2020. Animal Crossing: New
+        Horizons sold 13 million copies in its first six weeks. Stardew Valley has crossed 30 million lifetime.
+        Unpacking, A Short Hike, Spiritfarer, and others have built devoted audiences without violence, urgency,
+        or competition. The genre is no longer niche.</p>
+
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-val">13M copies</div>
+          <div class="perf-desc">Animal Crossing: New Horizons in first 6 weeks (2020)</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">30M+ copies</div>
+          <div class="perf-desc">Stardew Valley lifetime sales as of 2023</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">$6.1B</div>
+          <div class="perf-desc">Global productivity app market size (2023)</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">Underlapped</div>
+          <div class="perf-desc">No dominant cozy mobile app that doubles as a real productivity tool</div>
+        </div>
+      </div>
+
+      <div class="market-two-col">
+        <div class="market-block">
+          <div class="market-block-label">Where cozy games are</div>
+          <div class="market-list">
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Dominated by PC and Nintendo Switch</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Mobile cozy is underserved — dominated by gacha and idle</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Audience skews anxious, creative, introverted</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Strong community engagement through YouTube and Discord</span>
+            </div>
+          </div>
+        </div>
+        <div class="market-block">
+          <div class="market-block-label">Where productivity apps are</div>
+          <div class="market-list">
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Saturated market competing on features, not feeling</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>No emotional hook — nothing that makes you want to open them</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Designed for optimizers, not overwhelmed students</span>
+            </div>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>High abandonment rates — apps get deleted within weeks</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 20px;">
+        <div class="callout-label">The overlap</div>
+        <p>The cozy game audience and the "person who struggles with productivity" audience are probably the same
+          people. Both skew toward anxious, creative individuals who respond to warmth and low-stakes environments.
+          Witch Task is built for that overlap — a game that earns daily opens through genuine emotional engagement,
+          not notification pressure.</p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- 2. COMPETITOR ANALYSIS (replace existing)       -->
+  <!-- ─────────────────────────────────────────────── -->
+
+  <div class="divider"></div>
+
+
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Competitor Analysis</div>
+      <h2 class="section-heading">What We Learned From The Space</h2>
+      <p class="body-text">A competitive analysis of top-grossing products informed our design decisions, helping us
+        identify opportunities in the
+        market.</p>
+
+      <div class="competitor-grid">
+        <div class="qw">
+          <div class="ql" id="qLeg"></div>
+          <div class="chart-wrap" id="chartWrap">
+            <svg id="qSvg" viewBox="0 0 320 320"></svg>
+            <div class="q-tt" id="qTt"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- 3. FEATURES (replace existing — L/R layout)    -->
+  <!-- ─────────────────────────────────────────────── -->
+
+  <div class="divider"></div>
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Features</div>
+      <h2 class="section-heading">Current Development State</h2>
+
+      <!-- 01 — text left, image right -->
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-icon">01</div>
+          <div>
+            <div class="feature-title">Task journal + order system</div>
+            <div class="feature-subtitle">Weekly planner · order numbering · binary serialization</div>
+          </div>
+        </div>
+        <div class="feature-body-lr">
+          <div class="feature-text">
+            <p>At the start of each week users fill out a weekly planner — task name, description, difficulty, and
+              deadline. Each task is assigned a unique order number and converted into a potion request from a mushroom
+              inhabitant. Task data is saved locally via binary serialization across sessions.</p>
+            <p>When a task is completed, a stamp marks it done, the entry collapses, coins are awarded, and the
+              mushroom customer collects their potion and leaves.</p>
+          </div>
+          <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Journal UI + order screen">
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 — image left, text right -->
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-icon">02</div>
+          <div>
+            <div class="feature-title">Pomodoro-style task timer</div>
+            <div class="feature-subtitle">Difficulty-based estimates · pause / resume / cancel · cross-session sync
+            </div>
+          </div>
+        </div>
+        <div class="feature-body-rl">
+          <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Timer UI screenshot"></div>
+          <div class="feature-text">
+            <p>Timer opens pre-filled based on task difficulty — 15 min easy, 30 medium, 60 hard — freely adjustable
+              from 5 to 120 minutes. Runs at the top of the screen while the customer waits on the bench.</p>
+            <p>If the user exits mid-session, the timer subtracts elapsed time on next open. Pause, resume, and cancel
+              are accessible from an expandable task detail panel.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 — text left, image right -->
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-icon">03</div>
+          <div>
+            <div class="feature-title">Character customization</div>
+            <div class="feature-subtitle">Shader-based color replacement · runtime updates · 4 categories</div>
+          </div>
+        </div>
+        <div class="feature-body-lr">
+          <div class="feature-text">
+            <p>Rather than maintaining separate PNGs per color option, a ShaderGraph shader uses the ReplaceColor node
+              to swap designated sprite colors at runtime. Material property blocks let skin, hair, and hat share one
+              shader instance.</p>
+            <p>Long hair is split into bangs and back layers for correct compositing. Categories: skin tone, hairstyle,
+              hair color, shirt, and hat.</p>
+          </div>
+          <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Customization screen"></div>
+        </div>
+      </div>
+
+      <!-- 04 — image left, text right -->
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-icon">04</div>
+          <div>
+            <div class="feature-title">Shop + Silk's item store</div>
+            <div class="feature-subtitle">Scriptable Objects · daily refresh · dialogue-based shopping</div>
+          </div>
+        </div>
+        <div class="feature-body-rl">
+          <div class="media-holder empty" style="min-height:200px;margin:0;" data-hint="Silk's shop + dialogue"></div>
+          <div class="feature-text">
+            <p>Silk's shop resets every day at 7am. Items are Unity Scriptable Objects loaded into template prefabs —
+              flexible for 100+ planned items across furniture, consumables, stationery, and miscellaneous.</p>
+            <p>Daily refresh avoids duplicates via a UID dictionary saved in binary serialization. Tapping an item
+              triggers Silk's dialogue — a deliberate choice over a generic shop UI.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 — Forest Fighter, full width -->
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-icon">05</div>
+          <div>
+            <div class="feature-title">Forest Fighter 7 minigame</div>
+            <div class="feature-subtitle">2D fighter · enemy AI · pixel art in Aseprite · landscape mode</div>
+          </div>
+        </div>
+        <div class="tech-body">
+          <p>A 2D fighting minigame unlocked by challenging part-timer DanDan for a free work week. Best-of-three
+            rounds with normal attacks, blocks, and burst attacks requiring three energy charges. Enemy AI manages
+            movement, range-based attack decisions, and a randomized block chance.</p>
+          <p>Little Witch's burst fires five laser beams from spatial rifts. Mushroom Man's ground-smash requires
+            dodge or block. All pixel art and animations were made in Aseprite. Loads in landscape mode with a
+            rotation prompt.</p>
+          <div class="media-holder empty tech-img-bottom" data-hint="Forest Fighter 7 screenshot"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHARACTERS — replace existing section -->
+  <div class="divider"></div>
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Characters</div>
+      <h2 class="section-heading">Characters Introduced So Far</h2>
+
+      <div class="char-layout">
+
+        <div class="char-carousel-col">
+          <div class="char-track-wrap">
+            <div class="char-track">
+
+              <div class="char-card">
+                <div class="media-holder char-art">
+                  <img src="images/mushroom_customers.png" alt="Mushroom customer art">
+                </div>
+                <div class="char-card-body">
+                  <div class="char-name">Mushroom Customers</div>
+                  <div class="char-role">Task requesters</div>
+                  <p class="char-desc">The town inhabitants who order potions — each one corresponds to a real-life
+                    task.
+                    Up to two can be in the shop at once. They wander until tapped, then wait on in the shop while
+                    the user works.</p>
+                </div>
+              </div>
+
+              <div class="char-card">
+                <div class="media-holder char-art">
+                  <img src="images/silk.png" alt="Mushroom customer art">
+                </div>
+                <div class="char-card-body">
+                  <div class="char-name">Silk</div>
+                  <div class="char-role">Wandering merchant</div>
+                  <p class="char-desc">A forest merchant who carries an infinitely expanding shadow bag. Silk's
+                    understanding of human item value is poor — occasional overpricing may occur. Shop resets daily at
+                    7am
+                    after a new border stroll.</p>
+                </div>
+              </div>
+
+              <div class="char-card">
+                <div class="media-holder char-art">
+                  <img src="images/dandan.png" alt="DanDan character art">
+                </div>
+                <div class="char-card-body">
+                  <div class="char-name">DanDan</div>
+                  <div class="char-role">Part-timer</div>
+                  <p class="char-desc">Available shop part timer for hire. Loves playing Forest Fighter 7 on his free
+                    time.</p>
+                </div>
+              </div>
+
+              <div class="char-card">
+                <div class="media-holder empty char-art" data-hint="ShuShu character art"></div>
+                <div class="char-card-body">
+                  <div class="char-name">ShuShu</div>
+                  <div class="char-role">Regular customer</div>
+                  <p class="char-desc">A returning mushroom customer who triggers the DanDan introduction event after
+                    enough leaves are cleaned. Acts as the social connector between the player and new characters.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="char-dots">
+            <span class="char-dot active"></span>
+            <span class="char-dot"></span>
+            <span class="char-dot"></span>
+            <span class="char-dot"></span>
+          </div>
+        </div>
+
+        <div class="char-description">
+          <p>NPC personality is central to the game — the goal is for users to genuinely look forward to interacting
+            with
+            them the same way Animal Crossing villagers make users want to log in daily.</p>
+          <p>Each character has a distinct personality, a role in the shop ecosystem, and dialogue that updates as the
+            story progresses. More characters are planned as the village expands.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <div class="divider"></div>
 
@@ -958,24 +1242,28 @@
         decisions, art process, and honest updates on what's working and what isn't.</p>
 
       <div class="devlog-strip">
-        <a href="https://www.youtube.com/watch?v=p7zyFa7Ndis" class="devlog-card" target="_blank">
-          <div class="devlog-thumb empty" data-hint="Devlog 0 thumbnail">
-            <!-- replace with: <img src="images/devlog0_thumb.png" alt=""> -->
+        <a href="https://youtu.be/DDXr5ihO84U?si=oj_3rfo_KkqVyWX7" class="devlog-card" target="_blank">
+          <div class="devlog-thumb">
+            <img src="images/wt_devlog_00.png" alt="">
           </div>
           <div class="devlog-info">
             <div class="devlog-num">Devlog 00</div>
             <div class="devlog-title">Concept, research basis, and first build progress</div>
           </div>
         </a>
-        <a href="#" class="devlog-card" target="_blank">
-          <div class="devlog-thumb empty" data-hint="Devlog 1 thumbnail"></div>
+        <a href="https://youtu.be/K5rHuHanvEU?si=8OkqGUnArjz165Of" class="devlog-card" target="_blank">
+          <div class="devlog-thumb">
+            <img src="images/wt_devlog_01.png" alt="">
+          </div>
           <div class="devlog-info">
             <div class="devlog-num">Devlog 01</div>
             <div class="devlog-title">Shop system, character customization, gameplay loop</div>
           </div>
         </a>
-        <a href="#" class="devlog-card" target="_blank">
-          <div class="devlog-thumb empty" data-hint="Devlog 2 thumbnail"></div>
+        <a href="https://youtu.be/uBCpFtgHRd0?si=NpTyDQYIsB2ph7l6" class="devlog-card" target="_blank">
+          <div class="devlog-thumb">
+            <img src="images/wt_devlog_02.png" alt="">
+          </div>
           <div class="devlog-info">
             <div class="devlog-num">Devlog 02</div>
             <div class="devlog-title">Part timer, Forest Fighter 7, achievements, inventory</div>
@@ -983,7 +1271,7 @@
         </a>
       </div>
 
-      <a href="https://www.youtube.com/@witchtask" class="read-more" target="_blank">
+      <a href="https://youtube.com/@huehueu.studios?si=egLuetRFoH_J6lYG" class="read-more" target="_blank">
         Watch all devlogs <span class="rm-arrow">→</span>
       </a>
 
@@ -996,7 +1284,7 @@
   <div class="section-wrap">
     <div class="section">
       <div class="section-eyebrow">Roadmap</div>
-      <h2 class="section-heading">What's Coming</h2>
+      <h2 class="section-heading">Next Plans</h2>
 
       <div class="roadmap">
         <div class="roadmap-item">
@@ -1161,84 +1449,224 @@
         </div>
       </div>
 
-      <!-- Art references -->
-      <div class="design-block" style="margin-top: 20px;">
-        <div class="design-block-label">Visual references</div>
-        <div class="reference-grid">
-          <div class="reference-card">
-            <div class="media-holder empty" style="height:100px;" data-hint="Tabikaeru screenshot"></div>
-            <div class="reference-name">Tabikaeru</div>
-            <div class="reference-note">Quiet, minimal, patient tone</div>
-          </div>
-          <div class="reference-card">
-            <div class="media-holder empty" style="height:100px;" data-hint="Animal Crossing screenshot"></div>
-            <div class="reference-name">Animal Crossing</div>
-            <div class="reference-note">Daily ritual, NPC personality</div>
-          </div>
-          <div class="reference-card">
-            <div class="media-holder empty" style="height:100px;" data-hint="Stardew Valley screenshot"></div>
-            <div class="reference-name">Stardew Valley</div>
-            <div class="reference-note">Reward loop, world-building</div>
-          </div>
-          <div class="reference-card">
-            <div class="media-holder empty" style="height:100px;" data-hint="Concept art sketch"></div>
-            <div class="reference-name">Our concept art</div>
-            <div class="reference-note">Isometric shop, foliage, warmth</div>
-          </div>
-        </div>
-      </div>
+      <script>
 
-    </div>
-  </div>
+        const competitors = [
+          {
+            name: "Habitica", type: "Productivity RPG", color: "#7F77DD", mobile: false,
+            x: 0.78, y: 0.55,
+            works: ["Proves gamified task management works", "Social accountability party system", "Deep gear-based customization"],
+            different: ["Narrative world instead of stats screen", "Cozy tone — no punishment for missed tasks", "Lower barrier to entry, mobile-first"]
+          },
+          {
+            name: "Todoist", type: "Productivity app", color: "#1D9E75", mobile: true,
+            x: 0.05, y: 0.92,
+            works: ["Fast, frictionless task entry", "Reliable cross-platform sync", "Clean information hierarchy"],
+            different: ["Engagement loop that bring users back daily", "Emotional connection through characters", "Reward system beyond the checkbox"]
+          },
+          {
+            name: "Animal Crossing", type: "Cozy game", color: "#EF9F27", mobile: false,
+            x: 0.45, y: -0.82,
+            works: ["Real-time clock creates daily rituals", "NPCs feel like real relationships", "Customization that feels personal"],
+            different: ["Daily loop tied to users' real tasks", "Opening the app is actually productive"]
+          },
+          {
+            name: "Forest", type: "Focus timer", color: "#639922", mobile: true,
+            x: 0.3, y: 0.3,
+            works: ["Visual metaphor makes focus meaningful", "Simple enough to use without thinking", "Gentle positive reinforcement"],
+            different: ["Full task management, not just a timer", "Persistent world that grows with users"]
+          },
+          {
+            name: "Witch Task", type: "Our target", color: "#B197FC", mobile: true,
+            x: 0.72, y: 0.72,
+            works: ["Cozy game energy meets real productivity", "NPCs users look forward to seeing", "Grows alongside users' real-life progress"],
+            different: ["The only app combining all of the above", "Built for anxious, creative students"]
+          }
+        ];
 
-  <div style="height: 48px;"></div>
+        // Custom images map: name -> dataURL
+        const compImages = {};
 
-  <script>
+        const MID = 160, R = 118;
+        function px(v) { return MID + v * R; }
+        function py(v) { return MID - v * R; }
 
-     const track = document.querySelector('.char-track');
-      const dots = document.querySelectorAll('.char-dot');
-      const cards = document.querySelectorAll('.char-card');
-      let current = 0;
-      let timer;
+        const svg = document.getElementById('qSvg');
+        const tt = document.getElementById('qTt');
+        const wrap = document.getElementById('chartWrap');
 
-      function goTo(n) {
-        current = (n + cards.length) % cards.length;
-        track.style.transform = `translateX(-${current * 100}%)`;
-        dots.forEach((d, i) => d.classList.toggle('active', i === current));
-      }
+        const axCol = 'rgba(177,151,252,0.3)';
+        const lblCol = 'rgba(177,151,252,0.5)';
 
-      function startAuto() {
-        timer = setInterval(() => goTo(current + 1), 10000);
-      }
-
-      function stopAuto() {
-        clearInterval(timer);
-      }
-
-      dots.forEach((d, i) => {
-        d.addEventListener('click', () => {
-          stopAuto();
-          goTo(i);
-          startAuto();
+        [[MID - R, MID, MID + R, MID], [MID, MID - R, MID, MID + R]].forEach(([x1, y1, x2, y2]) => {
+          const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          l.setAttribute("x1", x1); l.setAttribute("y1", y1);
+          l.setAttribute("x2", x2); l.setAttribute("y2", y2);
+          l.setAttribute("stroke", axCol); l.setAttribute("stroke-width", "0.5");
+          svg.appendChild(l);
         });
-      });
 
-      // Pause on hover
-      track.closest('.char-carousel-col').addEventListener('mouseenter', stopAuto);
-      track.closest('.char-carousel-col').addEventListener('mouseleave', startAuto);
+        [
+          { text: "low gamification", x: MID - R + 2, y: MID + 13, anchor: "start" },
+          { text: "high gamification", x: MID + R - 2, y: MID + 13, anchor: "end" },
+          { text: "high productivity", x: MID + 3, y: MID - R + 11, anchor: "start" },
+          { text: "low productivity", x: MID + 3, y: MID + R - 4, anchor: "start" },
+        ].forEach(l => {
+          const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          t.setAttribute("x", l.x); t.setAttribute("y", l.y);
+          t.setAttribute("text-anchor", l.anchor); t.setAttribute("font-size", "7.5");
+          t.setAttribute("fill", lblCol); t.setAttribute("font-family", "'Source Code Pro', monospace");
+          t.setAttribute("font-weight", "700"); t.setAttribute("letter-spacing", "0.08em");
+          t.textContent = l.text;
+          svg.appendChild(t);
+        });
 
-      startAuto();
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
+        compImages['Witch Task'] = 'images/aliens_icon.png';
+
+        function renderDots() {
+          svg.querySelectorAll('.comp-dot, .comp-label, .comp-img-node').forEach(el => el.remove());
+
+          let defs = svg.querySelector('defs');
+          if (!defs) { defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); svg.insertBefore(defs, svg.firstChild); }
+          defs.innerHTML = '';
+
+          competitors.forEach(comp => {
+            const cx = px(comp.x), cy = py(comp.y);
+            const isUs = comp.name === "Witch Task";
+            const r = isUs ? 8 : 4;
+
+            if (isUs && compImages['Witch Task']) {
+              // clipPath
+              const cp = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+              cp.setAttribute("id", "clip-witchtask");
+              const cCirc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+              cCirc.setAttribute("cx", cx); cCirc.setAttribute("cy", cy); cCirc.setAttribute("r", r);
+              cp.appendChild(cCirc); defs.appendChild(cp);
+
+              // ring
+              const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+              ring.setAttribute("cx", cx); ring.setAttribute("cy", cy); ring.setAttribute("r", r + 2);
+              ring.setAttribute("fill", comp.color); ring.setAttribute("class", "comp-dot");
+              svg.appendChild(ring);
+
+              // image
+              const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+              img.setAttribute("x", cx - r); img.setAttribute("y", cy - r);
+              img.setAttribute("width", r * 2); img.setAttribute("height", r * 2);
+              img.setAttribute("href", compImages['Witch Task']);
+              img.setAttribute("clip-path", "url(#clip-witchtask)");
+              img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+              img.setAttribute("class", "comp-img-node");
+              img.style.cursor = "pointer";
+              addTooltip(img, comp);
+              svg.appendChild(img);
+            } else {
+              const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+              dot.setAttribute("cx", cx); dot.setAttribute("cy", cy);
+              dot.setAttribute("r", r);
+              dot.setAttribute("fill", comp.color);
+              dot.setAttribute("stroke", "#fff");
+              dot.setAttribute("stroke-width", "1.5");
+              dot.setAttribute("class", "comp-dot");
+              dot.style.cursor = "pointer";
+              addTooltip(dot, comp);
+              svg.appendChild(dot);
+            }
+
+            const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            lbl.setAttribute("x", cx); lbl.setAttribute("y", cy - (isUs ? 12 : 8));
+            lbl.setAttribute("text-anchor", "middle"); lbl.setAttribute("font-size", "8.5");
+            lbl.setAttribute("font-weight", "700"); lbl.setAttribute("letter-spacing", "0.06em");
+            lbl.setAttribute("fill", comp.color); lbl.setAttribute("font-family", "'Source Code Pro', monospace");
+            lbl.setAttribute("class", "comp-label");
+            lbl.textContent = comp.name.toUpperCase();
+            svg.appendChild(lbl);
+          });
         }
-      });
-    }, { threshold: 0.08 });
 
-    document.querySelectorAll('.section').forEach(s => observer.observe(s));
-  </script>
+        function addTooltip(el, comp) {
+          el.addEventListener("mouseenter", e => {
+            tt.innerHTML = `
+      <div class="q-tt-name">${comp.name}</div>
+      <div class="q-tt-type">${comp.type}</div>
+      <span class="q-tt-badge ${comp.mobile ? 'yes' : 'no'}">${comp.mobile ? 'Mobile' : 'Not mobile'}</span>
+      <div class="q-tt-section">What works</div>
+      <ul class="q-tt-list">${comp.works.map(w => `<li>${w}</li>`).join('')}</ul>
+      <hr class="q-tt-hr">
+      <div class="q-tt-section">What we do differently</div>
+      <ul class="q-tt-list">${comp.different.map(d => `<li>${d}</li>`).join('')}</ul>
+    `;
+            tt.classList.add('show');
+            move(e);
+          });
+          el.addEventListener("mousemove", move);
+          el.addEventListener("mouseleave", () => tt.classList.remove('show'));
+        }
+
+        renderDots();
+
+        function move(e) {
+          const r = wrap.getBoundingClientRect();
+          let x = e.clientX - r.left + 12;
+          let y = e.clientY - r.top + 12;
+          if (x + 220 > r.width) x = e.clientX - r.left - 225;
+          if (x < 0) x = 4;
+          tt.style.left = x + 'px';
+          tt.style.top = y + 'px';
+        }
+
+        const leg = document.getElementById('qLeg');
+        competitors.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'ql-item';
+          el.innerHTML = `<span class="ql-dot" style="background:${c.color}"></span>${c.name}`;
+          leg.appendChild(el);
+        });
+
+        const track = document.querySelector('.char-track');
+        const dots = document.querySelectorAll('.char-dot');
+        const cards = document.querySelectorAll('.char-card');
+        let current = 0;
+        let timer;
+
+        function goTo(n) {
+          current = (n + cards.length) % cards.length;
+          track.style.transform = `translateX(-${current * 100}%)`;
+          dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        }
+
+        function startAuto() {
+          timer = setInterval(() => goTo(current + 1), 10000);
+        }
+
+        function stopAuto() {
+          clearInterval(timer);
+        }
+
+        dots.forEach((d, i) => {
+          d.addEventListener('click', () => {
+            stopAuto();
+            goTo(i);
+            startAuto();
+          });
+        });
+
+        // Pause on hover
+        track.closest('.char-carousel-col').addEventListener('mouseenter', stopAuto);
+        track.closest('.char-carousel-col').addEventListener('mouseleave', startAuto);
+
+        startAuto();
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              observer.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.08 });
+
+        document.querySelectorAll('.section').forEach(s => observer.observe(s));
+      </script>
 
 </body>
 

@@ -7,6 +7,8 @@
     --dark: #43424C;
     --light-grey: #E8E8EE;
     --white: #FFFFFF;
+    --yellow: #FDF4A4;
+    --grid-size: 120px;
 }
 
 *,
@@ -68,10 +70,10 @@ body {
     padding: 150px 8vw 80px;
     gap: 100px;
     background-image:
-    linear-gradient(rgba(120, 184, 255, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(120, 184, 255, 0.3) 1px, transparent 1px);
+        linear-gradient(rgba(120, 184, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 184, 255, 0.3) 1px, transparent 1px);
     background-size: 120px 120px;
-     color: var(--dark);
+    color: var(--dark);
     overflow-x: hidden;
     background-repeat: repeat;
 }
@@ -109,7 +111,6 @@ body {
 .intro-right {
     position: relative;
     height: 700px;
-    /* background: var(--light-grey); */
     border-radius: 1px;
     overflow: hidden;
     cursor: crosshair;
@@ -146,7 +147,6 @@ body {
     width: auto;
     display: block;
 }
-
 
 .intro-right:hover .draw-hint {
     opacity: 1;
@@ -203,20 +203,14 @@ body {
 .exp-left {
     display: flex;
     align-items: flex-end;
-    /* Changed from center to flex-end */
     justify-content: flex-start;
-    /* Changed from center to flex-start */
     height: 100%;
-    /* Make it fill the grid cell */
 }
 
-/* Size for the canvas container */
 .exp-left canvas,
 .exp-left>* {
     width: 300px;
-    /* Adjust size as needed */
     height: 300px;
-    /* Adjust size as needed */
 }
 
 .exp-right {
@@ -232,10 +226,35 @@ body {
 }
 
 .exp-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 40px;
     transform: rotate(30deg) translateX(200px);
     opacity: 0;
     will-change: transform, opacity;
+}
+
+.exp-bullet {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background-image: url('../../images/star.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.15s ease;
+}
+
+.exp-item:hover .exp-bullet {
+    background-image: url('../../images/star_yellow.png');
+}
+
+.exp-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .exp-role {
@@ -253,7 +272,6 @@ body {
 }
 
 /* ── SECTION 3: SKILLS ── */
-/* Outer wrapper height controls how long the pin lasts */
 #skills {
     position: relative;
     height: 70vh;
@@ -267,12 +285,15 @@ body {
     flex-direction: column;
     justify-content: center;
     background: var(--white);
+    background-image:
+        linear-gradient(rgba(120, 184, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 184, 255, 0.1) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
 }
 
-/* Animated oscillating border */
 .skills-border {
-    border: 3px solid white;
-    border-radius: 10px;
+    border: 1px solid rgba(120, 184, 255, 0.3);
+    border-radius: 4px;
     margin: 0 40px;
     padding: 25px 0 20px;
     position: relative;
@@ -297,7 +318,6 @@ body {
     flex-shrink: 0;
 }
 
-/* REPLACE */
 .skills-track {
     display: flex;
     gap: 24px;
@@ -309,20 +329,26 @@ body {
     flex: 0 0 260px;
     height: 200px;
     padding: 20px;
-    background: white;
-    border-radius: 16px;
+    background: var(--white);
+    border: 1px solid rgba(120, 184, 255, 0.35);
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 15px;
     font-weight: 600;
     color: var(--dark);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
-    transition: transform 0.3s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.3s ease;
     flex-direction: column;
     gap: 5px;
     user-select: none;
 }
+
+.skill-box:hover {
+    box-shadow: 0 6px 24px rgba(120, 184, 255, 0.2);
+    border-color: var(--blue);
+}
+
 .skill-box-title {
     font-size: 20px;
     font-weight: 700;
@@ -331,7 +357,7 @@ body {
 .skill-box-items {
     font-size: 14px;
     font-weight: 400;
-    color: color: var(--light-grey);;
+    color: var(--light-grey);
     text-align: center;
 }
 
@@ -342,7 +368,6 @@ body {
 .skill-box.lift {
     transform: translateY(-20px) !important;
 }
-
 
 .wave-divider {
     width: 100%;
@@ -355,8 +380,8 @@ body {
     background-position: 0 0;
     z-index: 10;
     position: relative;
-    /* just for z-index to work */
 }
+
 .char-runner {
     margin-top: 50px;
     height: 170px;
@@ -369,20 +394,14 @@ body {
     bottom: 0;
     height: 200px;
     width: auto;
-    /* background: var(--light-grey); */
     border-radius: 8px;
 }
+
 #runner-bob {
     position: absolute;
     bottom: 0;
     left: -100px;
     animation: bobFloat 1.4s ease-in-out infinite;
-}
-
-.char-runner img {
-    width: auto;
-    /* background: var(--light-grey); */
-    border-radius: 8px;
 }
 
 @keyframes bobFloat {
@@ -398,6 +417,7 @@ body {
         transform: translateY(0px) rotate(-2deg);
     }
 }
+
 /* ── SECTION 4: AWARDS ── */
 #awards {
     min-height: 100vh;
@@ -406,20 +426,15 @@ body {
     align-items: center;
     padding: 20px 8vw;
     gap: 0;
-    /* Remove gap for overlap */
     background: var(--blue);
 }
 
 .awards-model {
     width: 130%;
-    /* Extend right by 30% */
     height: 600px;
-    /* Increased from 460px */
-    /* background: var(--light-grey); */
-    border-radius: 24px;
+    border-radius: 4px;
     position: relative;
     z-index: 1;
-    /* Behind the right side */
 }
 
 #awards-canvas {
@@ -433,17 +448,25 @@ body {
     position: relative;
     z-index: 2;
     padding-left: 40px;
-    /* Add some spacing from edge */
 }
+
 .awards-label {
-    font-size: 36px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--white);
     margin-bottom: 36px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+.awards-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .award-item {
@@ -451,6 +474,16 @@ body {
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 28px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.award-item:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .award-bullet {
@@ -462,7 +495,6 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-
 }
 
 .award-bullet img {
@@ -472,13 +504,16 @@ body {
 }
 
 .award-text-title {
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--dark);
 }
 
 .award-text-sub {
-    font-size: 17px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
     color: var(--light-grey);
     margin-top: 3px;
 }
@@ -486,8 +521,9 @@ body {
 /* ── SECTION 5: ABOUT ── */
 #about {
     min-height: 100vh;
-    padding: 20vh 8vw 20px;
+    padding: 0 8vw;
     display: flex;
+    align-items: center;
 }
 
 .about-inner {
@@ -495,7 +531,9 @@ body {
     grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: 20px;
+    width: 100%;
 }
+
 .about-left {
     display: flex;
     flex-direction: column;
@@ -516,12 +554,19 @@ body {
     gap: 12px;
     width: 100%;
     max-width: 380px;
-    /* matches image so they line up perfectly */
 }
+
+.about-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .about-logo {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    margin-top: 32px;
 }
 
 .about-logo-inner {
@@ -529,8 +574,7 @@ body {
 }
 
 #about-logo-img {
-height: 60px;
-    /* or whatever feels right */
+    height: 60px;
     width: auto;
     display: block;
     transform-origin: 50% 50%;
@@ -538,7 +582,7 @@ height: 60px;
 }
 
 .about-label {
-    font-size:30px;
+    font-size: 30px;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -552,9 +596,7 @@ height: 60px;
     line-height: 1.7;
     max-width: 700px;
     color: var(--dark);
-
 }
-
 
 .about-btn {
     display: flex;
@@ -568,9 +610,9 @@ height: 60px;
     text-decoration: none;
     color: var(--white);
     font-family: 'Source Code Pro', sans-serif;
-        outline: none;
-            border: none;
-            transition: transform 0.2s ease, background 0.2s ease;
+    outline: none;
+    border: none;
+    transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .about-btn img {

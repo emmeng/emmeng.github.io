@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ComPASS — MR Radiation Visualization</title>
+  <title>MR Radiation Visualization</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
     rel="stylesheet">
@@ -20,8 +20,7 @@
     <a class="nav-link" href="index.html#about">Contact</a>
     <a class="nav-link" href="blog.html">Blog</a>
   </nav>
-
-  <!-- FULL WIDTH HERO IMAGE -->
+  
   <div class="hero-image-placeholder">
     <video autoplay muted loop>
       <source src="images/h2dpi_header.mp4" type="video/mp4">
@@ -32,7 +31,7 @@
   <div class="section-wrap">
     <div class="hero">
       <div class="award-tag">★ Named Author — Nature Scientific Reports · 2024</div>
-      <h1>ComPASS — MR Radiation Visualization</h1>
+      <h1>MR Radiation Visualization</h1>
       <p class="hero-hook">A mixed reality tool for visualizing dual neutron/gamma radiation scatter patterns on the
         HoloLens 2. Designed for emergency responders who need to locate radiation sources in real time without
         specialized training.</p>
@@ -65,9 +64,9 @@
           <div class="meta-col-row">
             <span class="meta-col-val">University of Michigan DNNG Lab</span>
           </div>
-          <div class="meta-col-row">
-            <span class="meta-col-val">Xinying Chew</span>
-          </div>
+          <div class="meta-col-row"><span class="meta-col-val">Ivan Druckman</span></div>
+          <div class="meta-col-row"><span class="meta-col-val">Ziang Wang</span></div>
+          <div class="meta-col-row"><span class="meta-col-val">Erik Zhou</span></div>
         </div>
 
         <div class="meta-col">
@@ -81,18 +80,15 @@
               </div>
             </div>
             <div class="stack-cat">
-              <span class="stack-cat-name">Data</span>
+              <span class="stack-cat-name">Language</span>
               <div class="stack-chips">
                 <span class="stack-chip">Python</span>
-                <span class="stack-chip">Rust</span>
-                <span class="stack-chip">TensorFlow</span>
               </div>
             </div>
             <div class="stack-cat">
-              <span class="stack-cat-name">APIs</span>
+              <span class="stack-cat-name">Framework</span>
               <div class="stack-chips">
-                <span class="stack-chip">QR Code API</span>
-                <span class="stack-chip">HoloLens Spatial API</span>
+                <span class="stack-chip">MRTK</span>
               </div>
             </div>
             <div class="stack-cat">
@@ -114,12 +110,13 @@
               <span class="link-arrow">↗</span>
             </a>
 
-          <a href="https://gitlab.eecs.umich.edu/umich-dnng/dnng-hololens-visualization" class="sidebar-link featured">
-            <span class="link-icon">⬡</span>
-            <span class="link-text">GitLab Repository</span>
-            <span class="link-arrow">↗</span>
-          </a>
-            
+            <a href="https://gitlab.eecs.umich.edu/umich-dnng/dnng-hololens-visualization"
+              class="sidebar-link featured">
+              <span class="link-icon">⬡</span>
+              <span class="link-text">GitLab Repository</span>
+              <span class="link-arrow">↗</span>
+            </a>
+
           </div>
         </div>
 
@@ -149,48 +146,45 @@
       </div>
 
       <div class="media-holder video">
-    <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:6974743330274312193?collapsed=1" height="549"
-      width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+        <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:6974743330274312193?collapsed=1"
+          height="600" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
       </div>
 
     </div>
   </div>
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<!-- RESEARCH CONTEXT -->
-<div class="section-wrap">
-  <div class="section">
-    <div class="section-eyebrow">Research Context</div>
-    <h2 class="section-heading">Why MR Data Visualization Is Important</h2>
-    <p class="body-text">The H2DPI works by detecting double-scatter events — pairs of radiation interactions that
-      occur within 30 nanoseconds of each other across two separate detector volumes. Each double-scatter event
-      produces an estimated incidence cone: a geometric shape representing the probable direction the radiation came
-      from. Once enough cones are stacked over time, their overlap reveals where the source is.</p>
-    <p class="body-text">Until now, those cone stacks were displayed as 2D angular plots on a screen — azimuth on
-      one axis, altitude on the other. To use them, a trained operator had to mentally translate that 2D map into
-      a 3D direction relative to where they were standing. That translation step is slow, error-prone, and requires
-      specialist knowledge.</p>
+  <!-- RESEARCH CONTEXT -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Research Context</div>
+      <h2 class="section-heading">Why MR Data Visualization Is Important</h2>
+      <p class="body-text">The H2DPI works by detecting double-scatter events — pairs of radiation interactions that
+        occur within 30 nanoseconds of each other across two separate detector volumes. Each double-scatter event
+        produces an estimated incidence cone: a geometric shape representing the probable direction the radiation came
+        from. Once enough cones are stacked over time, their overlap reveals where the source is.</p>
+      <p class="body-text">Until now, those cone stacks were displayed as 2D angular plots on a screen — azimuth on
+        one axis, altitude on the other. To use them, a trained operator had to mentally translate that 2D map into
+        a 3D direction relative to where they were standing. That translation step is slow, error-prone, and requires
+        specialist knowledge.</p>
 
-    <div class="callout">
-      <div class="callout-label">What MR changes</div>
-      <p>By projecting the back-projected image directly onto the spatial mesh of the real environment, the angular
-        data becomes a heatmap on the actual walls, floors, and objects around the user. The translation step
-        disappears — and the hotspot appears.
-        <br>
-        <br>
-        Our system also added a neural network mode for low-event-rate situations — when
-        double-scatter events are too sparse to form a clear image, single-interaction count rates across all 20
-        detector volumes are fed into a trained network that predicts the source's azimuthal direction in under one
-        second, displaying a yellow arrow in the user's field of view in the HoloLens.
-      </p>
+      <div class="callout">
+        <div class="callout-label">What MR changes</div>
+        <p>By projecting the back-projected image directly onto the spatial mesh of the real environment, the angular
+          data becomes a heatmap on the actual walls, floors, and objects around the user. The translation step
+          disappears — and the hotspot appears.
+          <br>
+          <br>
+          Our system also added a neural network mode for low-event-rate situations — when
+          double-scatter events are too sparse to form a clear image, single-interaction count rates across all 20
+          detector volumes are fed into a trained network that predicts the source's azimuthal direction in under one
+          second, displaying a yellow arrow in the user's field of view in the HoloLens.
+        </p>
+      </div>
+
     </div>
-
-
-
-
   </div>
-</div>
 
   <div class="divider"></div>
 
@@ -200,8 +194,9 @@
       <div class="section-eyebrow">System Context</div>
       <h2 class="section-heading">Where My Work Sat In The Pipeline</h2>
       <p class="body-text">The full system spans hardware detection, data processing, and MR visualization. My work
-        was on the Unity/HoloLens side — everything from receiving processed cone data forward.</p>
+        was on the Unity/HoloLens side — where the data exists and requires visualization.</p>
 
+      <!-- FIX 2: pipeline uses flex-wrap instead of overflow-x: auto (handled in CSS) -->
       <div class="pipeline">
         <div class="pipe-step">
           <div class="pipe-box">
@@ -244,8 +239,7 @@
             <li>Hand menu system (wrist-activated)</li>
             <li>Colormap implementation and runtime switching</li>
             <li>Visualization mode controls</li>
-            <li>Contributed to pixel shader for mesh coloring</li>
-            <li>Contributed to directional ray rendering</li>
+            <li>Contributed to pixel shader for mesh coloring and directional ray rendering</li>
           </ul>
         </div>
         <div class="role-card">
@@ -258,13 +252,13 @@
             <li>Informational posters in Illustrator</li>
           </ul>
         </div>
-          <div class="role-card">
-            <div class="role-tag">Web Dev</div>
-            <div class="role-name">Development</div>
-            <ul class="role-bullets">
-              <li>Created web portal for H2DPI data visualization for data summarization</li>
-            </ul>
-          </div>
+        <div class="role-card">
+          <div class="role-tag">Web Dev</div>
+          <div class="role-name">Development</div>
+          <ul class="role-bullets">
+            <li>Created web portal for H2DPI data visualization for data summarization</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -277,7 +271,8 @@
       <div class="section-eyebrow">Technical</div>
       <h2 class="section-heading">My Work</h2>
 
-      <!-- 01 — QR anchoring, image bottom -->
+      <!-- 01 — QR anchoring -->
+      <!-- FIX 3: tech-block div now correctly wraps header + body, closing before 02 starts -->
       <div class="tech-block">
         <div class="tech-header">
           <div class="tech-num">01</div>
@@ -286,20 +281,23 @@
             <div class="tech-subtitle">HoloLens Spatial Mapping · QR Code API · coordinate transforms</div>
           </div>
         </div>
-        <div class="tech-body">
-          <p>For the HoloLens to project radiation data correctly onto the real environment, it needs to know exactly
-            where the H2DPI detector is in 3D space. A QR code placed on the detector surface at a known offset from
-            its center gives the HoloLens a scannable reference point.</p>
-          <p>When the user scans the QR code, the HoloLens resolves its position in the spatial map and calculates the
-            detector's coordinate frame from that offset. All subsequent cone back-projection and ray rendering is
-            computed relative to that reference — if the detector moves, rescanning updates the anchor.</p>
-          <div class="media-holder tech-img-bottom" data-hint="">
+
+        <div class="tech-body-left">
+          <div class="media-holder tech-img-bottom">
             <img src="images/h2dpi_qr.png" alt="">
           </div>
+          <div class="tech-text">
+            <p>For the HoloLens to project radiation data correctly onto the real environment, it needs to know exactly
+              where the H2DPI detector is in 3D space. A QR code placed on the detector surface at a known offset from
+              its center gives the HoloLens a scannable reference point.</p>
+            <p>When the user scans the QR code, the HoloLens resolves its position in the spatial map and calculates the
+              detector's coordinate frame from that offset. All subsequent cone back-projection and ray rendering is
+              computed relative to that reference — if the detector moves, rescanning updates the anchor.</p>
+          </div>
         </div>
-      </div>
+      </div><!-- END tech-block 01 -->
 
-      <!-- 02 — Hand menu, image right -->
+      <!-- 02 — Hand menu -->
       <div class="tech-block">
         <div class="tech-header">
           <div class="tech-num">02</div>
@@ -323,9 +321,9 @@
             </video>
           </div>
         </div>
-      </div>
+      </div><!-- END tech-block 02 -->
 
-      <!-- 03 — Colormap, image left -->
+      <!-- 03 — Colormap -->
       <div class="tech-block">
         <div class="tech-header">
           <div class="tech-num">03</div>
@@ -335,11 +333,11 @@
           </div>
         </div>
         <div class="tech-body-left">
-          <div class="media-holder" style="min-height:200px;margin:0;"
-            data-hint="HoloLens view with colormap active">
-          <video autoplay muted loop>
-            <source src="images/h2dpi.mp4" type="video/mp4">
-          </video></div>
+          <div class="media-holder" style="min-height:200px;margin:0;" data-hint="HoloLens view with colormap active">
+            <video autoplay muted loop>
+              <source src="images/h2dpi.mp4" type="video/mp4">
+            </video>
+          </div>
           <div class="tech-text">
             <p>The radiation heatmap needs to convey intensity clearly across varying real-world backgrounds and to
               different users. The system implements five perceptually uniform sequential colormaps from Matplotlib —
@@ -350,7 +348,7 @@
               choice.</p>
           </div>
         </div>
-      </div>
+      </div><!-- END tech-block 03 -->
 
       <!-- Colormap mode cards -->
       <div class="modes-grid">
@@ -406,8 +404,18 @@
             kind</div>
         </div>
       </div>
+      <p class="body-text" style="margin-top: 20px;">Promotional posters I designed:</p>
+      <div style="display: flex; gap: 10px;">
+        <div class="media-holder" style="flex: 1; margin: 0;">
+          <img src="images/Poster_graphic.png" alt="Informational poster about the project, part 1">
+        </div>
+        <div class="media-holder" style="flex: 1; margin: 0;">
+          <img src="images/Poster_graphic2.png" alt="Informational poster about the project, part 2">
+        </div>
+      </div>
 
-      <p class="body-text" style="margin-top: 20px;">This project and its documentation was written to hand off to subsequent semester teams, who continued the work the
+      <p class="body-text" style="margin-top: 20px;">This project and its documentation was written to hand off to
+        subsequent semester teams, who continued the work the
         following year.</p>
     </div>
   </div>

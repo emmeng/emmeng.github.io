@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doc Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden
+    }
+
+    :root {
+      --ui-accent: #a68df4;
+      --ui-bg: #faf8f4;
+      --ui-ink: #1e1b27;
+      --ui-ink-dim: rgba(30, 27, 39, 0.45);
+      --ui-panel: #f4f2f0;
+      --ui-border: rgba(30, 27, 39, 0.1);
+      --panel-w: 264px;
+      --mono: 'Source Code Pro', monospace;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background: var(--ui-bg);
+      font-family: var(--mono);
+      color: var(--ui-ink)
+    }
+
+    #topbar {
+      height: 44px;
+      background: var(--ui-ink);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 9px;
+      flex-shrink: 0;
+      z-index: 100
+    }
+
+    .tb-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      flex: 1
+    }
+
+    .tb-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border-radius: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      white-space: nowrap
+    }
+
+    .tb-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff
+    }
+
+    .tb-btn.primary {
+      background: var(--ui-accent);
+      border-color: var(--ui-accent);
+      color: #fff
+    }
+
+    .tb-btn.primary:hover {
+      background: #8b72d4;
+      border-color: #8b72d4
+    }
+
+    #doc-title-input {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      color: #fff;
+      padding: 4px 10px;
+      width: 170px;
+      outline: none
+    }
+
+    #doc-title-input:focus {
+      border-color: var(--ui-accent)
+    }
+
+    #main {
+      display: flex;
+      flex: 1;
+      overflow: hidden
+    }
+
+    #canvas-wrap {
+      flex: 1;
+      overflow-y: auto;
+      background: #d6d2cc;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    /* ── DOC CANVAS — theme tokens scoped here only ── */
+    #doc-canvas {
+      width: 794px;
+      min-height: 1123px;
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
+      padding: 52px 56px;
+      position: relative;
+      flex-shrink: 0;
+      font-family: var(--mono);
+      --doc-accent: #a68df4;
+      --doc-accent-lt: rgba(166, 141, 244, 0.12);
+      --doc-accent-rule: rgba(166, 141, 244, 0.25);
+      --doc-bg: #ffffff;
+      --doc-ink: #1e1b27;
+      --doc-fs: 13px;
+      background: var(--doc-bg);
+      color: var(--doc-ink);
+    }
+
+    #drop-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0.3
+    }
+
+    #drop-hint span {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--doc-ink);
+      border: 2px dashed currentColor;
+      padding: 20px 32px;
+      border-radius: 4px
+    }
+
+    #doc-canvas.has-blocks #drop-hint {
+      display: none
+    }
+
+    .dz {
+      height: 8px;
+      margin: 2px 0;
+      border-radius: 2px;
+      transition: all .12s;
+      position: relative
+    }
+
+    .dz.over {
+      height: 36px;
+      background: var(--doc-accent-lt);
+      border: 1.5px dashed var(--doc-accent)
+    }
+
+    .dz.over::after {
+      content: 'Drop here';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--doc-accent)
+    }
+
+    #right-panel {
+      width: var(--panel-w);
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--ui-border);
+      flex-shrink: 0;
+      background: var(--ui-panel)
+    }
+
+    .panel-section {
+      border-bottom: 1px solid var(--ui-border);
+      flex-shrink: 0
+    }
+
+    .panel-hdr {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ui-ink-dim);
+      padding: 9px 13px 7px;
+      background: rgba(0, 0, 0, 0.03)
+    }
+
+    #theme-panel {
+      overflow-y: auto
+    }
+
+    .th-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 13px;
+      border-bottom: 1px solid var(--ui-border)
+    }
+
+    .th-row:last-child {
+      border-bottom: none
+    }
+
+    .th-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ui-ink);
+      flex: 1
+    }
+
+    .th-row input[type=color] {
+      width: 26px;
+      height: 20px;
+      border: 1px solid var(--ui-border);
+      border-radius: 2px;
+      cursor: pointer;
+      padding: 1px;
+      background: none
+    }
+
+    .th-row input[type=range] {
+      width: 76px;
+      accent-color: var(--ui-accent)
+    }
+
+    .th-val {
+      font-size: 9px;
+      color: var(--ui-ink-dim);
+      min-width: 26px;
+      text-align: right
+    }
+
+    .th-row select {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 5px;
+      border: 1px solid var(--ui-border);
+      border-radius: 2px;
+      background: #fff;
+      color: var(--ui-ink);
+      cursor: pointer
+    }
+
+    #components-panel {
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .comp-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 13px;
+      border-bottom: 1px solid var(--ui-border);
+      cursor: grab;
+      transition: background .12s;
+      user-select: none
+    }
+
+    .comp-item:hover {
+      background: rgba(166, 141, 244, 0.09)
+    }
+
+    .ci {
+      width: 26px;
+      height: 19px;
+      border: 1px solid rgba(166, 141, 244, 0.3);
+      border-radius: 2px;
+      background: rgba(166, 141, 244, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ci svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--ui-accent);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .cl {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ui-ink)
+    }
+
+    .cd {
+      font-size: 9px;
+      color: var(--ui-ink-dim);
+      margin-top: 1px
+    }
+
+    .doc-block {
+      position: relative
+    }
+
+    .doc-block:hover>.bctrl {
+      opacity: 1
+    }
+
+    .bctrl {
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0;
+      transition: opacity .15s;
+      z-index: 10
+    }
+
+    .bcb {
+      width: 28px;
+      height: 22px;
+      background: var(--ui-ink);
+      border: none;
+      border-radius: 2px;
+      color: #fff;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .12s
+    }
+
+    .bcb:hover {
+      background: var(--ui-accent)
+    }
+
+    .bcb.del:hover {
+      background: #e05a5a
+    }
+
+    /* ── BLOCK STYLES — all font sizes scale from --doc-fs ── */
+    #doc-canvas [contenteditable] {
+      outline: none;
+      cursor: text
+    }
+
+    #doc-canvas [contenteditable]:focus {
+      background: rgba(166, 141, 244, 0.06);
+      border-radius: 1px
+    }
+
+    #doc-canvas [contenteditable]:empty::before {
+      content: attr(data-ph);
+      opacity: 0.28;
+      pointer-events: none
+    }
+
+    .b-eyebrow {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--doc-accent);
+      margin-bottom: 10px
+    }
+
+    .b-hero {
+      padding: 0 0 22px;
+      border-bottom: 1px solid var(--doc-accent-rule);
+      margin-bottom: 22px
+    }
+
+    .b-hero .b-title {
+      font-size: calc(var(--doc-fs) * 2.9);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: var(--doc-ink);
+      margin-bottom: 11px
+    }
+
+    .b-hero .b-subtitle {
+      font-size: var(--doc-fs);
+      line-height: 1.8;
+      color: var(--doc-ink);
+      opacity: 0.7;
+      max-width: 560px
+    }
+
+    .b-sh {
+      padding: 0 0 18px;
+      border-bottom: 1px solid var(--doc-accent-rule);
+      margin-bottom: 18px
+    }
+
+    .b-sh .b-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .b-sh .b-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--doc-accent-rule)
+    }
+
+    .b-sh h2 {
+      font-size: calc(var(--doc-fs) * 1.85);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--doc-ink);
+      line-height: 1.1
+    }
+
+    .b-body {
+      margin-bottom: 14px
+    }
+
+    .b-body p {
+      font-size: var(--doc-fs);
+      line-height: 1.85;
+      color: var(--doc-ink);
+      opacity: 0.8
+    }
+
+    .b-callout {
+      border-left: 2px solid var(--doc-accent);
+      padding: 11px 17px;
+      margin-bottom: 16px
+    }
+
+    .b-callout .b-cl-label {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--doc-accent);
+      margin-bottom: 5px
+    }
+
+    .b-callout p {
+      font-size: var(--doc-fs);
+      line-height: 1.7;
+      color: var(--doc-ink);
+      opacity: 0.8;
+      font-style: italic
+    }
+
+    .b-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--doc-accent-rule);
+      margin-bottom: 16px
+    }
+
+    .b-sc {
+      padding: 16px 14px;
+      border-right: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-sc:last-child {
+      border-right: none
+    }
+
+    .b-sv {
+      font-size: calc(var(--doc-fs) * 2.15);
+      font-weight: 700;
+      color: var(--doc-ink);
+      line-height: 1;
+      margin-bottom: 5px
+    }
+
+    .b-sd {
+      font-size: calc(var(--doc-fs) * 0.85);
+      line-height: 1.5;
+      color: var(--doc-ink);
+      opacity: 0.5
+    }
+
+    .b-feature {
+      border: 1px solid var(--doc-accent-rule);
+      margin-bottom: 9px
+    }
+
+    .b-fh {
+      padding: 10px 15px;
+      border-bottom: 1px solid var(--doc-accent-rule);
+      display: flex;
+      align-items: flex-start;
+      gap: 11px
+    }
+
+    .b-fnum {
+      font-size: calc(var(--doc-fs) * 0.77);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--doc-accent);
+      opacity: 0.6;
+      width: 20px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .b-ftitle {
+      font-size: calc(var(--doc-fs) * 0.92);
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--doc-ink);
+      margin-bottom: 2px
+    }
+
+    .b-fsub {
+      font-size: calc(var(--doc-fs) * 0.77);
+      color: var(--doc-accent);
+      opacity: 0.75
+    }
+
+    .b-fbody {
+      padding: 12px 15px;
+      font-size: var(--doc-fs);
+      line-height: 1.8;
+      color: var(--doc-ink);
+      opacity: 0.8
+    }
+
+    .b-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--doc-accent-rule);
+      margin-bottom: 14px
+    }
+
+    .b-2cell {
+      padding: 16px;
+      border-right: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-2cell:last-child {
+      border-right: none
+    }
+
+    .b-2cell .b-cl-label {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--doc-accent);
+      margin-bottom: 9px
+    }
+
+    .b-2cell ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .b-2cell ul li {
+      font-size: calc(var(--doc-fs) * 0.92);
+      line-height: 1.55;
+      color: var(--doc-ink);
+      opacity: 0.8;
+      padding-left: 13px;
+      position: relative
+    }
+
+    .b-2cell ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--doc-accent);
+      font-weight: 700
+    }
+
+    .b-roadmap {
+      border: 1px solid var(--doc-accent-rule);
+      margin-bottom: 14px
+    }
+
+    .b-ri {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 10px 15px;
+      border-bottom: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-ri:last-child {
+      border-bottom: none
+    }
+
+    .b-rs {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 1px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .b-rs.done {
+      background: var(--doc-accent-lt);
+      color: var(--doc-accent);
+      border: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-rs.wip {
+      background: rgba(245, 198, 160, 0.2);
+      color: #9a5c00;
+      border: 1px solid rgba(245, 198, 160, 0.6)
+    }
+
+    .b-rs.next {
+      background: transparent;
+      color: var(--doc-ink);
+      opacity: 0.38;
+      border: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-rl {
+      font-size: calc(var(--doc-fs) * 0.92);
+      font-weight: 600;
+      color: var(--doc-ink);
+      margin-bottom: 2px
+    }
+
+    .b-rd {
+      font-size: calc(var(--doc-fs) * 0.85);
+      color: var(--doc-ink);
+      opacity: 0.5;
+      line-height: 1.4
+    }
+
+    .b-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--doc-accent-rule);
+      margin-bottom: 16px
+    }
+
+    .b-mc {
+      padding: 13px 15px;
+      border-right: 1px solid var(--doc-accent-rule)
+    }
+
+    .b-mc:last-child {
+      border-right: none
+    }
+
+    .b-mcl {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--doc-accent);
+      margin-bottom: 7px
+    }
+
+    .b-mr {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      margin-bottom: 3px
+    }
+
+    .b-mk {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--doc-ink);
+      opacity: 0.35;
+      flex-shrink: 0
+    }
+
+    .b-mv {
+      font-size: calc(var(--doc-fs) * 0.85);
+      font-weight: 500;
+      color: var(--doc-ink)
+    }
+
+    .b-img-wrap {
+      border: 1px solid var(--doc-accent-rule);
+      background: var(--doc-accent-lt);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      position: relative
+    }
+
+    .b-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .img-hint {
+      font-size: calc(var(--doc-fs) * 0.69);
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--doc-accent);
+      opacity: 0.55;
+      pointer-events: none
+    }
+
+    .b-upload-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 9px;
+      background: rgba(30, 27, 39, 0.85);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .15s
+    }
+
+    .b-img-wrap:hover .b-upload-btn {
+      opacity: 1
+    }
+
+    .b-divider {
+      height: 1px;
+      background: var(--doc-accent-rule);
+      margin: 18px 0
+    }
+
+    /* text+image */
+    .b-ti {
+      margin-bottom: 14px
+    }
+
+    .b-ti .b-ti-inner {
+      display: grid;
+      gap: 16px;
+      align-items: start
+    }
+
+    .b-ti.layout-right .b-ti-inner {
+      grid-template-columns: 1.6fr 1fr
+    }
+
+    .b-ti.layout-left .b-ti-inner {
+      grid-template-columns: 1fr 1.6fr
+    }
+
+    .b-ti.layout-below .b-ti-inner {
+      grid-template-columns: 1fr;
+      gap: 12px
+    }
+
+    .b-ti.layout-right .b-ti-img {
+      order: 1
+    }
+
+    .b-ti.layout-right .b-ti-txt {
+      order: 0
+    }
+
+    .b-ti.layout-left .b-ti-img {
+      order: 0
+    }
+
+    .b-ti.layout-left .b-ti-txt {
+      order: 1
+    }
+
+    .b-ti.layout-below .b-ti-img {
+      order: 1
+    }
+
+    .b-ti.layout-below .b-ti-txt {
+      order: 0
+    }
+
+    .b-ti-txt .b-ti-heading {
+      font-size: calc(var(--doc-fs) * 1.15);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--doc-ink);
+      margin-bottom: 8px
+    }
+
+    .b-ti-txt p {
+      font-size: var(--doc-fs);
+      line-height: 1.8;
+      color: var(--doc-ink);
+      opacity: 0.8
+    }
+
+    .b-ti-img {
+      border: 1px solid var(--doc-accent-rule);
+      background: var(--doc-accent-lt);
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative
+    }
+
+    .b-ti-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .b-ti-img:hover .b-upload-btn {
+      opacity: 1
+    }
+
+    /* ghost */
+    #drag-ghost {
+      position: fixed;
+      pointer-events: none !important;
+      z-index: 9999;
+      background: #fff;
+      border: 1.5px solid var(--ui-accent);
+      border-radius: 3px;
+      padding: 6px 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ui-accent);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+      white-space: nowrap;
+      display: none;
+      transform: rotate(1.5deg)
+    }
+
+    /* modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.48);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal-overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: #fff;
+      border: 1px solid var(--ui-border);
+      border-radius: 3px;
+      padding: 22px;
+      width: 400px;
+      max-height: 80vh;
+      overflow-y: auto
+    }
+
+    .modal h3 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px
+    }
+
+    .modal label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ui-ink-dim);
+      display: block;
+      margin-bottom: 3px;
+      margin-top: 11px
+    }
+
+    .modal label:first-of-type {
+      margin-top: 0
+    }
+
+    .modal input,
+    .modal textarea,
+    .modal select {
+      font-family: var(--mono);
+      font-size: 12px;
+      width: 100%;
+      border: 1px solid var(--ui-border);
+      border-radius: 2px;
+      padding: 5px 8px;
+      color: var(--ui-ink);
+      outline: none
+    }
+
+    .modal input:focus,
+    .modal textarea:focus {
+      border-color: var(--ui-accent)
+    }
+
+    .modal textarea {
+      resize: vertical;
+      min-height: 70px
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: flex-end
+    }
+
+    .modal-btns .tb-btn {
+      border-color: var(--ui-border);
+      color: var(--ui-ink)
+    }
+
+    @media print {
+      body {
+        overflow: visible
+      }
+
+      #topbar,
+      #right-panel {
+        display: none !important
+      }
+
+      #canvas-wrap {
+        background: none !important;
+        padding: 0;
+        overflow: visible
+      }
+
+      #doc-canvas {
+        box-shadow: none;
+        width: 100%;
+        padding: 0
+      }
+
+      .bctrl,
+      .dz,
+      .b-upload-btn {
+        display: none !important
+      }
+
+      #doc-canvas [contenteditable] {
+        cursor: default
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="topbar">
+    <span class="tb-title">Doc Builder</span>
+    <input type="text" id="doc-title-input" value="Untitled Document">
+    <button class="tb-btn" onclick="clearCanvas()">Clear</button>
+    <button class="tb-btn" onclick="loadTemplate()">Load</button>
+    <button class="tb-btn" onclick="saveTemplate()">Save .json</button>
+    <button class="tb-btn primary" onclick="exportPDF()">Export PDF</button>
+  </div>
+  <div id="main">
+    <div id="canvas-wrap">
+      <div id="doc-canvas">
+        <div id="drop-hint"><span>Drag components from the right panel</span></div>
+        <div id="blocks-container"></div>
+      </div>
+    </div>
+    <div id="right-panel">
+      <div class="panel-section">
+        <div class="panel-hdr">Document Theme</div>
+        <div id="theme-panel">
+          <div class="th-row"><span class="th-label">Accent</span><input type="color" id="th-accent" value="#a68df4"
+              oninput="applyTheme()"></div>
+          <div class="th-row"><span class="th-label">Doc background</span><input type="color" id="th-docbg"
+              value="#ffffff" oninput="applyTheme()"></div>
+          <div class="th-row"><span class="th-label">Canvas background</span><input type="color" id="th-pagebg"
+              value="#d6d2cc" oninput="applyTheme()"></div>
+          <div class="th-row"><span class="th-label">Ink</span><input type="color" id="th-ink" value="#1e1b27"
+              oninput="applyTheme()"></div>
+          <div class="th-row"><span class="th-label">Font size</span><input type="range" id="th-fs" min="10" max="18"
+              value="13" oninput="applyTheme()"><span class="th-val" id="th-fs-val">13px</span></div>
+          <div class="th-row"><span class="th-label">Preset</span>
+            <select onchange="applyPreset(this.value)">
+              <option value="">Custom</option>
+              <option value="witch">Witch Task</option>
+              <option value="dark">Dark</option>
+              <option value="minimal">Minimal</option>
+              <option value="warm">Warm</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="panel-section" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+        <div class="panel-hdr">Components — drag to canvas</div>
+        <div id="components-panel">
+          <div class="comp-item" data-type="hero">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="2" width="14" height="3" />
+                <rect x="1" y="7" width="10" height="1.5" />
+                <rect x="1" y="10" width="8" height="1.5" />
+              </svg></div>
+            <div>
+              <div class="cl">Hero</div>
+              <div class="cd">Title, eyebrow, subtitle</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="section-heading">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="3" width="14" height="2" />
+                <rect x="1" y="7" width="10" height="2" />
+              </svg></div>
+            <div>
+              <div class="cl">Section Heading</div>
+              <div class="cd">Eyebrow + H2</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="body-text">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="3" width="14" height="1.5" />
+                <rect x="1" y="6" width="14" height="1.5" />
+                <rect x="1" y="9" width="9" height="1.5" />
+              </svg></div>
+            <div>
+              <div class="cl">Body Text</div>
+              <div class="cd">Paragraph</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="callout">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="2" y="2" width="2" height="12" />
+                <rect x="5" y="4" width="10" height="1.5" />
+                <rect x="5" y="7" width="8" height="1.5" />
+              </svg></div>
+            <div>
+              <div class="cl">Callout</div>
+              <div class="cd">Labelled aside</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="stat-grid">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="3" width="6" height="10" />
+                <rect x="9" y="3" width="6" height="10" />
+              </svg></div>
+            <div>
+              <div class="cl">Stat Grid</div>
+              <div class="cd">4 big numbers</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="feature">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="2" width="14" height="4" />
+                <rect x="1" y="8" width="14" height="6" />
+              </svg></div>
+            <div>
+              <div class="cl">Feature Block</div>
+              <div class="cd">Numbered feature</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="two-col">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="2" width="6" height="12" />
+                <rect x="9" y="2" width="6" height="12" />
+              </svg></div>
+            <div>
+              <div class="cl">Two Column</div>
+              <div class="cd">Two bullet lists</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="roadmap">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="2" width="14" height="3" />
+                <rect x="1" y="7" width="14" height="3" />
+                <rect x="1" y="12" width="14" height="3" />
+              </svg></div>
+            <div>
+              <div class="cl">Roadmap</div>
+              <div class="cd">Status + items</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="meta-bar">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="4" width="4" height="8" />
+                <rect x="6" y="4" width="4" height="8" />
+                <rect x="11" y="4" width="4" height="8" />
+              </svg></div>
+            <div>
+              <div class="cl">Meta Bar</div>
+              <div class="cd">3-col info bar</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="image">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="3" width="14" height="10" />
+                <polyline points="1,10 5,6 8,9 11,6 15,10" />
+              </svg></div>
+            <div>
+              <div class="cl">Image</div>
+              <div class="cd">Full-width image</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="text-image">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <rect x="1" y="2" width="7" height="12" />
+                <rect x="9" y="2" width="6" height="5" />
+                <rect x="9" y="9" width="6" height="1.5" />
+                <rect x="9" y="12" width="4" height="1.5" />
+              </svg></div>
+            <div>
+              <div class="cl">Text + Image</div>
+              <div class="cd">Left / right / below</div>
+            </div>
+          </div>
+          <div class="comp-item" data-type="divider">
+            <div class="ci"><svg viewBox="0 0 16 16">
+                <line x1="1" y1="8" x2="15" y2="8" stroke-dasharray="2,2" />
+              </svg></div>
+            <div>
+              <div class="cl">Divider</div>
+              <div class="cd">Horizontal rule</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <h3 id="modal-title">Edit Block</h3>
+      <div id="modal-fields"></div>
+      <div class="modal-btns">
+        <button class="tb-btn" onclick="closeModal()">Cancel</button>
+        <button class="tb-btn primary" onclick="saveModal()">Apply</button>
+      </div>
+    </div>
+  </div>
+  <div id="drag-ghost"></div>
+  <input type="file" id="load-input" accept=".json" style="display:none" onchange="handleLoad(event)">
+  <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+  <script>
+    let blocks = [], blockId = 0, editingBlockId = null, pendingImgBlockId = null;
+    let imageStore = {};
+    let drag = null;
+    const ghost = document.getElementById('drag-ghost');
+
+    function defaultContent(type) {
+      const d = {
+        hero: { eyebrow: 'Project', title: 'Document Title', subtitle: 'A brief description of this document and its purpose.' },
+        'section-heading': { eyebrow: 'Section', heading: 'Section Heading' },
+        'body-text': { text: 'Write your content here.' },
+        callout: { label: 'Note', text: 'An important aside or supporting detail goes here.' },
+        'stat-grid': { stats: [{ val: '—', desc: 'Metric one' }, { val: '—', desc: 'Metric two' }, { val: '—', desc: 'Metric three' }, { val: '—', desc: 'Metric four' }] },
+        feature: { num: '01', title: 'Feature Name', subtitle: 'Subtitle · detail', body: 'Describe this feature and what it does.' },
+        'two-col': { leftLabel: 'Column A', leftItems: ['Item one', 'Item two', 'Item three'], rightLabel: 'Column B', rightItems: ['Item one', 'Item two', 'Item three'] },
+        roadmap: { items: [{ status: 'done', label: 'Completed item', detail: 'What was done' }, { status: 'wip', label: 'In progress', detail: 'Currently active' }, { status: 'next', label: 'Planned item', detail: 'Coming up' }] },
+        'meta-bar': { cols: [{ label: 'Details', rows: [{ key: 'Status', val: 'Active' }, { key: 'Platform', val: 'iOS / Android' }] }, { label: 'Team', rows: [{ key: '', val: 'Name One' }, { key: '', val: 'Name Two' }] }, { label: 'Stack', rows: [{ key: 'Engine', val: 'Unity / C#' }, { key: 'Design', val: 'Figma' }] }] },
+        image: { hint: 'Image / Screenshot', filename: null },
+        'text-image': { heading: 'Section Title', text: 'Write your content here.', filename: null, hint: 'Image', layout: 'right' },
+        divider: {}
+      };
+      return JSON.parse(JSON.stringify(d[type] || {}));
+    }
+
+    function renderBlock(block) {
+      const c = block.content, id = block.id;
+      const ce = 'contenteditable="true"';
+      const src = f => f && imageStore[f] ? imageStore[f] : null;
+      const imgBtn = `<button class="b-upload-btn" onclick="triggerImg(${id})">Upload image</button>`;
+
+      switch (block.type) {
+        case 'hero': return `<div class="b-hero"><div class="b-eyebrow" ${ce} data-ph="Eyebrow">${c.eyebrow}</div><div class="b-title" ${ce} data-ph="Title">${c.title}</div><div class="b-subtitle" ${ce} data-ph="Subtitle">${c.subtitle}</div></div>`;
+        case 'section-heading': return `<div class="b-sh"><div class="b-eyebrow" ${ce} data-ph="Eyebrow">${c.eyebrow}</div><h2 ${ce} data-ph="Heading">${c.heading}</h2></div>`;
+        case 'body-text': return `<div class="b-body"><p ${ce} data-ph="Body text...">${c.text}</p></div>`;
+        case 'callout': return `<div class="b-callout"><div class="b-cl-label" ${ce} data-ph="Label">${c.label}</div><p ${ce} data-ph="Callout text...">${c.text}</p></div>`;
+        case 'stat-grid': return `<div class="b-stat-grid">${c.stats.map(s => `<div class="b-sc"><div class="b-sv" ${ce} data-ph="—">${s.val}</div><div class="b-sd" ${ce} data-ph="Desc">${s.desc}</div></div>`).join('')}</div>`;
+        case 'feature': return `<div class="b-feature"><div class="b-fh"><div class="b-fnum" ${ce} data-ph="01">${c.num}</div><div><div class="b-ftitle" ${ce} data-ph="Feature name">${c.title}</div><div class="b-fsub" ${ce} data-ph="Subtitle">${c.subtitle}</div></div></div><div class="b-fbody" ${ce} data-ph="Description...">${c.body}</div></div>`;
+        case 'two-col': return `<div class="b-2col"><div class="b-2cell"><div class="b-cl-label" ${ce} data-ph="Column A">${c.leftLabel}</div><ul>${c.leftItems.map(i => `<li ${ce} data-ph="Item">${i}</li>`).join('')}</ul></div><div class="b-2cell"><div class="b-cl-label" ${ce} data-ph="Column B">${c.rightLabel}</div><ul>${c.rightItems.map(i => `<li ${ce} data-ph="Item">${i}</li>`).join('')}</ul></div></div>`;
+        case 'roadmap': return `<div class="b-roadmap">${c.items.map(item => `<div class="b-ri"><span class="b-rs ${item.status}">${item.status === 'done' ? 'Done' : item.status === 'wip' ? 'In progress' : 'Planned'}</span><div><div class="b-rl" ${ce} data-ph="Label">${item.label}</div><div class="b-rd" ${ce} data-ph="Detail">${item.detail}</div></div></div>`).join('')}</div>`;
+        case 'meta-bar': return `<div class="b-meta">${c.cols.map(col => `<div class="b-mc"><div class="b-mcl" ${ce} data-ph="Label">${col.label}</div>${col.rows.map(row => `<div class="b-mr">${row.key ? `<span class="b-mk" ${ce} data-ph="Key">${row.key}</span>` : ''}<span class="b-mv" ${ce} data-ph="Value">${row.val}</span></div>`).join('')}</div>`).join('')}</div>`;
+        case 'image': { const s = src(c.filename); return `<div class="b-img-wrap">${s ? `<img src="${s}" alt="">` : `<span class="img-hint">${c.hint}</span>`}${imgBtn}</div>`; }
+        case 'text-image': { const s = src(c.filename); return `<div class="b-ti layout-${c.layout}"><div class="b-ti-inner"><div class="b-ti-img">${s ? `<img src="${s}" alt="">` : `<span class="img-hint">${c.hint}</span>`}${imgBtn}</div><div class="b-ti-txt"><div class="b-ti-heading" ${ce} data-ph="Heading">${c.heading}</div><p ${ce} data-ph="Write your text here...">${c.text}</p></div></div></div>`; }
+        case 'divider': return `<div class="b-divider"></div>`;
+        default: return '';
+      }
+    }
+
+    function buildBlockEl(block) {
+      const wrap = document.createElement('div');
+      wrap.className = 'doc-block'; wrap.dataset.id = block.id;
+      wrap.innerHTML = renderBlock(block);
+      const ctrl = document.createElement('div'); ctrl.className = 'bctrl';
+      ctrl.innerHTML = `<button class="bcb" onclick="openEdit(${block.id})">✎</button><button class="bcb" onclick="moveBlock(${block.id},-1)">↑</button><button class="bcb" onclick="moveBlock(${block.id},1)">↓</button><button class="bcb del" onclick="deleteBlock(${block.id})">×</button>`;
+      wrap.appendChild(ctrl);
+      wrap.addEventListener('mousedown', e => {
+        if (e.target.closest('[contenteditable]') || e.target.closest('.bctrl') || e.target.closest('.b-upload-btn')) return;
+        startBlockDrag(block.id, e);
+      });
+      return wrap;
+    }
+
+    function rerenderCanvas() {
+      const c = document.getElementById('blocks-container'); c.innerHTML = '';
+      document.getElementById('doc-canvas').classList.toggle('has-blocks', blocks.length > 0);
+      blocks.forEach((b, i) => { c.appendChild(makeDZ(i)); c.appendChild(buildBlockEl(b)); });
+      c.appendChild(makeDZ(blocks.length));
+    }
+
+    function makeDZ(i) { const d = document.createElement('div'); d.className = 'dz'; d.dataset.index = i; return d; }
+    function insertBlock(type, at) { const b = { id: ++blockId, type, content: defaultContent(type) }; blocks.splice(at, 0, b); rerenderCanvas(); }
+    function deleteBlock(id) { blocks = blocks.filter(b => b.id !== id); rerenderCanvas(); }
+    function moveBlock(id, dir) { const i = blocks.findIndex(b => b.id === id), j = i + dir; if (j < 0 || j >= blocks.length) return;[blocks[i], blocks[j]] = [blocks[j], blocks[i]]; rerenderCanvas(); }
+
+    /* DRAG */
+    function startPanelDrag(type, label, e) { e.preventDefault(); drag = { fromPanel: true, compType: type, label, active: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDragMove); document.addEventListener('mouseup', onDragEnd); }
+    function startBlockDrag(id, e) { e.preventDefault(); drag = { fromPanel: false, blockId: id, active: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDragMove); document.addEventListener('mouseup', onDragEnd); }
+
+    function onDragMove(e) {
+      if (!drag) return;
+      if (!drag.active) { if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 5) return; drag.active = true; ghost.textContent = drag.fromPanel ? drag.label : 'Move block'; ghost.style.display = 'block'; if (!drag.fromPanel) { const el = document.querySelector(`.doc-block[data-id="${drag.blockId}"]`); if (el) el.style.opacity = '0.3'; } }
+      ghost.style.left = (e.clientX + 14) + 'px'; ghost.style.top = (e.clientY + 10) + 'px'; highlightDZ(e.clientX, e.clientY);
+    }
+
+    function onDragEnd(e) {
+      document.removeEventListener('mousemove', onDragMove); document.removeEventListener('mouseup', onDragEnd);
+      ghost.style.display = 'none'; document.querySelectorAll('.doc-block').forEach(el => el.style.opacity = '');
+      if (drag && drag.active) { const dz = getNearestDZ(e.clientX, e.clientY); if (dz !== null) { if (drag.fromPanel) { insertBlock(drag.compType, dz); } else { const fi = blocks.findIndex(b => b.id === drag.blockId); if (fi !== -1 && dz !== fi && dz !== fi + 1) { const [m] = blocks.splice(fi, 1); blocks.splice(dz > fi ? dz - 1 : dz, 0, m); rerenderCanvas(); } } } }
+      clearDZH(); drag = null;
+    }
+
+    function getNearestDZ(x, y) {
+      const cw = document.getElementById('canvas-wrap').getBoundingClientRect();
+      if (x < cw.left || x > cw.right || y < cw.top || y > cw.bottom) return null;
+      let best = null, bd = Infinity;
+      document.querySelectorAll('.dz').forEach(dz => { const r = dz.getBoundingClientRect(), dist = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)); if (dist < bd) { bd = dist; best = parseInt(dz.dataset.index); } });
+      return best;
+    }
+    function highlightDZ(x, y) { clearDZH(); const i = getNearestDZ(x, y); if (i === null) return; const d = document.querySelector(`.dz[data-index="${i}"]`); if (d) d.classList.add('over'); }
+    function clearDZH() { document.querySelectorAll('.dz.over').forEach(d => d.classList.remove('over')); }
+
+    document.querySelectorAll('.comp-item').forEach(item => {
+      item.addEventListener('mousedown', e => startPanelDrag(item.dataset.type, item.querySelector('.cl').textContent, e));
+    });
+
+    /* IMAGE UPLOAD */
+    function triggerImg(id) { pendingImgBlockId = id; document.getElementById('img-input').click(); }
+
+    function handleImageUpload(e) {
+      const file = e.target.files[0]; if (!file || pendingImgBlockId === null) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        imageStore[file.name] = ev.target.result;
+        const block = blocks.find(b => b.id === pendingImgBlockId);
+        if (block) { block.content.filename = file.name; rerenderCanvas(); }
+        pendingImgBlockId = null;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+
+    /* SYNC */
+    function syncFromDOM() {
+      blocks.forEach(block => {
+        const el = document.querySelector(`.doc-block[data-id="${block.id}"]`); if (!el) return;
+        const c = block.content, t = s => { const n = el.querySelector(s); return n ? n.textContent.trim() : ''; };
+        switch (block.type) {
+          case 'hero': c.eyebrow = t('.b-eyebrow'); c.title = t('.b-title'); c.subtitle = t('.b-subtitle'); break;
+          case 'section-heading': c.eyebrow = t('.b-eyebrow'); c.heading = t('h2'); break;
+          case 'body-text': c.text = t('p'); break;
+          case 'callout': c.label = t('.b-cl-label'); c.text = t('p'); break;
+          case 'stat-grid': el.querySelectorAll('.b-sc').forEach((cell, i) => { if (c.stats[i]) { c.stats[i].val = cell.querySelector('.b-sv').textContent.trim(); c.stats[i].desc = cell.querySelector('.b-sd').textContent.trim(); } }); break;
+          case 'feature': c.num = t('.b-fnum'); c.title = t('.b-ftitle'); c.subtitle = t('.b-fsub'); c.body = t('.b-fbody'); break;
+          case 'two-col': c.leftLabel = t('.b-2cell:first-child .b-cl-label'); c.rightLabel = t('.b-2cell:last-child .b-cl-label'); c.leftItems = [...el.querySelectorAll('.b-2cell:first-child li')].map(l => l.textContent.trim()); c.rightItems = [...el.querySelectorAll('.b-2cell:last-child li')].map(l => l.textContent.trim()); break;
+          case 'meta-bar': el.querySelectorAll('.b-mc').forEach((cell, ci) => { if (!c.cols[ci]) return; c.cols[ci].label = cell.querySelector('.b-mcl').textContent.trim(); c.cols[ci].rows.forEach((row, ri) => { const re = cell.querySelectorAll('.b-mr')[ri]; if (!re) return; const v = re.querySelector('.b-mv'); if (v) row.val = v.textContent.trim(); }); }); break;
+          case 'text-image': c.heading = t('.b-ti-heading'); c.text = t('.b-ti-txt p'); break;
+        }
+      });
+    }
+
+    /* EDIT MODAL */
+    function openEdit(id) {
+      editingBlockId = id; const block = blocks.find(b => b.id === id), c = block.content;
+      document.getElementById('modal-title').textContent = 'Edit: ' + block.type.replace(/-/g, ' ').toUpperCase();
+      let html = '';
+      switch (block.type) {
+        case 'roadmap':
+          html = c.items.map((item, i) => `<label>Item ${i + 1} status</label><select id="m-rs-${i}"><option value="done"${item.status === 'done' ? ' selected' : ''}>Done</option><option value="wip"${item.status === 'wip' ? ' selected' : ''}>In Progress</option><option value="next"${item.status === 'next' ? ' selected' : ''}>Planned</option></select><label>Label</label><input id="m-rl-${i}" value="${item.label}"><label>Detail</label><input id="m-rd-${i}" value="${item.detail}">`).join('') + `<button class="tb-btn" style="margin-top:12px;border-color:var(--ui-border);color:var(--ui-ink)" onclick="addRoadmapItem(${id})">+ Add item</button>`; break;
+        case 'two-col': html = `<label>Left label</label><input id="m-ll" value="${c.leftLabel}"><label>Left items (one per line)</label><textarea id="m-li">${c.leftItems.join('\n')}</textarea><label>Right label</label><input id="m-rl" value="${c.rightLabel}"><label>Right items (one per line)</label><textarea id="m-ri">${c.rightItems.join('\n')}</textarea>`; break;
+        case 'stat-grid': html = c.stats.map((s, i) => `<label>Stat ${i + 1} value</label><input id="m-sv-${i}" value="${s.val}"><label>Stat ${i + 1} description</label><input id="m-sd-${i}" value="${s.desc}">`).join(''); break;
+        case 'image': html = `<label>Placeholder hint</label><input id="m-ih" value="${c.hint}">${c.filename ? `<p style="font-size:11px;margin-top:8px;opacity:0.55">Image: ${c.filename}</p>` : ''}`; break;
+        case 'text-image': html = `<label>Layout</label><select id="m-tl"><option value="right"${c.layout === 'right' ? ' selected' : ''}>Image right</option><option value="left"${c.layout === 'left' ? ' selected' : ''}>Image left</option><option value="below"${c.layout === 'below' ? ' selected' : ''}>Image below</option></select><label>Image placeholder hint</label><input id="m-ih" value="${c.hint}">${c.filename ? `<p style="font-size:11px;margin-top:8px;opacity:0.55">Image: ${c.filename}</p>` : ''}`; break;
+        default: html = '<p style="font-size:11px;opacity:0.45;padding-top:4px">Click text directly on the canvas to edit.</p>';
+      }
+      document.getElementById('modal-fields').innerHTML = html;
+      document.getElementById('edit-modal').classList.add('open');
+    }
+
+    function addRoadmapItem(id) { blocks.find(b => b.id === id).content.items.push({ status: 'next', label: 'New item', detail: 'Description' }); openEdit(id); }
+
+    function saveModal() {
+      const block = blocks.find(b => b.id === editingBlockId), c = block.content;
+      const v = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+      switch (block.type) {
+        case 'roadmap': c.items.forEach((item, i) => { item.status = v(`m-rs-${i}`); item.label = v(`m-rl-${i}`); item.detail = v(`m-rd-${i}`); }); break;
+        case 'two-col': c.leftLabel = v('m-ll'); c.rightLabel = v('m-rl'); c.leftItems = v('m-li').split('\n').filter(Boolean); c.rightItems = v('m-ri').split('\n').filter(Boolean); break;
+        case 'stat-grid': c.stats.forEach((s, i) => { s.val = v(`m-sv-${i}`); s.desc = v(`m-sd-${i}`); }); break;
+        case 'image': c.hint = v('m-ih'); break;
+        case 'text-image': c.layout = v('m-tl'); c.hint = v('m-ih'); break;
+      }
+      closeModal(); rerenderCanvas();
+    }
+    function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+    /* THEME — scoped to #doc-canvas only */
+    function applyTheme() {
+      const dc = document.getElementById('doc-canvas');
+      const accent = document.getElementById('th-accent').value;
+      const docbg = document.getElementById('th-docbg').value;
+      const pagebg = document.getElementById('th-pagebg').value;
+      const ink = document.getElementById('th-ink').value;
+      const fs = document.getElementById('th-fs').value;
+      function hexA(hex, a) { const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return `rgba(${r},${g},${b},${a})`; }
+      dc.style.setProperty('--doc-accent', accent);
+      dc.style.setProperty('--doc-accent-lt', hexA(accent, 0.12));
+      dc.style.setProperty('--doc-accent-rule', hexA(accent, 0.25));
+      dc.style.setProperty('--doc-bg', docbg);
+      dc.style.setProperty('--doc-ink', ink);
+      dc.style.setProperty('--doc-fs', fs + 'px');
+      dc.style.background = docbg; dc.style.color = ink;
+      document.getElementById('canvas-wrap').style.background = pagebg;
+      document.getElementById('th-fs-val').textContent = fs + 'px';
+    }
+
+    function applyPreset(name) {
+      const p = { witch: { accent: '#a68df4', docbg: '#ffffff', pagebg: '#d6d2cc', ink: '#1e1b27' }, dark: { accent: '#7fd4ff', docbg: '#1a1a2e', pagebg: '#0e0e1a', ink: '#e8e8f0' }, minimal: { accent: '#444444', docbg: '#ffffff', pagebg: '#ebebeb', ink: '#111111' }, warm: { accent: '#d4845a', docbg: '#fffdf8', pagebg: '#e8e2d8', ink: '#2a1f15' } }[name];
+      if (!p) return;
+      document.getElementById('th-accent').value = p.accent; document.getElementById('th-docbg').value = p.docbg; document.getElementById('th-pagebg').value = p.pagebg; document.getElementById('th-ink').value = p.ink;
+      applyTheme();
+    }
+
+    /* SAVE — images embedded as base64 in the JSON */
+    function saveTemplate() {
+      syncFromDOM();
+      const data = { title: document.getElementById('doc-title-input').value, theme: { accent: document.getElementById('th-accent').value, docbg: document.getElementById('th-docbg').value, pagebg: document.getElementById('th-pagebg').value, ink: document.getElementById('th-ink').value, fs: document.getElementById('th-fs').value }, images: imageStore, blocks };
+      const slug = (data.title || 'document').replace(/\s+/g, '-').toLowerCase();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); a.download = slug + '.json'; a.click();
+    }
+
+    function loadTemplate() { document.getElementById('load-input').click(); }
+
+    function handleLoad(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (data.title) document.getElementById('doc-title-input').value = data.title;
+          if (data.images) imageStore = data.images;
+          if (data.theme) { document.getElementById('th-accent').value = data.theme.accent || '#a68df4'; document.getElementById('th-docbg').value = data.theme.docbg || '#ffffff'; document.getElementById('th-pagebg').value = data.theme.pagebg || '#d6d2cc'; document.getElementById('th-ink').value = data.theme.ink || '#1e1b27'; document.getElementById('th-fs').value = data.theme.fs || 13; applyTheme(); }
+          if (data.blocks) { blocks = data.blocks; blockId = blocks.reduce((m, b) => Math.max(m, b.id), 0); rerenderCanvas(); }
+        } catch (err) { alert('Could not read file: ' + err.message); }
+      };
+      reader.readAsText(file); e.target.value = '';
+    }
+
+    function clearCanvas() { if (blocks.length && !confirm('Clear all blocks?')) return; blocks = []; rerenderCanvas(); }
+    function exportPDF() { syncFromDOM(); document.title = document.getElementById('doc-title-input').value || 'document'; window.print(); }
+    rerenderCanvas();
+  </script>
+</body>
+
+</html>
