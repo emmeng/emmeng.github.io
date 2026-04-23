@@ -479,7 +479,8 @@
 
     /* Custom image nodes on the chart */
     .comp-img-node {
-      pointer-events: none;
+      pointer-events: all;
+      cursor: pointer;
     }
 
     /* Feature icon as numbered label */
@@ -664,7 +665,7 @@
         <span class="status-dot"></span>
         In development — OPEN TEST FLIGHT DEMO 2026 SUMMER
       </div>
-      <h1>Witch <span class="outline">Task</span></h1>
+      <h1>Witch Task</h1>
       <p class="hero-hook">A cozy gamified productivity app where you play as a witch running a potion business.
         Real-life tasks become potion orders from charming mushroom townspeople — complete them to earn coins,
         unlock customizations, and grow your shop.</p>
@@ -715,7 +716,6 @@
               <span class="stack-cat-name">Art</span>
               <div class="stack-chips">
                 <span class="stack-chip">Procreate</span>
-                <span class="stack-chip">Clip Studio Paint</span>
                 <span class="stack-chip">Aseprite</span>
               </div>
             </div>
@@ -736,300 +736,17 @@
               <span class="link-text">Devlog Series</span>
               <span class="link-arrow">↗</span>
             </a>
+            <a href="https://witchtask.netlify.app/" class="sidebar-link featured">
+              <span class="link-icon">▶</span>
+              <span class="link-text">Website</span>
+              <span class="link-arrow">↗</span>
+            </a>
           </div>
         </div>
 
       </div>
     </div>
   </div>
-
-  <div class="divider"></div>
-
-  <!-- CONCEPT -->
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Concept</div>
-      <h2 class="section-heading">Core Idea</h2>
-      <p class="body-text">Most productivity apps treat tasks as obligations. Witch Task reframes them as something
-        you want to get to — because completing your physics homework means a mushroom villager gets their potion,
-        your shop grows, and your witch gets a new hat.</p>
-      <p class="body-text">The inspiration came from cozy games like Tabikaeru, Animal Crossing, and Stardew Valley —
-        games that make showing up every day feel rewarding without pressure. The goal was to bring that same energy
-        to a productivity tool without sacrificing actual usefulness.</p>
-
-      <div class="callout">
-        <div class="callout-label">Research basis</div>
-        <p>The task ordering system is built around Big Five personality trait research — users take a quiz on first
-          launch that identifies their learning style, then tasks are surfaced in an order that matches how they
-          actually work best.</p>
-      </div>
-
-      <div class="media-holder video">
-      </div>
-
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- USER RESEARCH                                   -->
-  <!-- ─────────────────────────────────────────────── -->
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">User Research</div>
-      <h2 class="section-heading">Designing From Real Feedback</h2>
-      <p class="body-text">A pre-build survey results from students and viewers shaped the task ordering and personality
-        systems. Two findings stood out: feeling
-        overwhelmed was the #1 reason people procrastinate, and breaking tasks into smaller pieces was the most-wanted
-        solution</p>
-
-      <div class="perf-grid">
-        <div class="perf-card">
-          <div class="perf-val">92%</div>
-          <div class="perf-desc">Regularly experience anxiety or worry</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">69%</div>
-          <div class="perf-desc">Cite feeling overwhelmed as top procrastination cause</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">28%</div>
-          <div class="perf-desc">Prefer breaking tasks into small pieces over any other approach</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">33%</div>
-          <div class="perf-desc">Naturally sequence easy tasks first — informing personality-based ordering</div>
-        </div>
-      </div>
-
-      <div class="research-block-label">Why people procrastinate</div>
-      <div class="bar-chart">
-        <div class="bar-row"><span class="bar-label">Feeling overwhelmed</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:69%"></div>
-          </div><span class="bar-pct">69%</span>
-        </div>
-        <div class="bar-row"><span class="bar-label">Distractions</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:58%"></div>
-          </div><span class="bar-pct">58%</span>
-        </div>
-        <div class="bar-row"><span class="bar-label">Lack of motivation</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:56%"></div>
-          </div><span class="bar-pct">56%</span>
-        </div>
-        <div class="bar-row"><span class="bar-label">Avoiding discomfort</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:47%"></div>
-          </div><span class="bar-pct">47%</span>
-        </div>
-        <div class="bar-row"><span class="bar-label">Fear of failure</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:25%"></div>
-          </div><span class="bar-pct">25%</span>
-        </div>
-      </div>
-
-      <div class="callout">
-        <div class="callout-label">Big Five findings</div>
-        <p>The sample skewed toward high Openness (92%), high Neuroticism (92% frequently anxious), and high
-          Agreeableness
-          (72%) — a typical student profile. Anxiety-aware design is important for this audience.</p>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- PRODUCT RATIONALE — designer framing           -->
-  <!-- ─────────────────────────────────────────────── -->
-
-  <div class="divider"></div>
-
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Product Rationale</div>
-      <h2 class="section-heading">Why This Works</h2>
-      <p class="body-text">People download productivity apps because they already know they need help — they're
-        self-aware enough to seek structure, but something keeps them from sustaining it. Witch Task is built around
-        what that something actually is.</p>
-
-      <div class="rationale-grid">
-
-        <div class="rationale-card">
-          <div class="rationale-num">01</div>
-          <div class="rationale-title">Feeling types need emotional hooks</div>
-          <p class="rationale-body">The mushroom customers aren't decoration. They exist because caring about something
-            — even a small fictional thing — changes your relationship to the work attached to it. When you complete a
-            task, a villager gets their potion and leaves happy. That small moment of resolution is the point. Emotions
-            are a strong motivational system, and cozy games have proven this at scale.</p>
-        </div>
-
-        <div class="rationale-card">
-          <div class="rationale-num">02</div>
-          <div class="rationale-title">Real-time anchoring creates daily ritual</div>
-          <p class="rationale-body">The game world is synchronized to your actual life — real-time weather affects the
-            shop atmosphere, portrait lighting shifts with the time of day, and special events tie to real calendar
-            moments like birthdays and seasonal changes. When your in-game world mirrors the outside one, the app
-            becomes part of your day rather than something you have to remember to open.</p>
-        </div>
-
-        <div class="rationale-card">
-          <div class="rationale-num">03</div>
-          <div class="rationale-title">Small systems build investment</div>
-          <p class="rationale-body">Interactivity is the mechanism of care. The shop refreshes. Silk has new items.
-            DanDan is waiting for a rematch. These small systems aren't filler — they are the reason to return. When
-            users engage with these loops, they build genuine investment in a world that grows alongside their real-life
-            progress. Motivation follows investment, not the other way around.</p>
-        </div>
-
-        <div class="rationale-card">
-          <div class="rationale-num">04</div>
-          <div class="rationale-title">Story progression is unlocked by doing</div>
-          <p class="rationale-body">The mushroom customers are unassuming creatures — they show up, order a potion, and
-            wait. But completing tasks advances their stories. ShuShu returning enough times is what introduces DanDan.
-            The world expands through use. This makes the act of finishing your real tasks the mechanism of narrative
-            discovery, not just a checkbox.</p>
-        </div>
-
-        <div class="rationale-card">
-          <div class="rationale-num">05</div>
-          <div class="rationale-title">Design is the differentiator</div>
-          <p class="rationale-body">In a saturated mobile market, cozy aesthetics remain underlapped — particularly in
-            the productivity space, which has historically competed on features rather than feeling. We believe the
-            niche has been growing for years and is not yet dominated. A beautifully designed, character-driven
-            productivity app targeted at anxious, creative users is a product category that doesn't fully exist yet.</p>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-
-
-  <div class="divider"></div>
-
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Market Analysis</div>
-      <h2 class="section-heading">The Cozy Game Boom</h2>
-      <p class="body-text">Cozy games have had a sustained commercial moment since 2020. Animal Crossing: New
-        Horizons sold 13 million copies in its first six weeks. Stardew Valley has crossed 30 million lifetime.
-        Unpacking, A Short Hike, Spiritfarer, and others have built devoted audiences without violence, urgency,
-        or competition. The genre is no longer niche.</p>
-
-      <div class="perf-grid">
-        <div class="perf-card">
-          <div class="perf-val">13M copies</div>
-          <div class="perf-desc">Animal Crossing: New Horizons in first 6 weeks (2020)</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">30M+ copies</div>
-          <div class="perf-desc">Stardew Valley lifetime sales as of 2023</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">$6.1B</div>
-          <div class="perf-desc">Global productivity app market size (2023)</div>
-        </div>
-        <div class="perf-card">
-          <div class="perf-val">Underlapped</div>
-          <div class="perf-desc">No dominant cozy mobile app that doubles as a real productivity tool</div>
-        </div>
-      </div>
-
-      <div class="market-two-col">
-        <div class="market-block">
-          <div class="market-block-label">Where cozy games are</div>
-          <div class="market-list">
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Dominated by PC and Nintendo Switch</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Mobile cozy is underserved — dominated by gacha and idle</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Audience skews anxious, creative, introverted</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Strong community engagement through YouTube and Discord</span>
-            </div>
-          </div>
-        </div>
-        <div class="market-block">
-          <div class="market-block-label">Where productivity apps are</div>
-          <div class="market-list">
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Saturated market competing on features, not feeling</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>No emotional hook — nothing that makes you want to open them</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>Designed for optimizers, not overwhelmed students</span>
-            </div>
-            <div class="market-item">
-              <span class="market-dot filled"></span>
-              <span>High abandonment rates — apps get deleted within weeks</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="callout" style="margin-top: 20px;">
-        <div class="callout-label">The overlap</div>
-        <p>The cozy game audience and the "person who struggles with productivity" audience are probably the same
-          people. Both skew toward anxious, creative individuals who respond to warmth and low-stakes environments.
-          Witch Task is built for that overlap — a game that earns daily opens through genuine emotional engagement,
-          not notification pressure.</p>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- 2. COMPETITOR ANALYSIS (replace existing)       -->
-  <!-- ─────────────────────────────────────────────── -->
-
-  <div class="divider"></div>
-
-
-
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Competitor Analysis</div>
-      <h2 class="section-heading">What We Learned From The Space</h2>
-      <p class="body-text">A competitive analysis of top-grossing products informed our design decisions, helping us
-        identify opportunities in the
-        market.</p>
-
-      <div class="competitor-grid">
-        <div class="qw">
-          <div class="ql" id="qLeg"></div>
-          <div class="chart-wrap" id="chartWrap">
-            <svg id="qSvg" viewBox="0 0 320 320"></svg>
-            <div class="q-tt" id="qTt"></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ─────────────────────────────────────────────── -->
-  <!-- 3. FEATURES (replace existing — L/R layout)    -->
-  <!-- ─────────────────────────────────────────────── -->
 
   <div class="divider"></div>
 
@@ -1145,309 +862,523 @@
     </div>
   </div>
 
-  <!-- CHARACTERS — replace existing section -->
-  <div class="divider"></div>
-
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Characters</div>
-      <h2 class="section-heading">Characters Introduced So Far</h2>
-
-      <div class="char-layout">
-
-        <div class="char-carousel-col">
-          <div class="char-track-wrap">
-            <div class="char-track">
-
-              <div class="char-card">
-                <div class="media-holder char-art">
-                  <img src="images/mushroom_customers.png" alt="Mushroom customer art">
-                </div>
-                <div class="char-card-body">
-                  <div class="char-name">Mushroom Customers</div>
-                  <div class="char-role">Task requesters</div>
-                  <p class="char-desc">The town inhabitants who order potions — each one corresponds to a real-life
-                    task.
-                    Up to two can be in the shop at once. They wander until tapped, then wait on in the shop while
-                    the user works.</p>
-                </div>
-              </div>
-
-              <div class="char-card">
-                <div class="media-holder char-art">
-                  <img src="images/silk.png" alt="Mushroom customer art">
-                </div>
-                <div class="char-card-body">
-                  <div class="char-name">Silk</div>
-                  <div class="char-role">Wandering merchant</div>
-                  <p class="char-desc">A forest merchant who carries an infinitely expanding shadow bag. Silk's
-                    understanding of human item value is poor — occasional overpricing may occur. Shop resets daily at
-                    7am
-                    after a new border stroll.</p>
-                </div>
-              </div>
-
-              <div class="char-card">
-                <div class="media-holder char-art">
-                  <img src="images/dandan.png" alt="DanDan character art">
-                </div>
-                <div class="char-card-body">
-                  <div class="char-name">DanDan</div>
-                  <div class="char-role">Part-timer</div>
-                  <p class="char-desc">Available shop part timer for hire. Loves playing Forest Fighter 7 on his free
-                    time.</p>
-                </div>
-              </div>
-
-              <div class="char-card">
-                <div class="media-holder empty char-art" data-hint="ShuShu character art"></div>
-                <div class="char-card-body">
-                  <div class="char-name">ShuShu</div>
-                  <div class="char-role">Regular customer</div>
-                  <p class="char-desc">A returning mushroom customer who triggers the DanDan introduction event after
-                    enough leaves are cleaned. Acts as the social connector between the player and new characters.</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <div class="char-dots">
-            <span class="char-dot active"></span>
-            <span class="char-dot"></span>
-            <span class="char-dot"></span>
-            <span class="char-dot"></span>
-          </div>
-        </div>
-
-        <div class="char-description">
-          <p>NPC personality is central to the game — the goal is for users to genuinely look forward to interacting
-            with
-            them the same way Animal Crossing villagers make users want to log in daily.</p>
-          <p>Each character has a distinct personality, a role in the shop ecosystem, and dialogue that updates as the
-            story progresses. More characters are planned as the village expands.</p>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- DEVLOGS -->
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Devlogs</div>
-      <h2 class="section-heading">Following The Build</h2>
-      <p class="body-text">We document progress through a YouTube devlog series — covering concept, technical
-        decisions, art process, and honest updates on what's working and what isn't.</p>
-
-      <div class="devlog-strip">
-        <a href="https://youtu.be/DDXr5ihO84U?si=oj_3rfo_KkqVyWX7" class="devlog-card" target="_blank">
-          <div class="devlog-thumb">
-            <img src="images/wt_devlog_00.png" alt="">
-          </div>
-          <div class="devlog-info">
-            <div class="devlog-num">Devlog 00</div>
-            <div class="devlog-title">Concept, research basis, and first build progress</div>
-          </div>
-        </a>
-        <a href="https://youtu.be/K5rHuHanvEU?si=8OkqGUnArjz165Of" class="devlog-card" target="_blank">
-          <div class="devlog-thumb">
-            <img src="images/wt_devlog_01.png" alt="">
-          </div>
-          <div class="devlog-info">
-            <div class="devlog-num">Devlog 01</div>
-            <div class="devlog-title">Shop system, character customization, gameplay loop</div>
-          </div>
-        </a>
-        <a href="https://youtu.be/uBCpFtgHRd0?si=NpTyDQYIsB2ph7l6" class="devlog-card" target="_blank">
-          <div class="devlog-thumb">
-            <img src="images/wt_devlog_02.png" alt="">
-          </div>
-          <div class="devlog-info">
-            <div class="devlog-num">Devlog 02</div>
-            <div class="devlog-title">Part timer, Forest Fighter 7, achievements, inventory</div>
-          </div>
-        </a>
-      </div>
-
-      <a href="https://youtube.com/@huehueu.studios?si=egLuetRFoH_J6lYG" class="read-more" target="_blank">
-        Watch all devlogs <span class="rm-arrow">→</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- ROADMAP -->
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Roadmap</div>
-      <h2 class="section-heading">Next Plans</h2>
-
-      <div class="roadmap">
-        <div class="roadmap-item">
-          <span class="roadmap-status done">Done</span>
-          <div>
-            <div class="roadmap-label">Core task loop</div>
-            <div class="roadmap-detail">Journal, order system, timer, coin rewards, task completion</div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status done">Done</span>
-          <div>
-            <div class="roadmap-label">Character customization</div>
-            <div class="roadmap-detail">Skin tone, hairstyle, hair color, shirt, hat with shader-based color replacement
-            </div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status done">Done</span>
-          <div>
-            <div class="roadmap-label">Shop + NPCs</div>
-            <div class="roadmap-detail">Silk's daily refresh store, DanDan part-timer, dialogue system, achievement
-              system</div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status done">Done</span>
-          <div>
-            <div class="roadmap-label">Forest Fighter 7 minigame</div>
-            <div class="roadmap-detail">2D fighter with enemy AI, pixel art, landscape mode</div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status wip">In progress</span>
-          <div>
-            <div class="roadmap-label">Shop visual rehaul + ranking system</div>
-            <div class="roadmap-detail">Redesigned shop environment with day/night support, customer satisfaction rating
-            </div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status wip">In progress</span>
-          <div>
-            <div class="roadmap-label">Personality quiz + task ordering</div>
-            <div class="roadmap-detail">Big Five-based onboarding quiz, personalized task surfacing, familiar companion
-              assignment</div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status next">Planned</span>
-          <div>
-            <div class="roadmap-label">Seasonal weather + overarching village storyline</div>
-            <div class="roadmap-detail">Real-time weather integration, multi-arc NPC storylines</div>
-          </div>
-        </div>
-        <div class="roadmap-item">
-          <span class="roadmap-status next">Planned</span>
-          <div>
-            <div class="roadmap-label">Demo release</div>
-            <div class="roadmap-detail">Public demo on iOS and Android — 2025</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
   <!-- ─────────────────────────────────────────────── -->
   <!-- DESIGN GUIDE                                    -->
   <!-- ─────────────────────────────────────────────── -->
 
   <div class="divider"></div>
 
+  <!-- CONCEPT -->
   <div class="section-wrap">
     <div class="section">
-      <div class="section-eyebrow">Design Guide</div>
-      <h2 class="section-heading">Visual Language</h2>
-      <p class="body-text">The art direction aims for handmade warmth — textured lines, soft palettes, and
-        character designs that feel like they came from a sketchbook rather than a design tool. Every visual
-        decision is filtered through the same question: does this feel cozy and inviting?</p>
+      <div class="section-eyebrow">Concept</div>
+      <h2 class="section-heading">Core Idea</h2>
+      <p class="body-text">Most productivity apps treat tasks as obligations. Witch Task reframes them as something
+        you want to get to — because completing your physics homework means a mushroom villager gets their potion,
+        your shop grows, and your witch gets a new hat.</p>
+      <p class="body-text">The inspiration came from cozy games like Tabikaeru, Animal Crossing, and Stardew Valley —
+        games that make showing up every day feel rewarding without pressure. The goal was to bring that same energy
+        to a productivity tool without sacrificing actual usefulness.</p>
 
-      <!-- Color palette -->
-      <div class="design-block">
-        <div class="design-block-label">Color palette</div>
-        <div class="palette-row">
-          <div class="swatch" style="background:#6B4F8E;">
-            <span class="swatch-hex">#6B4F8E</span>
-            <span class="swatch-name">Deep plum</span>
-          </div>
-          <div class="swatch" style="background:#B197FC;">
-            <span class="swatch-hex">#B197FC</span>
-            <span class="swatch-name">Lavender</span>
-          </div>
-          <div class="swatch" style="background:#EAD7F5;">
-            <span class="swatch-hex">#EAD7F5</span>
-            <span class="swatch-name">Soft lilac</span>
-          </div>
-          <div class="swatch" style="background:#F5C6A0;">
-            <span class="swatch-hex">#F5C6A0</span>
-            <span class="swatch-name">Warm peach</span>
-          </div>
-          <div class="swatch" style="background:#7FBF8E;">
-            <span class="swatch-hex">#7FBF8E</span>
-            <span class="swatch-name">Sage green</span>
-          </div>
-          <div class="swatch" style="background:#F7E8B0;">
-            <span class="swatch-hex">#F7E8B0</span>
-            <span class="swatch-name">Soft yellow</span>
-          </div>
-          <div class="swatch dark" style="background:#3B3648;">
-            <span class="swatch-hex">#3B3648</span>
-            <span class="swatch-name">Dark ink</span>
+      <div class="callout">
+        <div class="callout-label">Research basis</div>
+        <p>The task ordering system is built around Big Five personality trait research — users take a quiz on first
+          launch that identifies their learning style, then tasks are surfaced in an order that matches how they
+          actually work best.</p>
+      </div>
+
+      <div class="media-holder video">
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- USER RESEARCH                                   -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">User Research</div>
+      <h2 class="section-heading">Designing From Real Feedback</h2>
+      <p class="body-text">A pre-build survey results from students and viewers shaped the task ordering and personality
+        systems. Two findings stood out: feeling
+        overwhelmed was the #1 reason people procrastinate, and breaking tasks into smaller pieces was the most-wanted
+        solution</p>
+
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-val">92%</div>
+          <div class="perf-desc">Regularly experience anxiety or worry</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">69%</div>
+          <div class="perf-desc">Cite feeling overwhelmed as top procrastination cause</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">28%</div>
+          <div class="perf-desc">Prefer breaking tasks into small pieces over any other approach</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">33%</div>
+          <div class="perf-desc">Naturally sequence easy tasks first — informing personality-based ordering</div>
+        </div>
+      </div>
+
+      <div class="research-block-label">Why people procrastinate</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Feeling overwhelmed</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:69%"></div>
+          </div><span class="bar-pct">69%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Distractions</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:58%"></div>
+          </div><span class="bar-pct">58%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Lack of motivation</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:56%"></div>
+          </div><span class="bar-pct">56%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Avoiding discomfort</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:47%"></div>
+          </div><span class="bar-pct">47%</span>
+        </div>
+        <div class="bar-row"><span class="bar-label">Fear of failure</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:25%"></div>
+          </div><span class="bar-pct">25%</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Big Five findings</div>
+        <p>The sample skewed toward high Openness (92%), high Neuroticism (92% frequently anxious), and high
+          Agreeableness
+          (72%) — a typical student profile. Anxiety-aware design is important for this audience.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- PRODUCT RATIONALE — designer framing           -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="divider"></div>
+
+
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Competitor Analysis</div>
+      <h2 class="section-heading">What We Learned From The Space</h2>
+      <p class="body-text">A competitive analysis of top-grossing products informed our design decisions, helping us
+        identify opportunities in the
+        market.</p>
+
+      <div class="competitor-grid">
+        <div class="qw">
+          <div class="ql" id="qLeg"></div>
+          <div class="chart-wrap" id="chartWrap">
+            <svg id="qSvg" viewBox="0 0 320 320"></svg>
+            <div class="q-tt" id="qTt"></div>
           </div>
         </div>
       </div>
 
-      <!-- Art tools -->
-      <div class="design-two-col" style="margin-top: 20px;">
-        <div class="design-block">
-          <div class="design-block-label">Art tools</div>
-          <div class="design-tool-list">
-            <div class="design-tool">
-              <span class="design-tool-name">Procreate</span>
-              <span class="design-tool-use">Character art, environment illustration, UI assets</span>
+    </div>
+  </div>
+
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- 3. FEATURES (replace existing — L/R layout)    -->
+  <!-- ─────────────────────────────────────────────── -->
+
+
+
+
+
+  <div class="divider"></div>
+
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Market Analysis</div>
+      <h2 class="section-heading">The Cozy Game Boom</h2>
+      <p class="body-text">Cozy games have had a sustained commercial moment since 2020. Animal Crossing: New
+        Horizons sold 13 million copies in its first six weeks. Stardew Valley has crossed 30 million lifetime.
+        Unpacking, A Short Hike, Spiritfarer, and others have built devoted audiences without violence, urgency,
+        or competition. The genre is no longer niche.</p>
+
+      <div class="perf-grid">
+        <div class="perf-card">
+          <div class="perf-val">13M copies</div>
+          <div class="perf-desc">Animal Crossing: New Horizons in first 6 weeks (2020)</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">30M+ copies</div>
+          <div class="perf-desc">Stardew Valley lifetime sales as of 2023</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">$6.1B</div>
+          <div class="perf-desc">Global productivity app market size (2023)</div>
+        </div>
+        <div class="perf-card">
+          <div class="perf-val">Underlapped</div>
+          <div class="perf-desc">No dominant cozy mobile app that doubles as a real productivity tool</div>
+        </div>
+      </div>
+
+      <div class="market-two-col">
+        <div class="market-block">
+          <div class="market-block-label">Where cozy games are</div>
+          <div class="market-list">
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Dominated by PC and Nintendo Switch</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Clip Studio Paint</span>
-              <span class="design-tool-use">Linework, textured brushes, animation frames</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Mobile cozy is underserved — dominated by gacha and idle</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Aseprite</span>
-              <span class="design-tool-use">Pixel art and frame-by-frame animation for minigame</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Audience skews anxious, creative, introverted</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Figma</span>
-              <span class="design-tool-use">UI layout, wireframing, component planning</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Strong community engagement through YouTube and Discord</span>
             </div>
           </div>
         </div>
-
-        <div class="design-block">
-          <div class="design-block-label">Visual principles</div>
-          <div class="design-tool-list">
-            <div class="design-tool">
-              <span class="design-tool-name">Handmade feel</span>
-              <span class="design-tool-use">Textured brushes, slight imperfections, sketchy outlines</span>
+        <div class="market-block">
+          <div class="market-block-label">Where productivity apps are</div>
+          <div class="market-list">
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Saturated market competing on features, not feeling</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Isometric layout</span>
-              <span class="design-tool-use">Shop uses isometric perspective for depth without 3D complexity</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>No emotional hook — nothing that makes you want to open them</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Soft contrast</span>
-              <span class="design-tool-use">Never harsh black on white — always warm dark ink on muted
-                backgrounds</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>Designed for optimizers, not overwhelmed students</span>
             </div>
-            <div class="design-tool">
-              <span class="design-tool-name">Personality in UI</span>
-              <span class="design-tool-use">Buttons and menus have character — not flat material design</span>
+            <div class="market-item">
+              <span class="market-dot filled"></span>
+              <span>High abandonment rates — apps get deleted within weeks</span>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="callout" style="margin-top: 20px;">
+        <div class="callout-label">The overlap</div>
+        <p>The cozy game audience and the "person who struggles with productivity" audience are probably the same
+          people. Both skew toward anxious, creative individuals who respond to warmth and low-stakes environments.
+          Witch Task is built for that overlap — a game that earns daily opens through genuine emotional engagement,
+          not notification pressure.</p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- 2. COMPETITOR ANALYSIS (replace existing)       -->
+  <!-- ─────────────────────────────────────────────── -->
+
+  <div class="divider"></div>
+
+  <!-- CHARACTERS + VISUAL DESIGN (merged) -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-eyebrow">Characters &amp; Visual Design</div>
+      <h2 class="section-heading">World &amp; Art Direction</h2>
+
+      <div class="char-design-split">
+
+        <!-- LEFT: Character carousel -->
+        <div class="char-split-left">
+          <div class="char-split-label">Characters</div>
+          <div class="char-layout">
+
+            <div class="char-carousel-col">
+              <div class="char-track-wrap">
+                <div class="char-track">
+
+                  <div class="char-card">
+                    <div class="media-holder char-art">
+                      <img src="images/mushroom_customers.png" alt="Mushroom customer art">
+                    </div>
+                    <div class="char-card-body">
+                      <div class="char-name">Mushroom Customers</div>
+                      <div class="char-role">Task requesters</div>
+                      <p class="char-desc">The town inhabitants who order potions — each one corresponds to a real-life
+                        task.
+                        Up to two can be in the shop at once. They wander until tapped, then wait on in the shop while
+                        the user works.</p>
+                    </div>
+                  </div>
+
+                  <div class="char-card">
+                    <div class="media-holder char-art">
+                      <img src="images/silk.png" alt="Mushroom customer art">
+                    </div>
+                    <div class="char-card-body">
+                      <div class="char-name">Silk</div>
+                      <div class="char-role">Wandering merchant</div>
+                      <p class="char-desc">A forest merchant who carries an infinitely expanding shadow bag. Silk's
+                        understanding of human item value is poor — occasional overpricing may occur. Shop resets daily
+                        at
+                        7am
+                        after a new border stroll.</p>
+                    </div>
+                  </div>
+
+                  <div class="char-card">
+                    <div class="media-holder char-art">
+                      <img src="images/dandan.png" alt="DanDan character art">
+                    </div>
+                    <div class="char-card-body">
+                      <div class="char-name">DanDan</div>
+                      <div class="char-role">Part-timer</div>
+                      <p class="char-desc">Available shop part timer for hire. Loves playing Forest Fighter 7 on his
+                        free
+                        time.</p>
+                    </div>
+                  </div>
+
+                  <div class="char-card">
+                    <div class="media-holder empty char-art" data-hint="ShuShu character art"></div>
+                    <div class="char-card-body">
+                      <div class="char-name">ShuShu</div>
+                      <div class="char-role">Regular customer</div>
+                      <p class="char-desc">A returning mushroom customer who triggers the DanDan introduction event
+                        after
+                        enough leaves are cleaned. Acts as the social connector between the player and new characters.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="char-dots">
+                <span class="char-dot active"></span>
+                <span class="char-dot"></span>
+                <span class="char-dot"></span>
+                <span class="char-dot"></span>
+              </div>
+            </div>
+
+          </div><!-- end char-layout -->
+
+          <div class="char-description" style="margin-top:16px;">
+            <p>NPC personality is central to the game — users should genuinely look forward to interacting with them the
+              same way Animal Crossing villagers create daily login motivation.</p>
+            <p>Each character has a distinct personality, a role in the shop ecosystem, and dialogue that updates as the
+              story progresses.</p>
+          </div>
+        </div><!-- end char-split-left -->
+
+        <!-- RIGHT: Visual design -->
+        <div class="char-split-right">
+          <div class="char-split-label">Visual Language</div>
+          <p class="body-text" style="margin-bottom:16px;">Art direction aims for handmade warmth — textured lines, soft
+            palettes, and character designs that feel like a sketchbook rather than a design tool.</p>
+          <div class="design-block">
+            <div class="design-block-label">Color palette</div>
+            <div class="palette-row">
+              <div class="swatch" style="background:#6B4F8E;">
+                <span class="swatch-hex">#6B4F8E</span>
+                <span class="swatch-name">Deep plum</span>
+              </div>
+              <div class="swatch" style="background:#B197FC;">
+                <span class="swatch-hex">#B197FC</span>
+                <span class="swatch-name">Lavender</span>
+              </div>
+              <div class="swatch" style="background:#EAD7F5;">
+                <span class="swatch-hex">#EAD7F5</span>
+                <span class="swatch-name">Soft lilac</span>
+              </div>
+              <div class="swatch" style="background:#F5C6A0;">
+                <span class="swatch-hex">#F5C6A0</span>
+                <span class="swatch-name">Warm peach</span>
+              </div>
+              <div class="swatch" style="background:#7FBF8E;">
+                <span class="swatch-hex">#7FBF8E</span>
+                <span class="swatch-name">Sage green</span>
+              </div>
+              <div class="swatch" style="background:#F7E8B0;">
+                <span class="swatch-hex">#F7E8B0</span>
+                <span class="swatch-name">Soft yellow</span>
+              </div>
+              <div class="swatch dark" style="background:#3B3648;">
+                <span class="swatch-hex">#3B3648</span>
+                <span class="swatch-name">Dark ink</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Art tools -->
+          <div class="design-two-col" style="margin-top: 20px;">
+            <div class="design-block">
+              <div class="design-block-label">Art tools</div>
+              <div class="design-tool-list">
+                <div class="design-tool">
+                  <span class="design-tool-name">Procreate</span>
+                  <span class="design-tool-use">Character art, environment illustration, UI assets</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Clip Studio Paint</span>
+                  <span class="design-tool-use">Linework, textured brushes, animation frames</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Aseprite</span>
+                  <span class="design-tool-use">Pixel art and frame-by-frame animation for minigame</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Figma</span>
+                  <span class="design-tool-use">UI layout, wireframing, component planning</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="design-block">
+              <div class="design-block-label">Visual principles</div>
+              <div class="design-tool-list">
+                <div class="design-tool">
+                  <span class="design-tool-name">Handmade feel</span>
+                  <span class="design-tool-use">Textured brushes, slight imperfections, sketchy outlines</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Isometric layout</span>
+                  <span class="design-tool-use">Shop uses isometric perspective for depth without 3D complexity</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Soft contrast</span>
+                  <span class="design-tool-use">Never harsh black on white — always warm dark ink on muted
+                    backgrounds</span>
+                </div>
+                <div class="design-tool">
+                  <span class="design-tool-name">Personality in UI</span>
+                  <span class="design-tool-use">Buttons and menus have character — not flat material design</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="divider"></div>
+
+      <!-- DEVLOGS -->
+      <div class="section-wrap">
+        <div class="section">
+          <div class="section-eyebrow">Devlogs</div>
+          <h2 class="section-heading">Following The Build</h2>
+          <p class="body-text">We document progress through a YouTube devlog series — covering concept, technical
+            decisions, art process, and honest updates on what's working and what isn't.</p>
+
+          <div class="devlog-strip">
+            <a href="https://youtu.be/DDXr5ihO84U?si=oj_3rfo_KkqVyWX7" class="devlog-card" target="_blank">
+              <div class="devlog-thumb">
+                <img src="images/wt_devlog_00.png" alt="">
+              </div>
+              <div class="devlog-info">
+                <div class="devlog-num">Devlog 00</div>
+                <div class="devlog-title">Concept, research basis, and first build progress</div>
+              </div>
+            </a>
+            <a href="https://youtu.be/K5rHuHanvEU?si=8OkqGUnArjz165Of" class="devlog-card" target="_blank">
+              <div class="devlog-thumb">
+                <img src="images/wt_devlog_01.png" alt="">
+              </div>
+              <div class="devlog-info">
+                <div class="devlog-num">Devlog 01</div>
+                <div class="devlog-title">Shop system, character customization, gameplay loop</div>
+              </div>
+            </a>
+            <a href="https://youtu.be/uBCpFtgHRd0?si=NpTyDQYIsB2ph7l6" class="devlog-card" target="_blank">
+              <div class="devlog-thumb">
+                <img src="images/wt_devlog_02.png" alt="">
+              </div>
+              <div class="devlog-info">
+                <div class="devlog-num">Devlog 02</div>
+                <div class="devlog-title">Part timer, Forest Fighter 7, achievements, inventory</div>
+              </div>
+            </a>
+          </div>
+
+          <a href="https://youtube.com/@huehueu.studios?si=egLuetRFoH_J6lYG" class="read-more" target="_blank">
+            Watch all devlogs <span class="rm-arrow">→</span>
+          </a>
+
+        </div>
+      </div>
+<div class="divider"></div>
+<!-- ROADMAP -->
+<div class="section-wrap">
+  <div class="section">
+    <div class="section-eyebrow">Roadmap</div>
+    <h2 class="section-heading">Next Plans</h2>
+
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <span class="roadmap-status done">Done</span>
+        <div>
+          <div class="roadmap-label">Core task loop</div>
+          <div class="roadmap-detail">Journal, order system, timer, coin rewards, task completion</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-status done">Done</span>
+        <div>
+          <div class="roadmap-label">Forest Fighter 7 minigame</div>
+          <div class="roadmap-detail">2D fighter with enemy AI, pixel art, landscape mode</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-status wip">In progress</span>
+        <div>
+          <div class="roadmap-label">Demo release</div>
+          <div class="roadmap-detail">Public demo for playtesting and feedback - 2026
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-status wip">In progress</span>
+        <div>
+          <div class="roadmap-label">Personality quiz + task ordering</div>
+          <div class="roadmap-detail">Big Five-based onboarding quiz, personalized task surfacing, familiar companion
+            assignment</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-status next">Planned</span>
+        <div>
+          <div class="roadmap-label">Seasonal weather + overarching village storyline</div>
+          <div class="roadmap-detail">Real-time weather integration, multi-arc NPC storylines</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-status next">Planned</span>
+        <div>
+          <div class="roadmap-label">App release</div>
+          <div class="roadmap-detail">ReleaseiOS and Android — 2027</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
       <script>
 

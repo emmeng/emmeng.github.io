@@ -131,12 +131,12 @@
     <div class="section">
       <div class="section-eyebrow">Overview</div>
       <h2 class="section-heading">Radiation Data Made Spatial</h2>
-      <p class="body-text">The H2DPI — a handheld dual particle imager — detects radiation and generates waveforms
+      <p class="body-text">The H2DPI (handheld dual particle imager) detects radiation and generates waveforms
         across 32 light detectors. Those waveforms are processed into cone-shaped data structures representing probable
-        source directions. The HoloLens 2 receives those cones, calculates back-projection, and overlays the resulting
+        source directions. Our HoloLens 2 program receives those cones, calculates back-projection, and overlays the resulting
         heatmap directly onto the user's physical surroundings.</p>
       <p class="body-text">Radiation images previously required users to mentally project 2D angular data into 3D
-        space. The MR overlay eliminates that step, making source localization accessible to non-specialists —
+        space. The MR overlay eliminates that step, making source localization accessible to non-specialists such as
         emergency responders, inspectors, or personnel without radiation imaging training.</p>
 
       <div class="callout">
@@ -160,11 +160,11 @@
     <div class="section">
       <div class="section-eyebrow">Research Context</div>
       <h2 class="section-heading">Why MR Data Visualization Is Important</h2>
-      <p class="body-text">The H2DPI works by detecting double-scatter events — pairs of radiation interactions that
+      <p class="body-text">The H2DPI works by detecting double-scatter events, which are pairs of radiation interactions that
         occur within 30 nanoseconds of each other across two separate detector volumes. Each double-scatter event
         produces an estimated incidence cone: a geometric shape representing the probable direction the radiation came
         from. Once enough cones are stacked over time, their overlap reveals where the source is.</p>
-      <p class="body-text">Until now, those cone stacks were displayed as 2D angular plots on a screen — azimuth on
+      <p class="body-text">Until now, those cone stacks were displayed as 2D angular plots on a screen, azimuth on
         one axis, altitude on the other. To use them, a trained operator had to mentally translate that 2D map into
         a 3D direction relative to where they were standing. That translation step is slow, error-prone, and requires
         specialist knowledge.</p>
@@ -172,11 +172,10 @@
       <div class="callout">
         <div class="callout-label">What MR changes</div>
         <p>By projecting the back-projected image directly onto the spatial mesh of the real environment, the angular
-          data becomes a heatmap on the actual walls, floors, and objects around the user. The translation step
-          disappears — and the hotspot appears.
+          data becomes a heatmap on the actual walls, floors, and objects around the user.
           <br>
           <br>
-          Our system also added a neural network mode for low-event-rate situations — when
+          Our system also added a neural network mode for low-event-rate situations. When
           double-scatter events are too sparse to form a clear image, single-interaction count rates across all 20
           detector volumes are fed into a trained network that predicts the source's azimuthal direction in under one
           second, displaying a yellow arrow in the user's field of view in the HoloLens.
@@ -194,7 +193,7 @@
       <div class="section-eyebrow">System Context</div>
       <h2 class="section-heading">Where My Work Sat In The Pipeline</h2>
       <p class="body-text">The full system spans hardware detection, data processing, and MR visualization. My work
-        was on the Unity/HoloLens side — where the data exists and requires visualization.</p>
+        was on the Unity/HoloLens side where the data has been received and requires visualization.</p>
 
       <!-- FIX 2: pipeline uses flex-wrap instead of overflow-x: auto (handled in CSS) -->
       <div class="pipeline">
@@ -384,8 +383,8 @@
     <div class="section">
       <div class="section-eyebrow">Impact</div>
       <h2 class="section-heading">Testing Outcomes</h2>
-      <p class="body-text">The system was demonstrated live with real radioactive sources — a 137Cs gamma source and
-        a 252Cf spontaneous fission source — and produced converged radiation images within 20–60 seconds of
+      <p class="body-text">The system was demonstrated live with real radioactive sources (a 137Cs gamma source and
+        a 252Cf spontaneous fission source) and produced converged radiation images within 20–60 seconds of
         acquisition. The results were published in Nature Scientific Reports in 2024.</p>
 
       <div class="perf-grid">

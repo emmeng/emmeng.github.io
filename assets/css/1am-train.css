@@ -110,12 +110,11 @@
 }
 
 .stat-card {
-  border: 1px solid rgba(177, 151, 252, 0.25);
   border-radius: 4px;
   padding: 16px;
-  background: var(--white);
+  background: transparent;
   text-align: center;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s;
 }
 
 .stat-card:hover {
@@ -297,7 +296,7 @@
 .feature-body-lr {
   padding: 16px 18px;
   display: grid;
-  grid-template-columns: 1fr 260px;
+  grid-template-columns: 1fr 400px;
   gap: 20px;
   align-items: start;
 }
@@ -305,9 +304,14 @@
 .feature-body-rl {
   padding: 16px 18px;
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 400px 1fr;
   gap: 20px;
   align-items: start;
+}
+
+.feature-body-lr .media-holder,
+.feature-body-rl .media-holder {
+  margin: 0;
 }
 
 .feature-text p {
@@ -331,11 +335,8 @@
 
 /* ── SHARED OVERRIDES for purple palette ── */
 .section-wrap {
-  background: rgba(255, 255, 255, 0.84);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  border: 1px solid rgba(177, 151, 252, 0.15);
-  border-radius: 4px;
+  border: none;
+  border-radius: 0;
 }
 
 .section-eyebrow {
@@ -484,4 +485,38 @@
 .read-more {
   color: var(--blue);
   border-bottom-color: rgba(177, 151, 252, 0.3);
+}
+
+/* ── NATURAL-SIZE VIDEO ── */
+/* Use .media-holder.natural instead of .media-holder.video for clips
+   that should render at their own resolution (e.g. 480×480 square).
+   The shared .video class forces 16:9 padding — this undoes that. */
+.media-holder.natural {
+  padding-bottom: 0;
+  height: auto;
+  background: transparent;
+}
+
+.media-holder.natural video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.media-holder.natural .video-caption {
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dark);
+  opacity: 0.45;
+}
+
+/* On mobile, stack the lr/rl grids to single column */
+@media (max-width: 700px) {
+
+  .feature-body-lr,
+  .feature-body-rl {
+    grid-template-columns: 1fr;
+  }
 }

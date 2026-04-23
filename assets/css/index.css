@@ -223,6 +223,8 @@ body {
     text-transform: uppercase;
     color: var(--white);
     margin-bottom: 48px;
+    user-select: none;
+    pointer-events: none;
 }
 
 .exp-item {
@@ -234,11 +236,19 @@ body {
     transform: rotate(30deg) translateX(200px);
     opacity: 0;
     will-change: transform, opacity;
+    padding: 14px 20px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease;
+}
+
+.exp-item:hover {
+    transform: translateX(8px);
 }
 
 .exp-bullet {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
     background-image: url('../../images/star.png');
     background-size: contain;
@@ -357,7 +367,8 @@ body {
 .skill-box-items {
     font-size: 14px;
     font-weight: 400;
-    color: var(--light-grey);
+    color: var(--dark);
+    opacity: 0.55;
     text-align: center;
 }
 
@@ -451,22 +462,13 @@ body {
 }
 
 .awards-label {
-    font-size: 11px;
+    font-size: 36px;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--white);
     margin-bottom: 36px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.awards-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.3);
+    text-align: center;
 }
 
 .award-item {

@@ -3,9 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doc Builder</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
     rel="stylesheet">
   <style>
@@ -25,30 +23,30 @@
 
     :root {
       --ui-accent: #a68df4;
-      --ui-bg: #faf8f4;
       --ui-ink: #1e1b27;
       --ui-ink-dim: rgba(30, 27, 39, 0.45);
       --ui-panel: #f4f2f0;
       --ui-border: rgba(30, 27, 39, 0.1);
-      --panel-w: 264px;
+      --panel-w: 268px;
       --mono: 'Source Code Pro', monospace;
     }
 
     body {
       display: flex;
       flex-direction: column;
-      background: var(--ui-bg);
       font-family: var(--mono);
-      color: var(--ui-ink)
+      color: var(--ui-ink);
+      background: #f0ede8
     }
 
+    /* TOPBAR */
     #topbar {
       height: 44px;
       background: var(--ui-ink);
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      gap: 9px;
+      padding: 0 14px;
+      gap: 8px;
       flex-shrink: 0;
       z-index: 100
     }
@@ -58,7 +56,7 @@
       font-weight: 700;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.3);
       flex: 1
     }
 
@@ -66,20 +64,20 @@
       font-family: var(--mono);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 5px 11px;
+      padding: 5px 10px;
       border-radius: 2px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.13);
       background: transparent;
-      color: rgba(255, 255, 255, 0.65);
+      color: rgba(255, 255, 255, 0.6);
       cursor: pointer;
-      transition: background .15s, color .15s;
+      transition: all .15s;
       white-space: nowrap
     }
 
     .tb-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.09);
       color: #fff
     }
 
@@ -90,8 +88,14 @@
     }
 
     .tb-btn.primary:hover {
-      background: #8b72d4;
-      border-color: #8b72d4
+      background: #8b72d4
+    }
+
+    .tb-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      flex-shrink: 0
     }
 
     #doc-title-input {
@@ -99,11 +103,11 @@
       font-size: 12px;
       font-weight: 600;
       background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 2px;
       color: #fff;
-      padding: 4px 10px;
-      width: 170px;
+      padding: 4px 9px;
+      width: 160px;
       outline: none
     }
 
@@ -111,39 +115,48 @@
       border-color: var(--ui-accent)
     }
 
+    /* MAIN */
     #main {
       display: flex;
       flex: 1;
       overflow: hidden
     }
 
+    /* CANVAS */
     #canvas-wrap {
       flex: 1;
       overflow-y: auto;
-      background: #d6d2cc;
       padding: 32px;
       display: flex;
       flex-direction: column;
-      align-items: center
+      align-items: center;
+      background: #d4d0ca;
+      transition: background .2s
     }
 
-    /* ── DOC CANVAS — theme tokens scoped here only ── */
     #doc-canvas {
       width: 794px;
       min-height: 1123px;
-      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 36px rgba(0, 0, 0, 0.22);
       padding: 52px 56px;
       position: relative;
       flex-shrink: 0;
       font-family: var(--mono);
-      --doc-accent: #a68df4;
-      --doc-accent-lt: rgba(166, 141, 244, 0.12);
-      --doc-accent-rule: rgba(166, 141, 244, 0.25);
-      --doc-bg: #ffffff;
-      --doc-ink: #1e1b27;
-      --doc-fs: 13px;
-      background: var(--doc-bg);
-      color: var(--doc-ink);
+      --da: #a68df4;
+      --da-lt: rgba(166, 141, 244, 0.12);
+      --da-rule: rgba(166, 141, 244, 0.25);
+      --dbg: #fff;
+      --dink: #1e1b27;
+      --dfs: 13px;
+      background: var(--dbg);
+      color: var(--dink);
+    }
+
+    /* dot grid toggle */
+    #doc-canvas.show-grid {
+      background-image: radial-gradient(circle, rgba(166, 141, 244, 0.22) 1px, transparent 1px);
+      background-size: 44px 44px;
+      background-color: var(--dbg);
     }
 
     #drop-hint {
@@ -153,7 +166,7 @@
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      opacity: 0.3
+      opacity: 0.28
     }
 
     #drop-hint span {
@@ -161,10 +174,9 @@
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--doc-ink);
+      color: var(--dink);
       border: 2px dashed currentColor;
-      padding: 20px 32px;
-      border-radius: 4px
+      padding: 18px 28px
     }
 
     #doc-canvas.has-blocks #drop-hint {
@@ -172,7 +184,7 @@
     }
 
     .dz {
-      height: 8px;
+      height: 7px;
       margin: 2px 0;
       border-radius: 2px;
       transition: all .12s;
@@ -180,9 +192,9 @@
     }
 
     .dz.over {
-      height: 36px;
-      background: var(--doc-accent-lt);
-      border: 1.5px dashed var(--doc-accent)
+      height: 34px;
+      background: var(--da-lt);
+      border: 1.5px dashed var(--da)
     }
 
     .dz.over::after {
@@ -196,9 +208,10 @@
       font-weight: 700;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--doc-accent)
+      color: var(--da)
     }
 
+    /* RIGHT PANEL */
     #right-panel {
       width: var(--panel-w);
       display: flex;
@@ -208,47 +221,44 @@
       background: var(--ui-panel)
     }
 
-    .panel-section {
-      border-bottom: 1px solid var(--ui-border);
-      flex-shrink: 0
-    }
-
-    .panel-hdr {
+    .ph {
       font-size: 9px;
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--ui-ink-dim);
-      padding: 9px 13px 7px;
-      background: rgba(0, 0, 0, 0.03)
-    }
-
-    #theme-panel {
-      overflow-y: auto
-    }
-
-    .th-row {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 6px 13px;
+      padding: 8px 12px 6px;
+      background: rgba(0, 0, 0, 0.03);
       border-bottom: 1px solid var(--ui-border)
     }
 
-    .th-row:last-child {
+    #theme-panel {
+      overflow-y: auto;
+      border-bottom: 1px solid var(--ui-border)
+    }
+
+    .tr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-bottom: 1px solid var(--ui-border)
+    }
+
+    .tr:last-child {
       border-bottom: none
     }
 
-    .th-label {
+    .tl {
       font-size: 10px;
       font-weight: 600;
       color: var(--ui-ink);
       flex: 1
     }
 
-    .th-row input[type=color] {
-      width: 26px;
-      height: 20px;
+    .tr input[type=color] {
+      width: 24px;
+      height: 19px;
       border: 1px solid var(--ui-border);
       border-radius: 2px;
       cursor: pointer;
@@ -256,22 +266,22 @@
       background: none
     }
 
-    .th-row input[type=range] {
-      width: 76px;
+    .tr input[type=range] {
+      width: 72px;
       accent-color: var(--ui-accent)
     }
 
-    .th-val {
+    .tv {
       font-size: 9px;
       color: var(--ui-ink-dim);
-      min-width: 26px;
+      min-width: 28px;
       text-align: right
     }
 
-    .th-row select {
+    .tr select {
       font-family: var(--mono);
       font-size: 10px;
-      padding: 2px 5px;
+      padding: 2px 4px;
       border: 1px solid var(--ui-border);
       border-radius: 2px;
       background: #fff;
@@ -279,60 +289,66 @@
       cursor: pointer
     }
 
-    #components-panel {
+    .tr input[type=checkbox] {
+      accent-color: var(--ui-accent);
+      cursor: pointer
+    }
+
+    #comp-panel {
       flex: 1;
       overflow-y: auto
     }
 
-    .comp-item {
+    .ci-item {
       display: flex;
       align-items: center;
-      gap: 9px;
-      padding: 7px 13px;
+      gap: 8px;
+      padding: 6px 12px;
       border-bottom: 1px solid var(--ui-border);
       cursor: grab;
       transition: background .12s;
       user-select: none
     }
 
-    .comp-item:hover {
+    .ci-item:hover {
       background: rgba(166, 141, 244, 0.09)
     }
 
-    .ci {
-      width: 26px;
-      height: 19px;
-      border: 1px solid rgba(166, 141, 244, 0.3);
+    .cico {
+      width: 24px;
+      height: 18px;
+      border: 1px solid rgba(166, 141, 244, 0.28);
       border-radius: 2px;
-      background: rgba(166, 141, 244, 0.1);
+      background: rgba(166, 141, 244, 0.09);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0
     }
 
-    .ci svg {
-      width: 13px;
-      height: 13px;
+    .cico svg {
+      width: 12px;
+      height: 12px;
       stroke: var(--ui-accent);
       fill: none;
       stroke-width: 1.5
     }
 
-    .cl {
+    .cnm {
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--ui-ink)
     }
 
-    .cd {
+    .cds {
       font-size: 9px;
       color: var(--ui-ink-dim);
       margin-top: 1px
     }
 
+    /* BLOCK WRAPPER */
     .doc-block {
       position: relative
     }
@@ -343,25 +359,25 @@
 
     .bctrl {
       position: absolute;
-      right: -40px;
+      right: -38px;
       top: 50%;
       transform: translateY(-50%);
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       opacity: 0;
       transition: opacity .15s;
-      z-index: 10
+      z-index: 20
     }
 
     .bcb {
-      width: 28px;
-      height: 22px;
+      width: 26px;
+      height: 20px;
       background: var(--ui-ink);
       border: none;
       border-radius: 2px;
       color: #fff;
-      font-size: 11px;
+      font-size: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -374,13 +390,14 @@
     }
 
     .bcb.del:hover {
-      background: #e05a5a
+      background: #d94f4f
     }
 
-    /* ── BLOCK STYLES — all font sizes scale from --doc-fs ── */
+    /* ── DOC BLOCK STYLES (all font sizes relative to --dfs) ── */
     #doc-canvas [contenteditable] {
       outline: none;
-      cursor: text
+      cursor: text;
+      min-width: 4px
     }
 
     #doc-canvas [contenteditable]:focus {
@@ -390,46 +407,121 @@
 
     #doc-canvas [contenteditable]:empty::before {
       content: attr(data-ph);
-      opacity: 0.28;
+      opacity: 0.25;
       pointer-events: none
     }
 
+    /* inline add/remove buttons (only visible on hover, hidden in print) */
+    .row-add-btn,
+    .row-del-btn,
+    .status-btn,
+    .layout-cycle-btn {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all .12s;
+      padding: 2px 7px
+    }
+
+    .row-add-btn {
+      background: var(--da-lt);
+      color: var(--da);
+      display: block;
+      width: 100%;
+      margin-top: 6px;
+      border: 1px dashed var(--da-rule)
+    }
+
+    .row-add-btn:hover {
+      background: var(--da);
+      color: #fff
+    }
+
+    .row-del-btn {
+      background: transparent;
+      color: rgba(217, 79, 79, 0.5);
+      border: none;
+      padding: 2px 5px;
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0
+    }
+
+    .row-del-btn:hover {
+      color: #d94f4f;
+      opacity: 1 !important
+    }
+
+    .status-btn {
+      background: transparent;
+      border: 1px solid var(--da-rule);
+      color: var(--da);
+      padding: 1px 6px;
+      cursor: pointer
+    }
+
+    .status-btn:hover {
+      background: var(--da);
+      color: #fff
+    }
+
+    .layout-cycle-btn {
+      background: var(--da-lt);
+      color: var(--da);
+      border: 1px solid var(--da-rule);
+      padding: 2px 8px;
+      font-size: 8px
+    }
+
+    .layout-cycle-btn:hover {
+      background: var(--da);
+      color: #fff
+    }
+
     .b-eyebrow {
-      font-size: calc(var(--doc-fs) * 0.69);
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.26em;
       text-transform: uppercase;
-      color: var(--doc-accent);
-      margin-bottom: 10px
+      color: var(--da);
+      margin-bottom: 9px
     }
 
+    /* HERO */
     .b-hero {
-      padding: 0 0 22px;
-      border-bottom: 1px solid var(--doc-accent-rule);
-      margin-bottom: 22px
+      padding: 0 0 20px;
+      border-bottom: 1px solid var(--da-rule);
+      margin-bottom: 20px
     }
 
-    .b-hero .b-title {
-      font-size: calc(var(--doc-fs) * 2.9);
+    .b-hero .b-ht {
+      font-size: calc(var(--dfs)*2.9);
       font-weight: 700;
       letter-spacing: -0.01em;
       line-height: 1;
-      color: var(--doc-ink);
-      margin-bottom: 11px
+      color: var(--dink);
+      margin-bottom: 10px
     }
 
-    .b-hero .b-subtitle {
-      font-size: var(--doc-fs);
+    .b-hero .b-hs {
+      font-size: var(--dfs);
       line-height: 1.8;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.7;
       max-width: 560px
     }
 
+    /* SECTION HEADING */
     .b-sh {
-      padding: 0 0 18px;
-      border-bottom: 1px solid var(--doc-accent-rule);
-      margin-bottom: 18px
+      padding: 0 0 10px;
+      margin-bottom: 14px
     }
 
     .b-sh .b-eyebrow {
@@ -442,211 +534,413 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--doc-accent-rule)
+      background: var(--da-rule)
     }
 
     .b-sh h2 {
-      font-size: calc(var(--doc-fs) * 1.85);
+      font-size: calc(var(--dfs)*1.85);
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--doc-ink);
+      color: var(--dink);
       line-height: 1.1
     }
 
+    /* BODY TEXT */
     .b-body {
-      margin-bottom: 14px
+      margin-bottom: 13px
     }
 
     .b-body p {
-      font-size: var(--doc-fs);
+      font-size: var(--dfs);
       line-height: 1.85;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.8
     }
 
+    /* CALLOUT */
     .b-callout {
-      border-left: 2px solid var(--doc-accent);
-      padding: 11px 17px;
-      margin-bottom: 16px
+      border-left: 2px solid var(--da);
+      padding: 10px 16px;
+      margin-bottom: 14px
     }
 
-    .b-callout .b-cl-label {
-      font-size: calc(var(--doc-fs) * 0.69);
+    .b-callout .b-cll {
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--doc-accent);
-      margin-bottom: 5px
+      color: var(--da);
+      margin-bottom: 4px
     }
 
     .b-callout p {
-      font-size: var(--doc-fs);
+      font-size: var(--dfs);
       line-height: 1.7;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.8;
       font-style: italic
     }
 
-    .b-stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border: 1px solid var(--doc-accent-rule);
-      margin-bottom: 16px
-    }
-
-    .b-sc {
-      padding: 16px 14px;
-      border-right: 1px solid var(--doc-accent-rule)
-    }
-
-    .b-sc:last-child {
-      border-right: none
-    }
-
-    .b-sv {
-      font-size: calc(var(--doc-fs) * 2.15);
-      font-weight: 700;
-      color: var(--doc-ink);
-      line-height: 1;
-      margin-bottom: 5px
-    }
-
-    .b-sd {
-      font-size: calc(var(--doc-fs) * 0.85);
-      line-height: 1.5;
-      color: var(--doc-ink);
-      opacity: 0.5
-    }
-
-    .b-feature {
-      border: 1px solid var(--doc-accent-rule);
-      margin-bottom: 9px
-    }
-
-    .b-fh {
-      padding: 10px 15px;
-      border-bottom: 1px solid var(--doc-accent-rule);
-      display: flex;
-      align-items: flex-start;
-      gap: 11px
-    }
-
-    .b-fnum {
-      font-size: calc(var(--doc-fs) * 0.77);
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      color: var(--doc-accent);
-      opacity: 0.6;
-      width: 20px;
-      flex-shrink: 0;
-      margin-top: 2px
-    }
-
-    .b-ftitle {
-      font-size: calc(var(--doc-fs) * 0.92);
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--doc-ink);
-      margin-bottom: 2px
-    }
-
-    .b-fsub {
-      font-size: calc(var(--doc-fs) * 0.77);
-      color: var(--doc-accent);
-      opacity: 0.75
-    }
-
-    .b-fbody {
-      padding: 12px 15px;
-      font-size: var(--doc-fs);
-      line-height: 1.8;
-      color: var(--doc-ink);
-      opacity: 0.8
-    }
-
-    .b-2col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border: 1px solid var(--doc-accent-rule);
+    /* BULLET LIST */
+    .b-blist {
       margin-bottom: 14px
     }
 
-    .b-2cell {
-      padding: 16px;
-      border-right: 1px solid var(--doc-accent-rule)
-    }
-
-    .b-2cell:last-child {
-      border-right: none
-    }
-
-    .b-2cell .b-cl-label {
-      font-size: calc(var(--doc-fs) * 0.69);
+    .b-blist-title {
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--doc-accent);
-      margin-bottom: 9px
+      color: var(--da);
+      margin-bottom: 8px
     }
 
-    .b-2cell ul {
+    .b-blist ul {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 4px
     }
 
-    .b-2cell ul li {
-      font-size: calc(var(--doc-fs) * 0.92);
-      line-height: 1.55;
-      color: var(--doc-ink);
+    .b-blist-row {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding-right: 28px
+    }
+
+    .b-blist-row::before {
+      content: '—';
+      color: var(--da);
+      font-weight: 700;
+      font-size: var(--dfs);
+      flex-shrink: 0
+    }
+
+    .b-blist-row span {
+      font-size: var(--dfs);
+      line-height: 1.6;
+      color: var(--dink);
       opacity: 0.8;
-      padding-left: 13px;
+      flex: 1
+    }
+
+    .b-blist-row:hover .row-del-btn {
+      opacity: 0.5
+    }
+
+    /* TABLE */
+    .b-table {
+      margin-bottom: 14px;
+      overflow: hidden;
+      border: 1px solid var(--da-rule)
+    }
+
+    .b-table table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .b-table th {
+      background: var(--da-lt);
+      padding: 8px 12px;
+      font-size: calc(var(--dfs)*0.77);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--da);
+      border-right: 1px solid var(--da-rule);
+      border-bottom: 1px solid var(--da-rule);
+      text-align: left
+    }
+
+    .b-table th:last-child {
+      border-right: none
+    }
+
+    .b-table td {
+      padding: 7px 12px;
+      font-size: calc(var(--dfs)*0.92);
+      color: var(--dink);
+      border-right: 1px solid var(--da-rule);
+      border-bottom: 1px solid var(--da-rule);
+      vertical-align: top;
       position: relative
     }
 
-    .b-2cell ul li::before {
-      content: '—';
-      position: absolute;
-      left: 0;
-      color: var(--doc-accent);
-      font-weight: 700
+    .b-table td:last-child {
+      border-right: none
     }
 
-    .b-roadmap {
-      border: 1px solid var(--doc-accent-rule);
+    .b-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .b-table tr:hover td {
+      background: var(--da-lt)
+    }
+
+    .b-table .tbl-row-wrap {
+      position: relative
+    }
+
+    .b-table .tbl-row-wrap:hover .row-del-btn {
+      opacity: 0.5
+    }
+
+    /* STAT GRID */
+    .b-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--stat-cols, 4), 1fr);
+      border: 1px solid var(--da-rule);
       margin-bottom: 14px
+    }
+
+    .b-sc {
+      padding: 14px 13px;
+      border-right: 1px solid var(--da-rule);
+      position: relative
+    }
+
+    .b-sc:last-child {
+      border-right: none
+    }
+
+    .b-sc:hover .row-del-btn {
+      opacity: 0.5
+    }
+
+    .b-sv {
+      font-size: calc(var(--dfs)*2.15);
+      font-weight: 700;
+      color: var(--dink);
+      line-height: 1;
+      margin-bottom: 4px
+    }
+
+    .b-sd {
+      font-size: calc(var(--dfs)*0.85);
+      line-height: 1.5;
+      color: var(--dink);
+      opacity: 0.5
+    }
+
+    /* FEATURE */
+    .b-feature {
+      border: 1px solid var(--da-rule);
+      margin-bottom: 8px
+    }
+
+    .b-fh {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--da-rule);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .b-fnum {
+      font-size: calc(var(--dfs)*0.77);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--da);
+      opacity: 0.6;
+      width: 19px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .b-ftitle {
+      font-size: calc(var(--dfs)*0.92);
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--dink);
+      margin-bottom: 2px
+    }
+
+    .b-fsub {
+      font-size: calc(var(--dfs)*0.77);
+      color: var(--da);
+      opacity: 0.75
+    }
+
+    .b-feature-body-wrap {
+      padding: 11px 14px
+    }
+
+    .b-feature-body-wrap.with-img {
+      display: grid;
+      gap: 14px;
+      align-items: start
+    }
+
+    .b-feature-body-wrap.img-right {
+      grid-template-columns: 1fr 220px
+    }
+
+    .b-feature-body-wrap.img-left {
+      grid-template-columns: 220px 1fr
+    }
+
+    .b-feature-body-wrap.img-below {
+      grid-template-columns: 1fr
+    }
+
+    .b-fbody {
+      font-size: var(--dfs);
+      line-height: 1.8;
+      color: var(--dink);
+      opacity: 0.8
+    }
+
+    .b-fimg {
+      border: 1px solid var(--da-rule);
+      background: var(--da-lt);
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative
+    }
+
+    .b-fimg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .b-fimg .img-hint {
+      font-size: calc(var(--dfs)*0.69);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--da);
+      opacity: 0.5;
+      pointer-events: none
+    }
+
+    .b-fimg:hover .b-upload-btn {
+      opacity: 1
+    }
+
+    .b-feature-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 0 14px 9px;
+      flex-wrap: wrap
+    }
+
+    /* TWO COL */
+    .b-2col {
+      border: 1px solid var(--da-rule);
+      margin-bottom: 13px
+    }
+
+    .b-2col-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr
+    }
+
+    .b-2cell {
+      padding: 14px;
+      border-right: 1px solid var(--da-rule);
+      position: relative
+    }
+
+    .b-2cell:last-child {
+      border-right: none
+    }
+
+    .b-2cell .b-cll {
+      font-size: calc(var(--dfs)*0.69);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--da);
+      margin-bottom: 8px
+    }
+
+    .b-2cell ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px
+    }
+
+    .b-2cell-row {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      padding-right: 26px
+    }
+
+    .b-2cell-row::before {
+      content: '—';
+      color: var(--da);
+      font-weight: 700;
+      font-size: var(--dfs);
+      flex-shrink: 0
+    }
+
+    .b-2cell-row span {
+      font-size: calc(var(--dfs)*0.92);
+      line-height: 1.55;
+      color: var(--dink);
+      opacity: 0.8;
+      flex: 1
+    }
+
+    .b-2cell-row:hover .row-del-btn {
+      opacity: 0.5
+    }
+
+    /* ROADMAP */
+    .b-roadmap {
+      border: 1px solid var(--da-rule);
+      margin-bottom: 13px
     }
 
     .b-ri {
       display: flex;
       align-items: flex-start;
-      gap: 13px;
-      padding: 10px 15px;
-      border-bottom: 1px solid var(--doc-accent-rule)
+      gap: 12px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--da-rule);
+      position: relative
     }
 
     .b-ri:last-child {
       border-bottom: none
     }
 
+    .b-ri:hover .row-del-btn {
+      opacity: 0.5
+    }
+
     .b-rs {
-      font-size: calc(var(--doc-fs) * 0.69);
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       padding: 2px 7px;
       border-radius: 1px;
       flex-shrink: 0;
-      margin-top: 2px
+      margin-top: 1px;
+      cursor: pointer;
+      transition: all .15s
     }
 
     .b-rs.done {
-      background: var(--doc-accent-lt);
-      color: var(--doc-accent);
-      border: 1px solid var(--doc-accent-rule)
+      background: var(--da-lt);
+      color: var(--da);
+      border: 1px solid var(--da-rule)
     }
 
     .b-rs.wip {
@@ -657,35 +951,39 @@
 
     .b-rs.next {
       background: transparent;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.38;
-      border: 1px solid var(--doc-accent-rule)
+      border: 1px solid var(--da-rule)
     }
 
     .b-rl {
-      font-size: calc(var(--doc-fs) * 0.92);
+      font-size: calc(var(--dfs)*0.92);
       font-weight: 600;
-      color: var(--doc-ink);
+      color: var(--dink);
       margin-bottom: 2px
     }
 
     .b-rd {
-      font-size: calc(var(--doc-fs) * 0.85);
-      color: var(--doc-ink);
+      font-size: calc(var(--dfs)*0.85);
+      color: var(--dink);
       opacity: 0.5;
       line-height: 1.4
     }
 
+    /* META BAR */
     .b-meta {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--doc-accent-rule);
-      margin-bottom: 16px
+      border: 1px solid var(--da-rule);
+      margin-bottom: 14px
+    }
+
+    .b-meta-inner {
+      display: grid
     }
 
     .b-mc {
-      padding: 13px 15px;
-      border-right: 1px solid var(--doc-accent-rule)
+      padding: 12px 14px;
+      border-right: 1px solid var(--da-rule);
+      position: relative
     }
 
     .b-mc:last-child {
@@ -693,41 +991,48 @@
     }
 
     .b-mcl {
-      font-size: calc(var(--doc-fs) * 0.69);
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--doc-accent);
-      margin-bottom: 7px
+      color: var(--da);
+      margin-bottom: 6px
     }
 
     .b-mr {
       display: flex;
       align-items: baseline;
       gap: 5px;
-      margin-bottom: 3px
+      margin-bottom: 3px;
+      position: relative;
+      padding-right: 24px
+    }
+
+    .b-mr:hover .row-del-btn {
+      opacity: 0.5
     }
 
     .b-mk {
-      font-size: calc(var(--doc-fs) * 0.69);
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.35;
       flex-shrink: 0
     }
 
     .b-mv {
-      font-size: calc(var(--doc-fs) * 0.85);
+      font-size: calc(var(--dfs)*0.85);
       font-weight: 500;
-      color: var(--doc-ink)
+      color: var(--dink)
     }
 
+    /* IMAGE */
     .b-img-wrap {
-      border: 1px solid var(--doc-accent-rule);
-      background: var(--doc-accent-lt);
-      margin-bottom: 14px;
+      border: 1px solid var(--da-rule);
+      background: var(--da-lt);
+      margin-bottom: 13px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -744,26 +1049,26 @@
     }
 
     .img-hint {
-      font-size: calc(var(--doc-fs) * 0.69);
+      font-size: calc(var(--dfs)*0.69);
       font-weight: 700;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--doc-accent);
-      opacity: 0.55;
+      color: var(--da);
+      opacity: 0.5;
       pointer-events: none
     }
 
     .b-upload-btn {
       position: absolute;
-      bottom: 8px;
-      right: 8px;
+      bottom: 7px;
+      right: 7px;
       font-family: var(--mono);
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 4px 9px;
-      background: rgba(30, 27, 39, 0.85);
+      padding: 3px 8px;
+      background: rgba(30, 27, 39, 0.82);
       color: #fff;
       border: none;
       border-radius: 2px;
@@ -776,20 +1081,14 @@
       opacity: 1
     }
 
-    .b-divider {
-      height: 1px;
-      background: var(--doc-accent-rule);
-      margin: 18px 0
-    }
-
-    /* text+image */
+    /* TEXT + IMAGE */
     .b-ti {
-      margin-bottom: 14px
+      margin-bottom: 13px
     }
 
-    .b-ti .b-ti-inner {
+    .b-ti-inner {
       display: grid;
-      gap: 16px;
+      gap: 14px;
       align-items: start
     }
 
@@ -802,8 +1101,7 @@
     }
 
     .b-ti.layout-below .b-ti-inner {
-      grid-template-columns: 1fr;
-      gap: 12px
+      grid-template-columns: 1fr
     }
 
     .b-ti.layout-right .b-ti-img {
@@ -830,25 +1128,25 @@
       order: 0
     }
 
-    .b-ti-txt .b-ti-heading {
-      font-size: calc(var(--doc-fs) * 1.15);
+    .b-ti-txt .b-ti-hd {
+      font-size: calc(var(--dfs)*1.15);
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: var(--doc-ink);
-      margin-bottom: 8px
+      color: var(--dink);
+      margin-bottom: 7px
     }
 
     .b-ti-txt p {
-      font-size: var(--doc-fs);
+      font-size: var(--dfs);
       line-height: 1.8;
-      color: var(--doc-ink);
+      color: var(--dink);
       opacity: 0.8
     }
 
     .b-ti-img {
-      border: 1px solid var(--doc-accent-rule);
-      background: var(--doc-accent-lt);
+      border: 1px solid var(--da-rule);
+      background: var(--da-lt);
       aspect-ratio: 4/3;
       display: flex;
       align-items: center;
@@ -868,7 +1166,86 @@
       opacity: 1
     }
 
-    /* ghost */
+    .b-ti-actions {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      align-items: center
+    }
+
+    /* DIVIDER */
+    .b-divider {
+      height: 1px;
+      background: var(--da-rule);
+      margin: 16px 0
+    }
+
+    /* CHARTS */
+    .b-chart {
+      margin-bottom: 14px;
+      border: 1px solid var(--da-rule);
+      background: var(--dbg);
+      padding: 0
+    }
+
+    .b-chart-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--da-rule);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .b-chart-title {
+      font-size: calc(var(--dfs)*0.92);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dink)
+    }
+
+    .b-chart-subtitle {
+      font-size: calc(var(--dfs)*0.77);
+      color: var(--da);
+      opacity: 0.75;
+      margin-top: 2px
+    }
+
+    .b-chart-canvas-wrap {
+      padding: 14px;
+      position: relative
+    }
+
+    .b-chart canvas {
+      display: block;
+      width: 100% !important
+    }
+
+    .b-chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 14px 12px
+    }
+
+    .b-chart-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: calc(var(--dfs)*0.77);
+      color: var(--dink);
+      opacity: 0.75
+    }
+
+    .b-chart-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    /* GHOST */
     #drag-ghost {
       position: fixed;
       pointer-events: none !important;
@@ -876,31 +1253,31 @@
       background: #fff;
       border: 1.5px solid var(--ui-accent);
       border-radius: 3px;
-      padding: 6px 12px;
+      padding: 5px 11px;
       font-family: var(--mono);
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--ui-accent);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.13);
       white-space: nowrap;
       display: none;
       transform: rotate(1.5deg)
     }
 
-    /* modal */
-    .modal-overlay {
+    /* MODAL */
+    .modal-ov {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.48);
+      background: rgba(0, 0, 0, 0.45);
       z-index: 1000;
       display: none;
       align-items: center;
       justify-content: center
     }
 
-    .modal-overlay.open {
+    .modal-ov.open {
       display: flex
     }
 
@@ -908,29 +1285,29 @@
       background: #fff;
       border: 1px solid var(--ui-border);
       border-radius: 3px;
-      padding: 22px;
+      padding: 20px;
       width: 400px;
-      max-height: 80vh;
+      max-height: 82vh;
       overflow-y: auto
     }
 
     .modal h3 {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 14px
+      margin-bottom: 13px
     }
 
     .modal label {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ui-ink-dim);
       display: block;
       margin-bottom: 3px;
-      margin-top: 11px
+      margin-top: 10px
     }
 
     .modal label:first-of-type {
@@ -945,7 +1322,7 @@
       width: 100%;
       border: 1px solid var(--ui-border);
       border-radius: 2px;
-      padding: 5px 8px;
+      padding: 5px 7px;
       color: var(--ui-ink);
       outline: none
     }
@@ -957,13 +1334,13 @@
 
     .modal textarea {
       resize: vertical;
-      min-height: 70px
+      min-height: 65px
     }
 
     .modal-btns {
       display: flex;
-      gap: 8px;
-      margin-top: 16px;
+      gap: 7px;
+      margin-top: 14px;
       justify-content: flex-end
     }
 
@@ -972,7 +1349,12 @@
       color: var(--ui-ink)
     }
 
+    /* PRINT — hide all UI, remove browser header/footer text */
     @media print {
+      @page {
+        margin: 0
+      }
+
       body {
         overflow: visible
       }
@@ -991,12 +1373,24 @@
       #doc-canvas {
         box-shadow: none;
         width: 100%;
-        padding: 0
+        padding: 40px 52px;
+        min-height: 0
+      }
+
+      #doc-canvas.show-grid {
+        background-image: none !important
       }
 
       .bctrl,
       .dz,
-      .b-upload-btn {
+      .b-upload-btn,
+      .row-add-btn,
+      .row-del-btn,
+      .status-btn,
+      .layout-cycle-btn,
+      .b-feature-actions,
+      .b-ti-actions,
+      .drop-hint {
         display: none !important
       }
 
@@ -1008,14 +1402,19 @@
 </head>
 
 <body>
+
   <div id="topbar">
     <span class="tb-title">Doc Builder</span>
     <input type="text" id="doc-title-input" value="Untitled Document">
+    <div class="tb-sep"></div>
     <button class="tb-btn" onclick="clearCanvas()">Clear</button>
     <button class="tb-btn" onclick="loadTemplate()">Load</button>
     <button class="tb-btn" onclick="saveTemplate()">Save .json</button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" onclick="exportHTML()">View HTML</button>
     <button class="tb-btn primary" onclick="exportPDF()">Export PDF</button>
   </div>
+
   <div id="main">
     <div id="canvas-wrap">
       <div id="doc-canvas">
@@ -1023,167 +1422,233 @@
         <div id="blocks-container"></div>
       </div>
     </div>
+
     <div id="right-panel">
-      <div class="panel-section">
-        <div class="panel-hdr">Document Theme</div>
-        <div id="theme-panel">
-          <div class="th-row"><span class="th-label">Accent</span><input type="color" id="th-accent" value="#a68df4"
-              oninput="applyTheme()"></div>
-          <div class="th-row"><span class="th-label">Doc background</span><input type="color" id="th-docbg"
-              value="#ffffff" oninput="applyTheme()"></div>
-          <div class="th-row"><span class="th-label">Canvas background</span><input type="color" id="th-pagebg"
-              value="#d6d2cc" oninput="applyTheme()"></div>
-          <div class="th-row"><span class="th-label">Ink</span><input type="color" id="th-ink" value="#1e1b27"
-              oninput="applyTheme()"></div>
-          <div class="th-row"><span class="th-label">Font size</span><input type="range" id="th-fs" min="10" max="18"
-              value="13" oninput="applyTheme()"><span class="th-val" id="th-fs-val">13px</span></div>
-          <div class="th-row"><span class="th-label">Preset</span>
-            <select onchange="applyPreset(this.value)">
-              <option value="">Custom</option>
-              <option value="witch">Witch Task</option>
-              <option value="dark">Dark</option>
-              <option value="minimal">Minimal</option>
-              <option value="warm">Warm</option>
-            </select>
-          </div>
+      <div class="ph">Document Theme</div>
+      <div id="theme-panel">
+        <div class="tr"><span class="tl">Accent</span><input type="color" id="th-accent" value="#a68df4"
+            oninput="applyTheme()"></div>
+        <div class="tr"><span class="tl">Doc background</span><input type="color" id="th-docbg" value="#ffffff"
+            oninput="applyTheme()"></div>
+        <div class="tr"><span class="tl">Canvas background</span><input type="color" id="th-pagebg" value="#d4d0ca"
+            oninput="applyTheme()"></div>
+        <div class="tr"><span class="tl">Ink</span><input type="color" id="th-ink" value="#1e1b27"
+            oninput="applyTheme()"></div>
+        <div class="tr"><span class="tl">Font size</span><input type="range" id="th-fs" min="10" max="18" value="13"
+            oninput="applyTheme()"><span class="tv" id="th-fs-val">13px</span></div>
+        <div class="tr"><span class="tl">Dot grid</span><input type="checkbox" id="th-grid" onchange="applyTheme()">
+        </div>
+        <div class="tr"><span class="tl">Preset</span>
+          <select onchange="applyPreset(this.value)">
+            <option value="">Custom</option>
+            <option value="witch">Witch Task</option>
+            <option value="dark">Dark</option>
+            <option value="minimal">Minimal</option>
+            <option value="warm">Warm</option>
+          </select>
         </div>
       </div>
-      <div class="panel-section" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-        <div class="panel-hdr">Components — drag to canvas</div>
-        <div id="components-panel">
-          <div class="comp-item" data-type="hero">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="2" width="14" height="3" />
-                <rect x="1" y="7" width="10" height="1.5" />
-                <rect x="1" y="10" width="8" height="1.5" />
-              </svg></div>
-            <div>
-              <div class="cl">Hero</div>
-              <div class="cd">Title, eyebrow, subtitle</div>
-            </div>
+
+      <div class="ph" style="border-top:1px solid var(--ui-border)">Components</div>
+      <div id="comp-panel">
+        <div class="ci-item" data-type="hero">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="14" height="3" />
+              <rect x="1" y="7" width="10" height="1.5" />
+              <rect x="1" y="10" width="8" height="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Hero</div>
+            <div class="cds">Title + subtitle</div>
           </div>
-          <div class="comp-item" data-type="section-heading">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="3" width="14" height="2" />
-                <rect x="1" y="7" width="10" height="2" />
-              </svg></div>
-            <div>
-              <div class="cl">Section Heading</div>
-              <div class="cd">Eyebrow + H2</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="section-heading">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="3" width="14" height="2" />
+              <rect x="1" y="7" width="10" height="2" />
+            </svg></div>
+          <div>
+            <div class="cnm">Section Heading</div>
+            <div class="cds">Eyebrow + H2</div>
           </div>
-          <div class="comp-item" data-type="body-text">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="3" width="14" height="1.5" />
-                <rect x="1" y="6" width="14" height="1.5" />
-                <rect x="1" y="9" width="9" height="1.5" />
-              </svg></div>
-            <div>
-              <div class="cl">Body Text</div>
-              <div class="cd">Paragraph</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="body-text">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="3" width="14" height="1.5" />
+              <rect x="1" y="6" width="14" height="1.5" />
+              <rect x="1" y="9" width="9" height="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Body Text</div>
+            <div class="cds">Paragraph</div>
           </div>
-          <div class="comp-item" data-type="callout">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="2" y="2" width="2" height="12" />
-                <rect x="5" y="4" width="10" height="1.5" />
-                <rect x="5" y="7" width="8" height="1.5" />
-              </svg></div>
-            <div>
-              <div class="cl">Callout</div>
-              <div class="cd">Labelled aside</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="callout">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="2" y="2" width="2" height="12" />
+              <rect x="5" y="4" width="10" height="1.5" />
+              <rect x="5" y="7" width="8" height="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Callout</div>
+            <div class="cds">Labelled aside</div>
           </div>
-          <div class="comp-item" data-type="stat-grid">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="3" width="6" height="10" />
-                <rect x="9" y="3" width="6" height="10" />
-              </svg></div>
-            <div>
-              <div class="cl">Stat Grid</div>
-              <div class="cd">4 big numbers</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="bullet-list">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <circle cx="3" cy="4" r="1" />
+              <rect x="5" y="3" width="10" height="1.5" />
+              <circle cx="3" cy="8" r="1" />
+              <rect x="5" y="7" width="8" height="1.5" />
+              <circle cx="3" cy="12" r="1" />
+              <rect x="5" y="11" width="9" height="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Bullet List</div>
+            <div class="cds">Labelled list</div>
           </div>
-          <div class="comp-item" data-type="feature">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="2" width="14" height="4" />
-                <rect x="1" y="8" width="14" height="6" />
-              </svg></div>
-            <div>
-              <div class="cl">Feature Block</div>
-              <div class="cd">Numbered feature</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="table">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="14" height="3" />
+              <rect x="1" y="2" width="14" height="12" fill="none" />
+              <line x1="1" y1="5" x2="15" y2="5" />
+              <line x1="1" y1="9" x2="15" y2="9" />
+              <line x1="6" y1="2" x2="6" y2="14" />
+            </svg></div>
+          <div>
+            <div class="cnm">Table</div>
+            <div class="cds">Header + rows</div>
           </div>
-          <div class="comp-item" data-type="two-col">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="2" width="6" height="12" />
-                <rect x="9" y="2" width="6" height="12" />
-              </svg></div>
-            <div>
-              <div class="cl">Two Column</div>
-              <div class="cd">Two bullet lists</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="stat-grid">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="3" width="6" height="10" />
+              <rect x="9" y="3" width="6" height="10" />
+            </svg></div>
+          <div>
+            <div class="cnm">Stat Grid</div>
+            <div class="cds">Big numbers</div>
           </div>
-          <div class="comp-item" data-type="roadmap">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="2" width="14" height="3" />
-                <rect x="1" y="7" width="14" height="3" />
-                <rect x="1" y="12" width="14" height="3" />
-              </svg></div>
-            <div>
-              <div class="cl">Roadmap</div>
-              <div class="cd">Status + items</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="feature">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="14" height="4" />
+              <rect x="1" y="8" width="14" height="6" />
+            </svg></div>
+          <div>
+            <div class="cnm">Feature Block</div>
+            <div class="cds">Numbered + optional image</div>
           </div>
-          <div class="comp-item" data-type="meta-bar">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="4" width="4" height="8" />
-                <rect x="6" y="4" width="4" height="8" />
-                <rect x="11" y="4" width="4" height="8" />
-              </svg></div>
-            <div>
-              <div class="cl">Meta Bar</div>
-              <div class="cd">3-col info bar</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="two-col">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="6" height="12" />
+              <rect x="9" y="2" width="6" height="12" />
+            </svg></div>
+          <div>
+            <div class="cnm">Two Column</div>
+            <div class="cds">Two bullet lists</div>
           </div>
-          <div class="comp-item" data-type="image">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="3" width="14" height="10" />
-                <polyline points="1,10 5,6 8,9 11,6 15,10" />
-              </svg></div>
-            <div>
-              <div class="cl">Image</div>
-              <div class="cd">Full-width image</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="roadmap">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="14" height="3" />
+              <rect x="1" y="7" width="14" height="3" />
+              <rect x="1" y="12" width="14" height="3" />
+            </svg></div>
+          <div>
+            <div class="cnm">Roadmap</div>
+            <div class="cds">Status rows — click to cycle</div>
           </div>
-          <div class="comp-item" data-type="text-image">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <rect x="1" y="2" width="7" height="12" />
-                <rect x="9" y="2" width="6" height="5" />
-                <rect x="9" y="9" width="6" height="1.5" />
-                <rect x="9" y="12" width="4" height="1.5" />
-              </svg></div>
-            <div>
-              <div class="cl">Text + Image</div>
-              <div class="cd">Left / right / below</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="meta-bar">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="4" width="4" height="8" />
+              <rect x="6" y="4" width="4" height="8" />
+              <rect x="11" y="4" width="4" height="8" />
+            </svg></div>
+          <div>
+            <div class="cnm">Meta Bar</div>
+            <div class="cds">3-col info bar</div>
           </div>
-          <div class="comp-item" data-type="divider">
-            <div class="ci"><svg viewBox="0 0 16 16">
-                <line x1="1" y1="8" x2="15" y2="8" stroke-dasharray="2,2" />
-              </svg></div>
-            <div>
-              <div class="cl">Divider</div>
-              <div class="cd">Horizontal rule</div>
-            </div>
+        </div>
+        <div class="ci-item" data-type="image">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="3" width="14" height="10" />
+              <polyline points="1,10 5,6 8,9 11,6 15,10" />
+            </svg></div>
+          <div>
+            <div class="cnm">Image</div>
+            <div class="cds">Full-width</div>
+          </div>
+        </div>
+        <div class="ci-item" data-type="text-image">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="1" y="2" width="7" height="12" />
+              <rect x="9" y="2" width="6" height="5" />
+              <rect x="9" y="9" width="6" height="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Text + Image</div>
+            <div class="cds">Left / right / below</div>
+          </div>
+        </div>
+        <div class="ci-item" data-type="divider">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <line x1="1" y1="8" x2="15" y2="8" stroke-dasharray="2,2" />
+            </svg></div>
+          <div>
+            <div class="cnm">Divider</div>
+            <div class="cds">Horizontal rule</div>
+          </div>
+        </div>
+        <div class="ci-item" data-type="chart-bar">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <rect x="2" y="8" width="3" height="6" />
+              <rect x="7" y="4" width="3" height="10" />
+              <rect x="12" y="6" width="3" height="8" />
+            </svg></div>
+          <div>
+            <div class="cnm">Bar Chart</div>
+            <div class="cds">Editable bar chart</div>
+          </div>
+        </div>
+        <div class="ci-item" data-type="chart-line">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <polyline points="1,12 5,7 9,9 13,3" stroke-width="1.5" fill="none" />
+              <circle cx="1" cy="12" r="1.5" />
+              <circle cx="5" cy="7" r="1.5" />
+              <circle cx="9" cy="9" r="1.5" />
+              <circle cx="13" cy="3" r="1.5" />
+            </svg></div>
+          <div>
+            <div class="cnm">Line Chart</div>
+            <div class="cds">Trend / time series</div>
+          </div>
+        </div>
+        <div class="ci-item" data-type="chart-scatter">
+          <div class="cico"><svg viewBox="0 0 16 16">
+              <circle cx="4" cy="11" r="1.5" />
+              <circle cx="7" cy="5" r="1.5" />
+              <circle cx="11" cy="8" r="1.5" />
+              <circle cx="13" cy="3" r="1.5" />
+              <circle cx="3" cy="7" r="1.5" />
+              <line x1="1" y1="8" x2="15" y2="8" stroke-width="0.5" opacity="0.4" />
+              <line x1="8" y1="1" x2="8" y2="15" stroke-width="0.5" opacity="0.4" />
+            </svg></div>
+          <div>
+            <div class="cnm">Quadrant Chart</div>
+            <div class="cds">2×2 positioning map</div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="modal-overlay" id="edit-modal">
+
+  <div class="modal-ov" id="edit-modal">
     <div class="modal">
-      <h3 id="modal-title">Edit Block</h3>
+      <h3 id="modal-title">Edit</h3>
       <div id="modal-fields"></div>
       <div class="modal-btns">
         <button class="tb-btn" onclick="closeModal()">Cancel</button>
@@ -1191,183 +1656,669 @@
       </div>
     </div>
   </div>
+
   <div id="drag-ghost"></div>
   <input type="file" id="load-input" accept=".json" style="display:none" onchange="handleLoad(event)">
-  <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+  <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImgUpload(event)">
+
   <script>
-    let blocks = [], blockId = 0, editingBlockId = null, pendingImgBlockId = null;
+    // ── STATE ──────────────────────────────────────────────
+    let blocks = [], blockId = 0, editingBlockId = null, pendingImgId = null;
     let imageStore = {};
     let drag = null;
     const ghost = document.getElementById('drag-ghost');
 
-    function defaultContent(type) {
+    // ── DEFAULTS ───────────────────────────────────────────
+    function def(type) {
       const d = {
-        hero: { eyebrow: 'Project', title: 'Document Title', subtitle: 'A brief description of this document and its purpose.' },
+        hero: { eyebrow: 'Project', title: 'Document Title', subtitle: 'A brief description of this document and what it covers.' },
         'section-heading': { eyebrow: 'Section', heading: 'Section Heading' },
         'body-text': { text: 'Write your content here.' },
         callout: { label: 'Note', text: 'An important aside or supporting detail goes here.' },
+        'bullet-list': { title: 'Key Points', items: ['First item here', 'Second item here', 'Third item here'] },
+        table: { headers: ['Column A', 'Column B', 'Column C'], rows: [['Cell', 'Cell', 'Cell'], ['Cell', 'Cell', 'Cell']] },
         'stat-grid': { stats: [{ val: '—', desc: 'Metric one' }, { val: '—', desc: 'Metric two' }, { val: '—', desc: 'Metric three' }, { val: '—', desc: 'Metric four' }] },
-        feature: { num: '01', title: 'Feature Name', subtitle: 'Subtitle · detail', body: 'Describe this feature and what it does.' },
+        feature: { num: '01', title: 'Feature Name', subtitle: 'Subtitle · detail', body: 'Describe this feature.', imgLayout: 'none', filename: null, hint: 'Image' },
         'two-col': { leftLabel: 'Column A', leftItems: ['Item one', 'Item two', 'Item three'], rightLabel: 'Column B', rightItems: ['Item one', 'Item two', 'Item three'] },
         roadmap: { items: [{ status: 'done', label: 'Completed item', detail: 'What was done' }, { status: 'wip', label: 'In progress', detail: 'Currently active' }, { status: 'next', label: 'Planned item', detail: 'Coming up' }] },
         'meta-bar': { cols: [{ label: 'Details', rows: [{ key: 'Status', val: 'Active' }, { key: 'Platform', val: 'iOS / Android' }] }, { label: 'Team', rows: [{ key: '', val: 'Name One' }, { key: '', val: 'Name Two' }] }, { label: 'Stack', rows: [{ key: 'Engine', val: 'Unity / C#' }, { key: 'Design', val: 'Figma' }] }] },
         image: { hint: 'Image / Screenshot', filename: null },
         'text-image': { heading: 'Section Title', text: 'Write your content here.', filename: null, hint: 'Image', layout: 'right' },
-        divider: {}
+        divider: {},
+        'chart-bar': {
+          title: 'Bar Chart', subtitle: 'Category comparison',
+          labels: ['Category A', 'Category B', 'Category C', 'Category D', 'Category E'],
+          series: [{ name: 'Series 1', values: [65, 82, 54, 91, 38] }]
+        },
+        'chart-line': {
+          title: 'Line Chart', subtitle: 'Trend over time',
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          series: [{ name: 'Series 1', values: [30, 45, 38, 60, 52, 71] }, { name: 'Series 2', values: [20, 28, 35, 42, 38, 55] }]
+        },
+        'chart-scatter': {
+          title: 'Quadrant Chart', subtitle: 'Positioning map',
+          xLabel: 'Low engagement → High engagement',
+          yLabel: 'Low value → High value',
+          points: [
+            { label: 'Product A', x: 0.7, y: 0.75, highlight: true },
+            { label: 'Product B', x: 0.2, y: 0.6 },
+            { label: 'Product C', x: 0.55, y: 0.2 },
+            { label: 'Product D', x: 0.85, y: 0.35 },
+            { label: 'Product E', x: 0.3, y: 0.85 },
+          ],
+          quadrantLabels: ['Low/Low', 'High/Low', 'Low/High', 'High/High']
+        }
       };
       return JSON.parse(JSON.stringify(d[type] || {}));
     }
 
+    // ── STATUS CYCLE ───────────────────────────────────────
+    const STATUS_CYCLE = ['done', 'wip', 'next'];
+    const STATUS_LABEL = { 'done': 'Done', 'wip': 'In progress', 'next': 'Planned' };
+    function cycleStatus(blockId, itemIdx) {
+      const block = blocks.find(b => b.id === blockId);
+      const item = block.content.items[itemIdx];
+      const i = STATUS_CYCLE.indexOf(item.status);
+      item.status = STATUS_CYCLE[(i + 1) % STATUS_CYCLE.length];
+      rerenderCanvas();
+    }
+
+    // ── LAYOUT CYCLE ───────────────────────────────────────
+    const TI_LAYOUTS = ['right', 'left', 'below'];
+    const TI_LABELS = { 'right': 'Img right', 'left': 'Img left', 'below': 'Img below' };
+    function cycleTILayout(blockId) {
+      const block = blocks.find(b => b.id === blockId);
+      const i = TI_LAYOUTS.indexOf(block.content.layout);
+      block.content.layout = TI_LAYOUTS[(i + 1) % TI_LAYOUTS.length];
+      rerenderCanvas();
+    }
+    const FI_LAYOUTS = ['none', 'right', 'left', 'below'];
+    const FI_LABELS = { 'none': 'No image', 'right': 'Img right', 'left': 'Img left', 'below': 'Img below' };
+    function cycleFILayout(blockId) {
+      const block = blocks.find(b => b.id === blockId);
+      const i = FI_LAYOUTS.indexOf(block.content.imgLayout);
+      block.content.imgLayout = FI_LAYOUTS[(i + 1) % FI_LAYOUTS.length];
+      rerenderCanvas();
+    }
+
+    // ── INLINE ADD / REMOVE ────────────────────────────────
+    function addRow(blockId, listKey) {
+      const block = blocks.find(b => b.id === blockId);
+      const c = block.content;
+      if (listKey === 'stats') c.stats.push({ val: '—', desc: 'Description' });
+      else if (listKey === 'items') c.items.push({ status: 'next', label: 'New item', detail: 'Description' });
+      else if (listKey === 'bulletItems') c.items.push('New item');
+      else if (listKey === 'tableRow') c.rows.push(c.headers.map(() => 'Cell'));
+      else if (listKey.startsWith('left')) c.leftItems.push('New item');
+      else if (listKey.startsWith('right')) c.rightItems.push('New item');
+      else if (listKey.startsWith('col')) {
+        const ci = parseInt(listKey.replace('col', ''));
+        c.cols[ci].rows.push({ key: 'Key', val: 'Value' });
+      }
+      rerenderCanvas();
+    }
+
+    function removeRow(blockId, listKey, idx) {
+      const block = blocks.find(b => b.id === blockId);
+      const c = block.content;
+      if (listKey === 'stats' && c.stats.length > 1) c.stats.splice(idx, 1);
+      else if (listKey === 'items' && c.items.length > 1) c.items.splice(idx, 1);
+      else if (listKey === 'bulletItems' && c.items.length > 1) c.items.splice(idx, 1);
+      else if (listKey === 'tableRow' && c.rows.length > 1) c.rows.splice(idx, 1);
+      else if (listKey.startsWith('left') && c.leftItems.length > 1) c.leftItems.splice(idx, 1);
+      else if (listKey.startsWith('right') && c.rightItems.length > 1) c.rightItems.splice(idx, 1);
+      else if (listKey.startsWith('col')) {
+        const ci = parseInt(listKey.replace('col', ''));
+        if (c.cols[ci].rows.length > 1) c.cols[ci].rows.splice(idx, 1);
+      }
+      rerenderCanvas();
+    }
+
+    function addMetaCol(blockId) {
+      const block = blocks.find(b => b.id === blockId);
+      block.content.cols.push({ label: 'Column', rows: [{ key: 'Key', val: 'Value' }] });
+      rerenderCanvas();
+    }
+
+    function removeMetaCol(blockId, ci) {
+      const block = blocks.find(b => b.id === blockId);
+      if (block.content.cols.length > 1) block.content.cols.splice(ci, 1);
+      rerenderCanvas();
+    }
+
+    function addTableCol(blockId) {
+      const block = blocks.find(b => b.id === blockId);
+      block.content.headers.push('Column');
+      block.content.rows.forEach(r => r.push('Cell'));
+      rerenderCanvas();
+    }
+
+    function removeTableCol(blockId, ci) {
+      const block = blocks.find(b => b.id === blockId);
+      if (block.content.headers.length > 1) {
+        block.content.headers.splice(ci, 1);
+        block.content.rows.forEach(r => r.splice(ci, 1));
+        rerenderCanvas();
+      }
+    }
+
+    // ── RENDER ─────────────────────────────────────────────
     function renderBlock(block) {
       const c = block.content, id = block.id;
       const ce = 'contenteditable="true"';
-      const src = f => f && imageStore[f] ? imageStore[f] : null;
-      const imgBtn = `<button class="b-upload-btn" onclick="triggerImg(${id})">Upload image</button>`;
+      const S = s => s || '';
+      const imgSrc = f => f && imageStore[f] ? imageStore[f] : null;
+      const upBtn = `<button class="b-upload-btn" onclick="triggerImg(${id})">Upload</button>`;
 
       switch (block.type) {
-        case 'hero': return `<div class="b-hero"><div class="b-eyebrow" ${ce} data-ph="Eyebrow">${c.eyebrow}</div><div class="b-title" ${ce} data-ph="Title">${c.title}</div><div class="b-subtitle" ${ce} data-ph="Subtitle">${c.subtitle}</div></div>`;
-        case 'section-heading': return `<div class="b-sh"><div class="b-eyebrow" ${ce} data-ph="Eyebrow">${c.eyebrow}</div><h2 ${ce} data-ph="Heading">${c.heading}</h2></div>`;
-        case 'body-text': return `<div class="b-body"><p ${ce} data-ph="Body text...">${c.text}</p></div>`;
-        case 'callout': return `<div class="b-callout"><div class="b-cl-label" ${ce} data-ph="Label">${c.label}</div><p ${ce} data-ph="Callout text...">${c.text}</p></div>`;
-        case 'stat-grid': return `<div class="b-stat-grid">${c.stats.map(s => `<div class="b-sc"><div class="b-sv" ${ce} data-ph="—">${s.val}</div><div class="b-sd" ${ce} data-ph="Desc">${s.desc}</div></div>`).join('')}</div>`;
-        case 'feature': return `<div class="b-feature"><div class="b-fh"><div class="b-fnum" ${ce} data-ph="01">${c.num}</div><div><div class="b-ftitle" ${ce} data-ph="Feature name">${c.title}</div><div class="b-fsub" ${ce} data-ph="Subtitle">${c.subtitle}</div></div></div><div class="b-fbody" ${ce} data-ph="Description...">${c.body}</div></div>`;
-        case 'two-col': return `<div class="b-2col"><div class="b-2cell"><div class="b-cl-label" ${ce} data-ph="Column A">${c.leftLabel}</div><ul>${c.leftItems.map(i => `<li ${ce} data-ph="Item">${i}</li>`).join('')}</ul></div><div class="b-2cell"><div class="b-cl-label" ${ce} data-ph="Column B">${c.rightLabel}</div><ul>${c.rightItems.map(i => `<li ${ce} data-ph="Item">${i}</li>`).join('')}</ul></div></div>`;
-        case 'roadmap': return `<div class="b-roadmap">${c.items.map(item => `<div class="b-ri"><span class="b-rs ${item.status}">${item.status === 'done' ? 'Done' : item.status === 'wip' ? 'In progress' : 'Planned'}</span><div><div class="b-rl" ${ce} data-ph="Label">${item.label}</div><div class="b-rd" ${ce} data-ph="Detail">${item.detail}</div></div></div>`).join('')}</div>`;
-        case 'meta-bar': return `<div class="b-meta">${c.cols.map(col => `<div class="b-mc"><div class="b-mcl" ${ce} data-ph="Label">${col.label}</div>${col.rows.map(row => `<div class="b-mr">${row.key ? `<span class="b-mk" ${ce} data-ph="Key">${row.key}</span>` : ''}<span class="b-mv" ${ce} data-ph="Value">${row.val}</span></div>`).join('')}</div>`).join('')}</div>`;
-        case 'image': { const s = src(c.filename); return `<div class="b-img-wrap">${s ? `<img src="${s}" alt="">` : `<span class="img-hint">${c.hint}</span>`}${imgBtn}</div>`; }
-        case 'text-image': { const s = src(c.filename); return `<div class="b-ti layout-${c.layout}"><div class="b-ti-inner"><div class="b-ti-img">${s ? `<img src="${s}" alt="">` : `<span class="img-hint">${c.hint}</span>`}${imgBtn}</div><div class="b-ti-txt"><div class="b-ti-heading" ${ce} data-ph="Heading">${c.heading}</div><p ${ce} data-ph="Write your text here...">${c.text}</p></div></div></div>`; }
+        case 'hero': return `<div class="b-hero">
+      <div class="b-eyebrow" ${ce} data-ph="Eyebrow">${S(c.eyebrow)}</div>
+      <div class="b-ht" ${ce} data-ph="Title">${S(c.title)}</div>
+      <div class="b-hs" ${ce} data-ph="Subtitle">${S(c.subtitle)}</div></div>`;
+
+        case 'section-heading': return `<div class="b-sh">
+      <div class="b-eyebrow" ${ce} data-ph="Eyebrow">${S(c.eyebrow)}</div>
+      <h2 ${ce} data-ph="Heading">${S(c.heading)}</h2></div>`;
+
+        case 'body-text': return `<div class="b-body"><p ${ce} data-ph="Body text...">${S(c.text)}</p></div>`;
+
+        case 'callout': return `<div class="b-callout">
+      <div class="b-cll" ${ce} data-ph="Label">${S(c.label)}</div>
+      <p ${ce} data-ph="Callout text...">${S(c.text)}</p></div>`;
+
+        case 'bullet-list': return `<div class="b-blist">
+      <div class="b-blist-title" ${ce} data-ph="List title">${S(c.title)}</div>
+      <ul>${c.items.map((item, i) => `<li class="b-blist-row">
+        <span ${ce} data-ph="Item">${S(item)}</span>
+        <button class="row-del-btn" onclick="removeRow(${id},'bulletItems',${i})">×</button></li>`).join('')}</ul>
+      <button class="row-add-btn" onclick="addRow(${id},'bulletItems')">+ add item</button></div>`;
+
+        case 'table': {
+          const cols = c.headers.length;
+          return `<div class="b-table">
+        <table>
+          <thead><tr>${c.headers.map((h, ci) => `<th style="position:relative">
+            <span ${ce} data-ph="Header">${S(h)}</span>
+            ${cols > 1 ? `<button class="row-del-btn" style="top:50%;right:4px" onclick="removeTableCol(${id},${ci})">×</button>` : ''}
+          </th>`).join('')}</tr></thead>
+          <tbody>${c.rows.map((row, ri) => `<tr class="tbl-row-wrap">
+            ${row.map((cell, ci) => `<td><span ${ce} data-ph="Cell">${S(cell)}</span>
+              ${ri > 0 || ci > 0 ? `<button class="row-del-btn" style="display:${ci === 0 ? 'block' : 'none'};right:4px;top:50%" onclick="removeRow(${id},'tableRow',${ri})">×</button>` : ''}
+            </td>`).join('')}
+          </tr>`).join('')}</tbody>
+        </table>
+        <div style="display:flex;gap:6px;padding:6px 10px;border-top:1px solid var(--da-rule)">
+          <button class="row-add-btn" style="flex:1;margin:0" onclick="addRow(${id},'tableRow')">+ row</button>
+          <button class="row-add-btn" style="flex:1;margin:0" onclick="addTableCol(${id})">+ column</button>
+        </div></div>`;
+        }
+
+        case 'stat-grid': {
+          const n = c.stats.length;
+          return `<div class="b-stat-grid" style="--stat-cols:${n}">
+        ${c.stats.map((s, i) => `<div class="b-sc">
+          <div class="b-sv" ${ce} data-ph="—">${S(s.val)}</div>
+          <div class="b-sd" ${ce} data-ph="Description">${S(s.desc)}</div>
+          ${n > 1 ? `<button class="row-del-btn" style="top:8px;right:6px" onclick="removeRow(${id},'stats',${i})">×</button>` : ''}
+        </div>`).join('')}
+        <div class="b-sc" style="display:flex;align-items:center;justify-content:center;background:var(--da-lt);cursor:pointer;border-right:none" onclick="addRow(${id},'stats')">
+          <span style="font-size:calc(var(--dfs)*0.77);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--da);opacity:0.7">+ stat</span>
+        </div></div>`;
+        }
+
+        case 'feature': {
+          const il = c.imgLayout || 'none', src = imgSrc(c.filename);
+          const bodyWrapClass = il === 'none' ? '' : 'with-img img-' + il;
+          const bodyContent = `<div class="b-fbody" ${ce} data-ph="Describe this feature...">${S(c.body)}</div>`;
+          const imgContent = il !== 'none' ? `<div class="b-fimg">${src ? `<img src="${src}" alt="">` :
+            `<span class="img-hint">${S(c.hint)}</span>`}${upBtn}</div>` : '';
+          let innerHtml = il === 'none' ? bodyContent :
+            il === 'below' ? `${bodyContent}${imgContent}` :
+              il === 'right' ? `${bodyContent}${imgContent}` :
+                `${imgContent}${bodyContent}`;
+          return `<div class="b-feature">
+        <div class="b-fh">
+          <div class="b-fnum" ${ce} data-ph="01">${S(c.num)}</div>
+          <div>
+            <div class="b-ftitle" ${ce} data-ph="Feature name">${S(c.title)}</div>
+            <div class="b-fsub" ${ce} data-ph="Subtitle · tags">${S(c.subtitle)}</div>
+          </div></div>
+        <div class="b-feature-actions">
+          <button class="layout-cycle-btn" onclick="cycleFILayout(${id})">${FI_LABELS[il]}</button>
+        </div>
+        <div class="b-feature-body-wrap ${bodyWrapClass}">${innerHtml}</div></div>`;
+        }
+
+        case 'two-col': return `<div class="b-2col">
+      <div class="b-2col-inner">
+        <div class="b-2cell">
+          <div class="b-cll" ${ce} data-ph="Column A">${S(c.leftLabel)}</div>
+          <ul>${c.leftItems.map((item, i) => `<li class="b-2cell-row">
+            <span ${ce} data-ph="Item">${S(item)}</span>
+            <button class="row-del-btn" onclick="removeRow(${id},'leftItems',${i})">×</button></li>`).join('')}</ul>
+          <button class="row-add-btn" onclick="addRow(${id},'leftItems')">+ add item</button>
+        </div>
+        <div class="b-2cell">
+          <div class="b-cll" ${ce} data-ph="Column B">${S(c.rightLabel)}</div>
+          <ul>${c.rightItems.map((item, i) => `<li class="b-2cell-row">
+            <span ${ce} data-ph="Item">${S(item)}</span>
+            <button class="row-del-btn" onclick="removeRow(${id},'rightItems',${i})">×</button></li>`).join('')}</ul>
+          <button class="row-add-btn" onclick="addRow(${id},'rightItems')">+ add item</button>
+        </div></div></div>`;
+
+        case 'roadmap': return `<div class="b-roadmap">
+      ${c.items.map((item, i) => `<div class="b-ri">
+        <span class="b-rs ${item.status}" title="Click to cycle status" onclick="cycleStatus(${id},${i})">${STATUS_LABEL[item.status]}</span>
+        <div style="flex:1">
+          <div class="b-rl" ${ce} data-ph="Label">${S(item.label)}</div>
+          <div class="b-rd" ${ce} data-ph="Detail">${S(item.detail)}</div>
+        </div>
+        <button class="row-del-btn" onclick="removeRow(${id},'items',${i})">×</button>
+      </div>`).join('')}
+      <button class="row-add-btn" onclick="addRow(${id},'items')">+ add item</button></div>`;
+
+        case 'meta-bar': {
+          const nc = c.cols.length;
+          return `<div class="b-meta">
+        <div class="b-meta-inner" style="grid-template-columns:repeat(${nc},1fr)">
+          ${c.cols.map((col, ci) => `<div class="b-mc">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+              <div class="b-mcl" ${ce} data-ph="Label" style="margin-bottom:0;flex:1">${S(col.label)}</div>
+              ${nc > 1 ? `<button class="row-del-btn" style="position:static;opacity:0.4" onclick="removeMetaCol(${id},${ci})">×</button>` : ''}
+            </div>
+            ${col.rows.map((row, ri) => `<div class="b-mr">
+              ${row.key !== undefined ? `<span class="b-mk" ${ce} data-ph="Key">${S(row.key)}</span>` : ''}
+              <span class="b-mv" ${ce} data-ph="Value">${S(row.val)}</span>
+              <button class="row-del-btn" onclick="removeRow(${id},'col${ci}',${ri})">×</button>
+            </div>`).join('')}
+            <button class="row-add-btn" style="margin-top:5px" onclick="addRow(${id},'col${ci}')">+ row</button>
+          </div>`).join('')}
+        </div>
+        <div style="border-top:1px solid var(--da-rule);padding:5px 10px">
+          <button class="row-add-btn" style="margin:0" onclick="addMetaCol(${id})">+ add column</button>
+        </div></div>`;
+        }
+
+        case 'image': {
+          const s = imgSrc(c.filename); return `<div class="b-img-wrap">
+      ${s ? `<img src="${s}" alt="">` :
+              `<span class="img-hint">${S(c.hint)}</span>`}${upBtn}</div>`;
+        }
+
+        case 'text-image': {
+          const s = imgSrc(c.filename); return `<div class="b-ti layout-${c.layout}">
+      <div class="b-ti-actions">
+        <button class="layout-cycle-btn" onclick="cycleTILayout(${id})">${TI_LABELS[c.layout]}</button>
+      </div>
+      <div class="b-ti-inner">
+        <div class="b-ti-img">${s ? `<img src="${s}" alt="">` :
+              `<span class="img-hint">${S(c.hint)}</span>`}${upBtn}</div>
+        <div class="b-ti-txt">
+          <div class="b-ti-hd" ${ce} data-ph="Heading">${S(c.heading)}</div>
+          <p ${ce} data-ph="Write your text here...">${S(c.text)}</p>
+        </div></div></div>`;
+        }
+
         case 'divider': return `<div class="b-divider"></div>`;
+
+        case 'chart-bar': return `<div class="b-chart" data-chart-id="${id}">
+      <div class="b-chart-header">
+        <div>
+          <div class="b-chart-title" ${ce} data-ph="Chart title">${S(c.title)}</div>
+          <div class="b-chart-subtitle" ${ce} data-ph="Subtitle">${S(c.subtitle)}</div>
+        </div>
+        <button class="layout-cycle-btn" onclick="openEdit(${id})">Edit data</button>
+      </div>
+      <div class="b-chart-canvas-wrap"><canvas id="chart-${id}" height="220"></canvas></div>
+      <div class="b-chart-legend">${c.series.map((s, i) => `<div class="b-chart-legend-item"><div class="b-chart-legend-dot" style="background:${chartColor(i)}"></div>${S(s.name)}</div>`).join('')}</div>
+    </div>`;
+
+        case 'chart-line': return `<div class="b-chart" data-chart-id="${id}">
+      <div class="b-chart-header">
+        <div>
+          <div class="b-chart-title" ${ce} data-ph="Chart title">${S(c.title)}</div>
+          <div class="b-chart-subtitle" ${ce} data-ph="Subtitle">${S(c.subtitle)}</div>
+        </div>
+        <button class="layout-cycle-btn" onclick="openEdit(${id})">Edit data</button>
+      </div>
+      <div class="b-chart-canvas-wrap"><canvas id="chart-${id}" height="220"></canvas></div>
+      <div class="b-chart-legend">${c.series.map((s, i) => `<div class="b-chart-legend-item"><div class="b-chart-legend-dot" style="background:${chartColor(i)}"></div>${S(s.name)}</div>`).join('')}</div>
+    </div>`;
+
+        case 'chart-scatter': return `<div class="b-chart" data-chart-id="${id}">
+      <div class="b-chart-header">
+        <div>
+          <div class="b-chart-title" ${ce} data-ph="Chart title">${S(c.title)}</div>
+          <div class="b-chart-subtitle" ${ce} data-ph="Subtitle">${S(c.subtitle)}</div>
+        </div>
+        <button class="layout-cycle-btn" onclick="openEdit(${id})">Edit data</button>
+      </div>
+      <div class="b-chart-canvas-wrap"><canvas id="chart-${id}" height="280"></canvas></div>
+    </div>`;
         default: return '';
       }
     }
 
+    // ── BUILD BLOCK EL ─────────────────────────────────────
     function buildBlockEl(block) {
       const wrap = document.createElement('div');
       wrap.className = 'doc-block'; wrap.dataset.id = block.id;
       wrap.innerHTML = renderBlock(block);
       const ctrl = document.createElement('div'); ctrl.className = 'bctrl';
-      ctrl.innerHTML = `<button class="bcb" onclick="openEdit(${block.id})">✎</button><button class="bcb" onclick="moveBlock(${block.id},-1)">↑</button><button class="bcb" onclick="moveBlock(${block.id},1)">↓</button><button class="bcb del" onclick="deleteBlock(${block.id})">×</button>`;
+      ctrl.innerHTML = `<button class="bcb" onclick="openEdit(${block.id})" title="Edit">✎</button>
+    <button class="bcb" onclick="moveBlock(${block.id},-1)" title="Up">↑</button>
+    <button class="bcb" onclick="moveBlock(${block.id},1)" title="Down">↓</button>
+    <button class="bcb del" onclick="deleteBlock(${block.id})" title="Delete">×</button>`;
       wrap.appendChild(ctrl);
       wrap.addEventListener('mousedown', e => {
-        if (e.target.closest('[contenteditable]') || e.target.closest('.bctrl') || e.target.closest('.b-upload-btn')) return;
+        if (e.target.closest('[contenteditable]') || e.target.closest('.bctrl') || e.target.closest('button')) return;
         startBlockDrag(block.id, e);
       });
       return wrap;
     }
 
+    // ── CANVAS ─────────────────────────────────────────────
     function rerenderCanvas() {
       const c = document.getElementById('blocks-container'); c.innerHTML = '';
       document.getElementById('doc-canvas').classList.toggle('has-blocks', blocks.length > 0);
       blocks.forEach((b, i) => { c.appendChild(makeDZ(i)); c.appendChild(buildBlockEl(b)); });
       c.appendChild(makeDZ(blocks.length));
+      requestAnimationFrame(drawCharts);
     }
-
     function makeDZ(i) { const d = document.createElement('div'); d.className = 'dz'; d.dataset.index = i; return d; }
-    function insertBlock(type, at) { const b = { id: ++blockId, type, content: defaultContent(type) }; blocks.splice(at, 0, b); rerenderCanvas(); }
+    function insertBlock(type, at) { const b = { id: ++blockId, type, content: def(type) }; blocks.splice(at, 0, b); rerenderCanvas(); }
     function deleteBlock(id) { blocks = blocks.filter(b => b.id !== id); rerenderCanvas(); }
     function moveBlock(id, dir) { const i = blocks.findIndex(b => b.id === id), j = i + dir; if (j < 0 || j >= blocks.length) return;[blocks[i], blocks[j]] = [blocks[j], blocks[i]]; rerenderCanvas(); }
 
-    /* DRAG */
-    function startPanelDrag(type, label, e) { e.preventDefault(); drag = { fromPanel: true, compType: type, label, active: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDragMove); document.addEventListener('mouseup', onDragEnd); }
-    function startBlockDrag(id, e) { e.preventDefault(); drag = { fromPanel: false, blockId: id, active: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDragMove); document.addEventListener('mouseup', onDragEnd); }
-
-    function onDragMove(e) {
+    // ── DRAG ───────────────────────────────────────────────
+    function startPanelDrag(type, label, e) { e.preventDefault(); drag = { fp: true, type, label, act: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDM); document.addEventListener('mouseup', onDU); }
+    function startBlockDrag(id, e) { e.preventDefault(); drag = { fp: false, bid: id, act: false, sx: e.clientX, sy: e.clientY }; document.addEventListener('mousemove', onDM); document.addEventListener('mouseup', onDU); }
+    function onDM(e) {
       if (!drag) return;
-      if (!drag.active) { if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 5) return; drag.active = true; ghost.textContent = drag.fromPanel ? drag.label : 'Move block'; ghost.style.display = 'block'; if (!drag.fromPanel) { const el = document.querySelector(`.doc-block[data-id="${drag.blockId}"]`); if (el) el.style.opacity = '0.3'; } }
-      ghost.style.left = (e.clientX + 14) + 'px'; ghost.style.top = (e.clientY + 10) + 'px'; highlightDZ(e.clientX, e.clientY);
+      if (!drag.act) { if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 5) return; drag.act = true; ghost.textContent = drag.fp ? drag.label : 'Move'; ghost.style.display = 'block'; if (!drag.fp) { const el = document.querySelector(`.doc-block[data-id="${drag.bid}"]`); if (el) el.style.opacity = '0.3'; } }
+      ghost.style.left = (e.clientX + 13) + 'px'; ghost.style.top = (e.clientY + 9) + 'px'; hilightDZ(e.clientX, e.clientY);
     }
-
-    function onDragEnd(e) {
-      document.removeEventListener('mousemove', onDragMove); document.removeEventListener('mouseup', onDragEnd);
+    function onDU(e) {
+      document.removeEventListener('mousemove', onDM); document.removeEventListener('mouseup', onDU);
       ghost.style.display = 'none'; document.querySelectorAll('.doc-block').forEach(el => el.style.opacity = '');
-      if (drag && drag.active) { const dz = getNearestDZ(e.clientX, e.clientY); if (dz !== null) { if (drag.fromPanel) { insertBlock(drag.compType, dz); } else { const fi = blocks.findIndex(b => b.id === drag.blockId); if (fi !== -1 && dz !== fi && dz !== fi + 1) { const [m] = blocks.splice(fi, 1); blocks.splice(dz > fi ? dz - 1 : dz, 0, m); rerenderCanvas(); } } } }
+      if (drag && drag.act) { const dz = nearDZ(e.clientX, e.clientY); if (dz !== null) { if (drag.fp) { insertBlock(drag.type, dz); } else { const fi = blocks.findIndex(b => b.id === drag.bid); if (fi !== -1 && dz !== fi && dz !== fi + 1) { const [m] = blocks.splice(fi, 1); blocks.splice(dz > fi ? dz - 1 : dz, 0, m); rerenderCanvas(); } } } }
       clearDZH(); drag = null;
     }
-
-    function getNearestDZ(x, y) {
+    function nearDZ(x, y) {
       const cw = document.getElementById('canvas-wrap').getBoundingClientRect();
       if (x < cw.left || x > cw.right || y < cw.top || y > cw.bottom) return null;
       let best = null, bd = Infinity;
-      document.querySelectorAll('.dz').forEach(dz => { const r = dz.getBoundingClientRect(), dist = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)); if (dist < bd) { bd = dist; best = parseInt(dz.dataset.index); } });
+      document.querySelectorAll('.dz').forEach(dz => { const r = dz.getBoundingClientRect(), d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)); if (d < bd) { bd = d; best = parseInt(dz.dataset.index); } });
       return best;
     }
-    function highlightDZ(x, y) { clearDZH(); const i = getNearestDZ(x, y); if (i === null) return; const d = document.querySelector(`.dz[data-index="${i}"]`); if (d) d.classList.add('over'); }
+    function hilightDZ(x, y) { clearDZH(); const i = nearDZ(x, y); if (i === null) return; const d = document.querySelector(`.dz[data-index="${i}"]`); if (d) d.classList.add('over'); }
     function clearDZH() { document.querySelectorAll('.dz.over').forEach(d => d.classList.remove('over')); }
-
-    document.querySelectorAll('.comp-item').forEach(item => {
-      item.addEventListener('mousedown', e => startPanelDrag(item.dataset.type, item.querySelector('.cl').textContent, e));
+    document.querySelectorAll('.ci-item').forEach(item => {
+      item.addEventListener('mousedown', e => startPanelDrag(item.dataset.type, item.querySelector('.cnm').textContent, e));
     });
 
-    /* IMAGE UPLOAD */
-    function triggerImg(id) { pendingImgBlockId = id; document.getElementById('img-input').click(); }
-
-    function handleImageUpload(e) {
-      const file = e.target.files[0]; if (!file || pendingImgBlockId === null) return;
+    // ── IMAGE UPLOAD ───────────────────────────────────────
+    function triggerImg(id) { pendingImgId = id; document.getElementById('img-input').click(); }
+    function handleImgUpload(e) {
+      const file = e.target.files[0]; if (!file || pendingImgId === null) return;
       const reader = new FileReader();
       reader.onload = ev => {
         imageStore[file.name] = ev.target.result;
-        const block = blocks.find(b => b.id === pendingImgBlockId);
+        const block = blocks.find(b => b.id === pendingImgId);
         if (block) { block.content.filename = file.name; rerenderCanvas(); }
-        pendingImgBlockId = null;
+        pendingImgId = null;
       };
-      reader.readAsDataURL(file);
-      e.target.value = '';
+      reader.readAsDataURL(file); e.target.value = '';
     }
 
-    /* SYNC */
+    // ── SYNC DOM → STATE ───────────────────────────────────
     function syncFromDOM() {
       blocks.forEach(block => {
         const el = document.querySelector(`.doc-block[data-id="${block.id}"]`); if (!el) return;
-        const c = block.content, t = s => { const n = el.querySelector(s); return n ? n.textContent.trim() : ''; };
+        const c = block.content;
+        const t = s => { const n = el.querySelector(s); return n ? n.textContent.trim() : ''; };
         switch (block.type) {
-          case 'hero': c.eyebrow = t('.b-eyebrow'); c.title = t('.b-title'); c.subtitle = t('.b-subtitle'); break;
+          case 'hero': c.eyebrow = t('.b-eyebrow'); c.title = t('.b-ht'); c.subtitle = t('.b-hs'); break;
           case 'section-heading': c.eyebrow = t('.b-eyebrow'); c.heading = t('h2'); break;
           case 'body-text': c.text = t('p'); break;
-          case 'callout': c.label = t('.b-cl-label'); c.text = t('p'); break;
-          case 'stat-grid': el.querySelectorAll('.b-sc').forEach((cell, i) => { if (c.stats[i]) { c.stats[i].val = cell.querySelector('.b-sv').textContent.trim(); c.stats[i].desc = cell.querySelector('.b-sd').textContent.trim(); } }); break;
+          case 'callout': c.label = t('.b-cll'); c.text = t('p'); break;
+          case 'bullet-list':
+            c.title = t('.b-blist-title');
+            c.items = [...el.querySelectorAll('.b-blist-row span')].map(s => s.textContent.trim()); break;
+          case 'table':
+            c.headers = [...el.querySelectorAll('thead th span')].map(s => s.textContent.trim());
+            c.rows = [...el.querySelectorAll('tbody tr')].map(tr => [...tr.querySelectorAll('td span')].map(s => s.textContent.trim())); break;
+          case 'stat-grid':
+            el.querySelectorAll('.b-sc').forEach((cell, i) => { if (c.stats[i]) { c.stats[i].val = cell.querySelector('.b-sv') ? cell.querySelector('.b-sv').textContent.trim() : c.stats[i].val; c.stats[i].desc = cell.querySelector('.b-sd') ? cell.querySelector('.b-sd').textContent.trim() : c.stats[i].desc; } }); break;
           case 'feature': c.num = t('.b-fnum'); c.title = t('.b-ftitle'); c.subtitle = t('.b-fsub'); c.body = t('.b-fbody'); break;
-          case 'two-col': c.leftLabel = t('.b-2cell:first-child .b-cl-label'); c.rightLabel = t('.b-2cell:last-child .b-cl-label'); c.leftItems = [...el.querySelectorAll('.b-2cell:first-child li')].map(l => l.textContent.trim()); c.rightItems = [...el.querySelectorAll('.b-2cell:last-child li')].map(l => l.textContent.trim()); break;
-          case 'meta-bar': el.querySelectorAll('.b-mc').forEach((cell, ci) => { if (!c.cols[ci]) return; c.cols[ci].label = cell.querySelector('.b-mcl').textContent.trim(); c.cols[ci].rows.forEach((row, ri) => { const re = cell.querySelectorAll('.b-mr')[ri]; if (!re) return; const v = re.querySelector('.b-mv'); if (v) row.val = v.textContent.trim(); }); }); break;
-          case 'text-image': c.heading = t('.b-ti-heading'); c.text = t('.b-ti-txt p'); break;
+          case 'two-col':
+            c.leftLabel = t('.b-2cell:first-child .b-cll'); c.rightLabel = t('.b-2cell:last-child .b-cll');
+            c.leftItems = [...el.querySelectorAll('.b-2cell:first-child .b-2cell-row span')].map(s => s.textContent.trim());
+            c.rightItems = [...el.querySelectorAll('.b-2cell:last-child .b-2cell-row span')].map(s => s.textContent.trim()); break;
+          case 'meta-bar':
+            el.querySelectorAll('.b-mc').forEach((mc, ci) => {
+              if (!c.cols[ci]) return;
+              c.cols[ci].label = mc.querySelector('.b-mcl') ? mc.querySelector('.b-mcl').textContent.trim() : c.cols[ci].label;
+              mc.querySelectorAll('.b-mr').forEach((mr, ri) => { if (!c.cols[ci].rows[ri]) return; const mv = mr.querySelector('.b-mv'); const mk = mr.querySelector('.b-mk'); if (mv) c.cols[ci].rows[ri].val = mv.textContent.trim(); if (mk) c.cols[ci].rows[ri].key = mk.textContent.trim(); });
+            }); break;
+          case 'text-image': c.heading = t('.b-ti-hd'); c.text = t('.b-ti-txt p'); break;
         }
       });
     }
 
-    /* EDIT MODAL */
+    // ── EDIT MODAL ─────────────────────────────────────────
     function openEdit(id) {
       editingBlockId = id; const block = blocks.find(b => b.id === id), c = block.content;
-      document.getElementById('modal-title').textContent = 'Edit: ' + block.type.replace(/-/g, ' ').toUpperCase();
+      document.getElementById('modal-title').textContent = 'Edit: ' + block.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       let html = '';
       switch (block.type) {
-        case 'roadmap':
-          html = c.items.map((item, i) => `<label>Item ${i + 1} status</label><select id="m-rs-${i}"><option value="done"${item.status === 'done' ? ' selected' : ''}>Done</option><option value="wip"${item.status === 'wip' ? ' selected' : ''}>In Progress</option><option value="next"${item.status === 'next' ? ' selected' : ''}>Planned</option></select><label>Label</label><input id="m-rl-${i}" value="${item.label}"><label>Detail</label><input id="m-rd-${i}" value="${item.detail}">`).join('') + `<button class="tb-btn" style="margin-top:12px;border-color:var(--ui-border);color:var(--ui-ink)" onclick="addRoadmapItem(${id})">+ Add item</button>`; break;
-        case 'two-col': html = `<label>Left label</label><input id="m-ll" value="${c.leftLabel}"><label>Left items (one per line)</label><textarea id="m-li">${c.leftItems.join('\n')}</textarea><label>Right label</label><input id="m-rl" value="${c.rightLabel}"><label>Right items (one per line)</label><textarea id="m-ri">${c.rightItems.join('\n')}</textarea>`; break;
-        case 'stat-grid': html = c.stats.map((s, i) => `<label>Stat ${i + 1} value</label><input id="m-sv-${i}" value="${s.val}"><label>Stat ${i + 1} description</label><input id="m-sd-${i}" value="${s.desc}">`).join(''); break;
-        case 'image': html = `<label>Placeholder hint</label><input id="m-ih" value="${c.hint}">${c.filename ? `<p style="font-size:11px;margin-top:8px;opacity:0.55">Image: ${c.filename}</p>` : ''}`; break;
-        case 'text-image': html = `<label>Layout</label><select id="m-tl"><option value="right"${c.layout === 'right' ? ' selected' : ''}>Image right</option><option value="left"${c.layout === 'left' ? ' selected' : ''}>Image left</option><option value="below"${c.layout === 'below' ? ' selected' : ''}>Image below</option></select><label>Image placeholder hint</label><input id="m-ih" value="${c.hint}">${c.filename ? `<p style="font-size:11px;margin-top:8px;opacity:0.55">Image: ${c.filename}</p>` : ''}`; break;
-        default: html = '<p style="font-size:11px;opacity:0.45;padding-top:4px">Click text directly on the canvas to edit.</p>';
+        case 'table':
+          html = `<label>Headers (comma separated)</label><input id="m-th" value="${c.headers.join(', ')}">
+        <p style="font-size:11px;opacity:0.45;margin-top:8px">Edit cells directly on the canvas. Use + row / + column buttons below the table.</p>`; break;
+        case 'image': html = `<label>Placeholder hint</label><input id="m-ih" value="${c.hint || ''}">${c.filename ? `<p style="font-size:11px;opacity:0.5;margin-top:7px">Current: ${c.filename}</p>` : ''}`; break;
+        case 'text-image': html = `<label>Layout</label><select id="m-tl"><option value="right"${c.layout === 'right' ? ' selected' : ''}>Image right</option><option value="left"${c.layout === 'left' ? ' selected' : ''}>Image left</option><option value="below"${c.layout === 'below' ? ' selected' : ''}>Image below</option></select><label>Image hint</label><input id="m-ih" value="${c.hint || ''}">${c.filename ? `<p style="font-size:11px;opacity:0.5;margin-top:7px">Current: ${c.filename}</p>` : ''}`; break;
+        case 'chart-bar':
+        case 'chart-line':
+          html = `<label>Labels (comma separated)</label><input id="m-cl" value="${(c.labels || []).join(', ')}">
+        ${(c.series || []).map((s, i) => `
+        <label>Series ${i + 1} name</label><input id="m-sn-${i}" value="${s.name || ''}">
+        <label>Series ${i + 1} values (comma separated)</label><input id="m-sv-${i}" value="${(s.values || []).join(', ')}">`).join('')}
+        <p style="font-size:11px;opacity:0.45;margin-top:10px">Number of values should match number of labels.</p>`;
+          break;
+        case 'chart-scatter':
+          html = `<label>X axis label</label><input id="m-xl" value="${c.xLabel || ''}">
+        <label>Quadrant labels (top-left, top-right, bottom-left, bottom-right)</label>
+        <input id="m-ql" value="${(c.quadrantLabels || []).join(', ')}">
+        <label>Points (one per line: label, x 0–1, y 0–1, highlight true/false)</label>
+        <textarea id="m-pts" style="min-height:110px">${(c.points || []).map(p => `${p.label},${p.x},${p.y},${p.highlight || false}`).join('\n')}</textarea>
+        <p style="font-size:11px;opacity:0.45;margin-top:6px">Example: Witch Task,0.7,0.8,true</p>`;
+          break;
+        default: html = '<p style="font-size:11px;opacity:0.4;padding-top:3px">Edit text directly on the canvas. Use the inline buttons to add/remove rows and cycle status or layout.</p>';
       }
       document.getElementById('modal-fields').innerHTML = html;
       document.getElementById('edit-modal').classList.add('open');
     }
-
-    function addRoadmapItem(id) { blocks.find(b => b.id === id).content.items.push({ status: 'next', label: 'New item', detail: 'Description' }); openEdit(id); }
-
     function saveModal() {
-      const block = blocks.find(b => b.id === editingBlockId), c = block.content;
+      const block = blocks.find(b => b.id === editingBlockId); const c = block.content;
       const v = id => { const el = document.getElementById(id); return el ? el.value : ''; };
       switch (block.type) {
-        case 'roadmap': c.items.forEach((item, i) => { item.status = v(`m-rs-${i}`); item.label = v(`m-rl-${i}`); item.detail = v(`m-rd-${i}`); }); break;
-        case 'two-col': c.leftLabel = v('m-ll'); c.rightLabel = v('m-rl'); c.leftItems = v('m-li').split('\n').filter(Boolean); c.rightItems = v('m-ri').split('\n').filter(Boolean); break;
-        case 'stat-grid': c.stats.forEach((s, i) => { s.val = v(`m-sv-${i}`); s.desc = v(`m-sd-${i}`); }); break;
+        case 'table': { const hs = v('m-th').split(',').map(s => s.trim()).filter(Boolean); if (hs.length) { c.rows = c.rows.map(r => { while (r.length < hs.length) r.push('Cell'); return r.slice(0, hs.length); }); c.headers = hs; } break; }
         case 'image': c.hint = v('m-ih'); break;
         case 'text-image': c.layout = v('m-tl'); c.hint = v('m-ih'); break;
+        case 'chart-bar':
+        case 'chart-line': {
+          c.labels = v('m-cl').split(',').map(s => s.trim()).filter(Boolean);
+          (c.series || []).forEach((s, i) => {
+            s.name = v(`m-sn-${i}`) || s.name;
+            s.values = v(`m-sv-${i}`).split(',').map(s => parseFloat(s.trim()) || 0);
+          });
+          break;
+        }
+        case 'chart-scatter': {
+          c.xLabel = v('m-xl');
+          c.quadrantLabels = v('m-ql').split(',').map(s => s.trim());
+          c.points = v('m-pts').split('\n').filter(Boolean).map(line => {
+            const parts = line.split(',');
+            return { label: parts[0]?.trim() || '', x: parseFloat(parts[1]) || 0.5, y: parseFloat(parts[2]) || 0.5, highlight: parts[3]?.trim() === 'true' };
+          });
+          break;
+        }
       }
       closeModal(); rerenderCanvas();
     }
     function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
 
-    /* THEME — scoped to #doc-canvas only */
+    // ── CHART HELPERS ──────────────────────────────────────
+    function chartColor(i) {
+      const dc = document.getElementById('doc-canvas');
+      const base = getComputedStyle(dc).getPropertyValue('--da').trim() || '#a68df4';
+      // generate palette from accent color
+      const palette = [base, '#f5c6a0', '#7fbf8e', '#7fd4ff', '#f7c948', '#e07a7a'];
+      return palette[i % palette.length];
+    }
+
+    function hexA2(hex, a) {
+      hex = hex.trim(); if (hex.startsWith('rgba')) return hex;
+      const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    function drawCharts() {
+      blocks.forEach(block => {
+        if (!['chart-bar', 'chart-line', 'chart-scatter'].includes(block.type)) return;
+        const canvas = document.getElementById(`chart-${block.id}`);
+        if (!canvas) return;
+        const c = block.content;
+        // set canvas pixel dimensions
+        const wrap = canvas.parentElement;
+        const W = wrap.clientWidth || 680;
+        const H = parseInt(canvas.getAttribute('height')) || 220;
+        canvas.width = W * 2; canvas.height = H * 2;
+        canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.scale(2, 2);
+        ctx.clearRect(0, 0, W, H);
+
+        const dc = document.getElementById('doc-canvas');
+        const ink = getComputedStyle(dc).getPropertyValue('--dink').trim() || '#1e1b27';
+        const ruleColor = getComputedStyle(dc).getPropertyValue('--da-rule').trim() || 'rgba(166,141,244,0.25)';
+        const fs = parseFloat(getComputedStyle(dc).getPropertyValue('--dfs')) || 13;
+        const font = `${fs * 0.77}px 'Source Code Pro',monospace`;
+
+        if (block.type === 'chart-bar') drawBar(ctx, c, W, H, ink, ruleColor, font);
+        else if (block.type === 'chart-line') drawLine(ctx, c, W, H, ink, ruleColor, font);
+        else if (block.type === 'chart-scatter') drawScatter(ctx, c, W, H, ink, ruleColor, font);
+      });
+    }
+
+    function drawBar(ctx, c, W, H, ink, rule, font) {
+      const pad = { t: 16, r: 16, b: 36, l: 44 };
+      const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+      const labels = c.labels || [];
+      const series = c.series || [];
+      const allVals = series.flatMap(s => s.values || []);
+      const maxVal = Math.max(...allVals, 1);
+      const ySteps = 5;
+      ctx.font = font; ctx.textAlign = 'right'; ctx.fillStyle = ink; ctx.globalAlpha = 0.4;
+      for (let i = 0; i <= ySteps; i++) {
+        const v = Math.round(maxVal / ySteps * i);
+        const y = pad.t + cH - (cH / ySteps * i);
+        ctx.fillText(v, pad.l - 6, y + 4);
+        ctx.strokeStyle = rule; ctx.lineWidth = 0.5; ctx.globalAlpha = 0.4;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      const groupW = cW / labels.length;
+      const barW = Math.max(4, (groupW - 8) / series.length);
+      series.forEach((s, si) => {
+        const col = chartColor(si);
+        (s.values || []).forEach((v, li) => {
+          const bH = cH * (v / maxVal);
+          const x = pad.l + groupW * li + (groupW - barW * series.length) / 2 + si * barW;
+          const y = pad.t + cH - bH;
+          ctx.fillStyle = col; ctx.globalAlpha = 0.85;
+          ctx.fillRect(x, y, barW - 1, bH);
+        });
+      });
+      ctx.globalAlpha = 0.6; ctx.font = font; ctx.textAlign = 'center'; ctx.fillStyle = ink;
+      labels.forEach((lbl, i) => {
+        ctx.fillText(lbl.length > 10 ? lbl.slice(0, 9) + '…' : lbl, pad.l + groupW * i + groupW / 2, H - 6);
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function drawLine(ctx, c, W, H, ink, rule, font) {
+      const pad = { t: 16, r: 16, b: 36, l: 44 };
+      const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+      const labels = c.labels || [];
+      const series = c.series || [];
+      const allVals = series.flatMap(s => s.values || []);
+      const maxVal = Math.max(...allVals, 1);
+      const ySteps = 5;
+      ctx.font = font;
+      for (let i = 0; i <= ySteps; i++) {
+        const v = Math.round(maxVal / ySteps * i);
+        const y = pad.t + cH - (cH / ySteps * i);
+        ctx.textAlign = 'right'; ctx.fillStyle = ink; ctx.globalAlpha = 0.4; ctx.fillText(v, pad.l - 6, y + 4);
+        ctx.strokeStyle = rule; ctx.lineWidth = 0.5; ctx.globalAlpha = 0.35;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
+      }
+      const xStep = labels.length > 1 ? cW / (labels.length - 1) : cW;
+      series.forEach((s, si) => {
+        const col = chartColor(si);
+        const pts = (s.values || []).map((v, i) => ({ x: pad.l + i * xStep, y: pad.t + cH - cH * (v / maxVal) }));
+        // fill
+        ctx.beginPath(); ctx.moveTo(pts[0].x, pad.t + cH);
+        pts.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(pts[pts.length - 1].x, pad.t + cH); ctx.closePath();
+        ctx.fillStyle = hexA2(col, 0.12); ctx.globalAlpha = 1; ctx.fill();
+        // line
+        ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+        ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.globalAlpha = 0.9; ctx.stroke();
+        // dots
+        pts.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2); ctx.fillStyle = col; ctx.globalAlpha = 1; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); });
+      });
+      ctx.globalAlpha = 0.6; ctx.font = font; ctx.textAlign = 'center'; ctx.fillStyle = ink;
+      labels.forEach((lbl, i) => ctx.fillText(lbl.length > 8 ? lbl.slice(0, 7) + '…' : lbl, pad.l + i * xStep, H - 6));
+      ctx.globalAlpha = 1;
+    }
+
+    function drawScatter(ctx, c, W, H, ink, rule, font) {
+      const pad = { t: 24, r: 24, b: 44, l: 44 };
+      const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+      const mid = { x: pad.l + cW / 2, y: pad.t + cH / 2 };
+      // axes
+      ctx.strokeStyle = rule; ctx.lineWidth = 0.75; ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(pad.l, mid.y); ctx.lineTo(pad.l + cW, mid.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mid.x, pad.t); ctx.lineTo(mid.x, pad.t + cH); ctx.stroke();
+      // quadrant labels
+      const ql = c.quadrantLabels || ['', '', '', ''];
+      ctx.font = font; ctx.globalAlpha = 0.25; ctx.fillStyle = ink;
+      ctx.textAlign = 'start'; ctx.fillText(ql[2] || '', pad.l + 6, pad.t + 14);
+      ctx.textAlign = 'end'; ctx.fillText(ql[3] || '', pad.l + cW - 6, pad.t + 14);
+      ctx.textAlign = 'start'; ctx.fillText(ql[0] || '', pad.l + 6, pad.t + cH - 6);
+      ctx.textAlign = 'end'; ctx.fillText(ql[1] || '', pad.l + cW - 6, pad.t + cH - 6);
+      // axis labels
+      ctx.globalAlpha = 0.45; ctx.font = font;
+      ctx.textAlign = 'center'; ctx.fillStyle = ink;
+      if (c.xLabel) ctx.fillText(c.xLabel.length > 40 ? c.xLabel.slice(0, 39) + '…' : c.xLabel, mid.x, H - 6);
+      // points
+      const accent = chartColor(0);
+      (c.points || []).forEach((pt, i) => {
+        const px2 = pad.l + pt.x * cW, py2 = pad.t + (1 - pt.y) * cH;
+        const r = pt.highlight ? 7 : 5;
+        ctx.globalAlpha = 1;
+        ctx.beginPath(); ctx.arc(px2, py2, r, 0, Math.PI * 2);
+        ctx.fillStyle = pt.highlight ? accent : hexA2(accent, 0.55); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+        // label
+        ctx.font = font; ctx.fillStyle = ink; ctx.globalAlpha = 0.75; ctx.textAlign = 'center';
+        ctx.fillText(pt.label || '', px2, py2 - r - 4);
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    // ── THEME ──────────────────────────────────────────────
     function applyTheme() {
       const dc = document.getElementById('doc-canvas');
       const accent = document.getElementById('th-accent').value;
@@ -1375,35 +2326,37 @@
       const pagebg = document.getElementById('th-pagebg').value;
       const ink = document.getElementById('th-ink').value;
       const fs = document.getElementById('th-fs').value;
-      function hexA(hex, a) { const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return `rgba(${r},${g},${b},${a})`; }
-      dc.style.setProperty('--doc-accent', accent);
-      dc.style.setProperty('--doc-accent-lt', hexA(accent, 0.12));
-      dc.style.setProperty('--doc-accent-rule', hexA(accent, 0.25));
-      dc.style.setProperty('--doc-bg', docbg);
-      dc.style.setProperty('--doc-ink', ink);
-      dc.style.setProperty('--doc-fs', fs + 'px');
+      const grid = document.getElementById('th-grid').checked;
+      const hA = (hex, a) => { const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return `rgba(${r},${g},${b},${a})`; };
+      dc.style.setProperty('--da', accent);
+      dc.style.setProperty('--da-lt', hA(accent, 0.12));
+      dc.style.setProperty('--da-rule', hA(accent, 0.25));
+      dc.style.setProperty('--dbg', docbg);
+      dc.style.setProperty('--dink', ink);
+      dc.style.setProperty('--dfs', fs + 'px');
       dc.style.background = docbg; dc.style.color = ink;
+      dc.classList.toggle('show-grid', grid);
       document.getElementById('canvas-wrap').style.background = pagebg;
       document.getElementById('th-fs-val').textContent = fs + 'px';
     }
-
     function applyPreset(name) {
-      const p = { witch: { accent: '#a68df4', docbg: '#ffffff', pagebg: '#d6d2cc', ink: '#1e1b27' }, dark: { accent: '#7fd4ff', docbg: '#1a1a2e', pagebg: '#0e0e1a', ink: '#e8e8f0' }, minimal: { accent: '#444444', docbg: '#ffffff', pagebg: '#ebebeb', ink: '#111111' }, warm: { accent: '#d4845a', docbg: '#fffdf8', pagebg: '#e8e2d8', ink: '#2a1f15' } }[name];
+      const p = { witch: { accent: '#a68df4', docbg: '#ffffff', pagebg: '#d4d0ca', ink: '#1e1b27' }, dark: { accent: '#7fd4ff', docbg: '#1a1a2e', pagebg: '#0e0e1a', ink: '#e8e8f0' }, minimal: { accent: '#444444', docbg: '#ffffff', pagebg: '#ebebeb', ink: '#111111' }, warm: { accent: '#d4845a', docbg: '#fffdf8', pagebg: '#e8e2d8', ink: '#2a1f15' } }[name];
       if (!p) return;
-      document.getElementById('th-accent').value = p.accent; document.getElementById('th-docbg').value = p.docbg; document.getElementById('th-pagebg').value = p.pagebg; document.getElementById('th-ink').value = p.ink;
-      applyTheme();
+      document.getElementById('th-accent').value = p.accent; document.getElementById('th-docbg').value = p.docbg; document.getElementById('th-pagebg').value = p.pagebg; document.getElementById('th-ink').value = p.ink; applyTheme();
     }
 
-    /* SAVE — images embedded as base64 in the JSON */
+    // ── SAVE ───────────────────────────────────────────────
     function saveTemplate() {
       syncFromDOM();
-      const data = { title: document.getElementById('doc-title-input').value, theme: { accent: document.getElementById('th-accent').value, docbg: document.getElementById('th-docbg').value, pagebg: document.getElementById('th-pagebg').value, ink: document.getElementById('th-ink').value, fs: document.getElementById('th-fs').value }, images: imageStore, blocks };
-      const slug = (data.title || 'document').replace(/\s+/g, '-').toLowerCase();
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); a.download = slug + '.json'; a.click();
+      const data = {
+        title: document.getElementById('doc-title-input').value,
+        theme: { accent: document.getElementById('th-accent').value, docbg: document.getElementById('th-docbg').value, pagebg: document.getElementById('th-pagebg').value, ink: document.getElementById('th-ink').value, fs: document.getElementById('th-fs').value, grid: document.getElementById('th-grid').checked },
+        images: imageStore, blocks
+      };
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      a.download = (data.title || 'document').replace(/\s+/g, '-').toLowerCase() + '.json'; a.click();
     }
-
     function loadTemplate() { document.getElementById('load-input').click(); }
-
     function handleLoad(e) {
       const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
@@ -1412,15 +2365,183 @@
           const data = JSON.parse(ev.target.result);
           if (data.title) document.getElementById('doc-title-input').value = data.title;
           if (data.images) imageStore = data.images;
-          if (data.theme) { document.getElementById('th-accent').value = data.theme.accent || '#a68df4'; document.getElementById('th-docbg').value = data.theme.docbg || '#ffffff'; document.getElementById('th-pagebg').value = data.theme.pagebg || '#d6d2cc'; document.getElementById('th-ink').value = data.theme.ink || '#1e1b27'; document.getElementById('th-fs').value = data.theme.fs || 13; applyTheme(); }
+          if (data.theme) {
+            document.getElementById('th-accent').value = data.theme.accent || '#a68df4';
+            document.getElementById('th-docbg').value = data.theme.docbg || '#ffffff';
+            document.getElementById('th-pagebg').value = data.theme.pagebg || '#d4d0ca';
+            document.getElementById('th-ink').value = data.theme.ink || '#1e1b27';
+            document.getElementById('th-fs').value = data.theme.fs || 13;
+            document.getElementById('th-grid').checked = data.theme.grid || false;
+            applyTheme();
+          }
           if (data.blocks) { blocks = data.blocks; blockId = blocks.reduce((m, b) => Math.max(m, b.id), 0); rerenderCanvas(); }
         } catch (err) { alert('Could not read file: ' + err.message); }
       };
       reader.readAsText(file); e.target.value = '';
     }
-
     function clearCanvas() { if (blocks.length && !confirm('Clear all blocks?')) return; blocks = []; rerenderCanvas(); }
-    function exportPDF() { syncFromDOM(); document.title = document.getElementById('doc-title-input').value || 'document'; window.print(); }
+
+    // ── EXPORT PDF ─────────────────────────────────────────
+    function exportPDF() {
+      syncFromDOM();
+      document.title = document.getElementById('doc-title-input').value || 'document';
+      window.print();
+    }
+
+    // ── EXPORT HTML ────────────────────────────────────────
+    function exportHTML() {
+      syncFromDOM();
+      // First snapshot all chart canvases as PNG data URLs
+      const chartImgs = {};
+      document.querySelectorAll('.b-chart canvas').forEach(canvas => {
+        chartImgs[canvas.id] = canvas.toDataURL('image/png');
+      });
+
+      const dc = document.getElementById('doc-canvas');
+      const showGrid = dc.classList.contains('show-grid');
+      const title = document.getElementById('doc-title-input').value || 'Document';
+      const bodyContent = document.getElementById('blocks-container').innerHTML;
+
+      // Strip editor-only elements and swap canvases for img tags
+      const tmp = document.createElement('div');
+      tmp.innerHTML = bodyContent;
+      tmp.querySelectorAll('.bctrl,.dz,.b-upload-btn,.row-add-btn,.row-del-btn,.status-btn,.layout-cycle-btn,.b-feature-actions,.b-ti-actions').forEach(el => el.remove());
+      tmp.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+      // Replace each chart canvas with a static img
+      tmp.querySelectorAll('canvas[id^="chart-"]').forEach(canvas => {
+        const dataUrl = chartImgs[canvas.id];
+        if (dataUrl) {
+          const img = document.createElement('img');
+          img.src = dataUrl; img.style.width = '100%'; img.style.display = 'block';
+          canvas.parentNode.replaceChild(img, canvas);
+        }
+      });
+      const cleanBody = tmp.innerHTML;
+
+      const gridBg = showGrid ? `background-image:radial-gradient(circle,rgba(166,141,244,0.22) 1px,transparent 1px);background-size:44px 44px;` : '';
+      const accentVal = getComputedStyle(dc).getPropertyValue('--da').trim() || '#a68df4';
+      const inkVal = getComputedStyle(dc).getPropertyValue('--dink').trim() || '#1e1b27';
+      const fsVal = getComputedStyle(dc).getPropertyValue('--dfs').trim() || '13px';
+      const bgVal = getComputedStyle(dc).getPropertyValue('--dbg').trim() || '#fff';
+      const pagebg = document.getElementById('th-pagebg').value || '#d4d0ca';
+
+      const html = `<!DOCTYPE html>
+${'<'}html lang="en">
+${'<'}head>
+${'<'}meta charset="UTF-8">
+${'<'}meta name="viewport" content="width=device-width,initial-scale=1">
+${'<'}title>${title}${'<'}/title>
+${'<'}link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+${'<'}style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Code Pro',monospace;background:${pagebg};display:flex;flex-direction:column;align-items:center;padding:32px;min-height:100vh}
+#doc{
+  width:794px;max-width:100%;
+  background:${bgVal};${gridBg}
+  padding:52px 56px;box-shadow:0 4px 32px rgba(0,0,0,0.18);
+  --da:${accentVal};
+  --da-lt:rgba(166,141,244,0.12);
+  --da-rule:rgba(166,141,244,0.25);
+  --dink:${inkVal};
+  --dfs:${fsVal};
+  color:${inkVal};
+  font-family:'Source Code Pro',monospace;
+}
+.b-eyebrow{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--da);margin-bottom:9px}
+.b-hero{padding:0 0 20px;border-bottom:1px solid var(--da-rule);margin-bottom:20px}
+.b-hero .b-ht{font-size:calc(var(--dfs)*2.9);font-weight:700;letter-spacing:-0.01em;line-height:1;color:var(--dink);margin-bottom:10px}
+.b-hero .b-hs{font-size:var(--dfs);line-height:1.8;color:var(--dink);opacity:0.7;max-width:560px}
+.b-sh{padding:0 0 10px;margin-bottom:14px}
+.b-sh .b-eyebrow{display:flex;align-items:center;gap:8px}
+.b-sh .b-eyebrow::after{content:'';flex:1;height:1px;background:var(--da-rule)}
+.b-sh h2{font-size:calc(var(--dfs)*1.85);font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--dink);line-height:1.1}
+.b-body{margin-bottom:13px}.b-body p{font-size:var(--dfs);line-height:1.85;color:var(--dink);opacity:0.8}
+.b-callout{border-left:2px solid var(--da);padding:10px 16px;margin-bottom:14px}
+.b-callout .b-cll{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--da);margin-bottom:4px}
+.b-callout p{font-size:var(--dfs);line-height:1.7;color:var(--dink);opacity:0.8;font-style:italic}
+.b-blist{margin-bottom:14px}.b-blist-title{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--da);margin-bottom:8px}
+.b-blist ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.b-blist-row{display:flex;align-items:baseline;gap:8px}
+.b-blist-row::before{content:'—';color:var(--da);font-weight:700;font-size:var(--dfs);flex-shrink:0}
+.b-blist-row span{font-size:var(--dfs);line-height:1.6;color:var(--dink);opacity:0.8;flex:1}
+.b-table{margin-bottom:14px;overflow:hidden;border:1px solid var(--da-rule)}
+.b-table table{width:100%;border-collapse:collapse}
+.b-table th{background:var(--da-lt);padding:8px 12px;font-size:calc(var(--dfs)*0.77);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--da);border-right:1px solid var(--da-rule);border-bottom:1px solid var(--da-rule);text-align:left}
+.b-table th:last-child{border-right:none}
+.b-table td{padding:7px 12px;font-size:calc(var(--dfs)*0.92);color:var(--dink);border-right:1px solid var(--da-rule);border-bottom:1px solid var(--da-rule);vertical-align:top}
+.b-table td:last-child{border-right:none}.b-table tr:last-child td{border-bottom:none}
+.b-stat-grid{display:grid;grid-template-columns:repeat(var(--stat-cols,4),1fr);border:1px solid var(--da-rule);margin-bottom:14px}
+.b-sc{padding:14px 13px;border-right:1px solid var(--da-rule)}.b-sc:last-child{border-right:none}
+.b-sv{font-size:calc(var(--dfs)*2.15);font-weight:700;color:var(--dink);line-height:1;margin-bottom:4px}
+.b-sd{font-size:calc(var(--dfs)*0.85);line-height:1.5;color:var(--dink);opacity:0.5}
+.b-feature{border:1px solid var(--da-rule);margin-bottom:8px}
+.b-fh{padding:9px 14px;border-bottom:1px solid var(--da-rule);display:flex;align-items:flex-start;gap:10px}
+.b-fnum{font-size:calc(var(--dfs)*0.77);font-weight:700;letter-spacing:0.14em;color:var(--da);opacity:0.6;width:19px;flex-shrink:0;margin-top:2px}
+.b-ftitle{font-size:calc(var(--dfs)*0.92);font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dink);margin-bottom:2px}
+.b-fsub{font-size:calc(var(--dfs)*0.77);color:var(--da);opacity:0.75}
+.b-feature-body-wrap{padding:11px 14px}
+.b-feature-body-wrap.with-img{display:grid;gap:14px;align-items:start}
+.b-feature-body-wrap.img-right{grid-template-columns:1fr 220px}.b-feature-body-wrap.img-left{grid-template-columns:220px 1fr}.b-feature-body-wrap.img-below{grid-template-columns:1fr}
+.b-fbody{font-size:var(--dfs);line-height:1.8;color:var(--dink);opacity:0.8}
+.b-fimg{border:1px solid var(--da-rule);background:var(--da-lt);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.b-fimg img{width:100%;height:100%;object-fit:cover;display:block}
+.b-2col{border:1px solid var(--da-rule);margin-bottom:13px}
+.b-2col-inner{display:grid;grid-template-columns:1fr 1fr}
+.b-2cell{padding:14px;border-right:1px solid var(--da-rule)}.b-2cell:last-child{border-right:none}
+.b-2cell .b-cll{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--da);margin-bottom:8px}
+.b-2cell ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.b-2cell-row{display:flex;align-items:baseline;gap:7px}
+.b-2cell-row::before{content:'—';color:var(--da);font-weight:700;font-size:var(--dfs);flex-shrink:0}
+.b-2cell-row span{font-size:calc(var(--dfs)*0.92);line-height:1.55;color:var(--dink);opacity:0.8;flex:1}
+.b-roadmap{border:1px solid var(--da-rule);margin-bottom:13px}
+.b-ri{display:flex;align-items:flex-start;gap:12px;padding:9px 14px;border-bottom:1px solid var(--da-rule)}.b-ri:last-child{border-bottom:none}
+.b-rs{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:1px;flex-shrink:0;margin-top:1px}
+.b-rs.done{background:var(--da-lt);color:var(--da);border:1px solid var(--da-rule)}
+.b-rs.wip{background:rgba(245,198,160,0.2);color:#9a5c00;border:1px solid rgba(245,198,160,0.6)}
+.b-rs.next{background:transparent;color:var(--dink);opacity:0.38;border:1px solid var(--da-rule)}
+.b-rl{font-size:calc(var(--dfs)*0.92);font-weight:600;color:var(--dink);margin-bottom:2px}
+.b-rd{font-size:calc(var(--dfs)*0.85);color:var(--dink);opacity:0.5;line-height:1.4}
+.b-meta{border:1px solid var(--da-rule);margin-bottom:14px}
+.b-meta-inner{display:grid}
+.b-mc{padding:12px 14px;border-right:1px solid var(--da-rule)}.b-mc:last-child{border-right:none}
+.b-mcl{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--da);margin-bottom:6px}
+.b-mr{display:flex;align-items:baseline;gap:5px;margin-bottom:3px}
+.b-mk{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dink);opacity:0.35;flex-shrink:0}
+.b-mv{font-size:calc(var(--dfs)*0.85);font-weight:500;color:var(--dink)}
+.b-img-wrap{border:1px solid var(--da-rule);background:var(--da-lt);margin-bottom:13px;display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;overflow:hidden}
+.b-img-wrap img,.b-chart-canvas-wrap img{width:100%;height:auto;display:block}
+.b-ti{margin-bottom:13px}.b-ti-inner{display:grid;gap:14px;align-items:start}
+.b-ti.layout-right .b-ti-inner{grid-template-columns:1.6fr 1fr}.b-ti.layout-left .b-ti-inner{grid-template-columns:1fr 1.6fr}.b-ti.layout-below .b-ti-inner{grid-template-columns:1fr}
+.b-ti.layout-right .b-ti-img{order:1}.b-ti.layout-right .b-ti-txt{order:0}
+.b-ti.layout-left .b-ti-img{order:0}.b-ti.layout-left .b-ti-txt{order:1}
+.b-ti.layout-below .b-ti-img{order:1}.b-ti.layout-below .b-ti-txt{order:0}
+.b-ti-txt .b-ti-hd{font-size:calc(var(--dfs)*1.15);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--dink);margin-bottom:7px}
+.b-ti-txt p{font-size:var(--dfs);line-height:1.8;color:var(--dink);opacity:0.8}
+.b-ti-img{border:1px solid var(--da-rule);background:var(--da-lt);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.b-ti-img img{width:100%;height:100%;object-fit:cover;display:block}
+.b-divider{height:1px;background:var(--da-rule);margin:16px 0}
+.img-hint{font-size:calc(var(--dfs)*0.69);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--da);opacity:0.5}
+.b-chart{margin-bottom:14px;border:1px solid var(--da-rule)}
+.b-chart-header{padding:10px 14px;border-bottom:1px solid var(--da-rule)}
+.b-chart-title{font-size:calc(var(--dfs)*0.92);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--dink)}
+.b-chart-subtitle{font-size:calc(var(--dfs)*0.77);color:var(--da);opacity:0.75;margin-top:2px}
+.b-chart-canvas-wrap{padding:14px}
+.b-chart-legend{display:flex;flex-wrap:wrap;gap:10px;padding:0 14px 12px}
+.b-chart-legend-item{display:flex;align-items:center;gap:5px;font-size:calc(var(--dfs)*0.77);color:var(--dink);opacity:0.75}
+.b-chart-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.doc-block{position:relative}
+${'<'}/style>
+${'<'}/head>
+${'<'}body>
+${'<'}div id="doc">${cleanBody}${'<'}/div>
+${'<'}/body>
+${'<'}/html>`;
+
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      a.download = (title || 'document').replace(/\s+/g, '-').toLowerCase() + '.html'; a.click();
+    }
+
+    // ── INIT ───────────────────────────────────────────────
     rerenderCanvas();
   </script>
 </body>

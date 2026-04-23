@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1:AM Train / Midnight Train</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/project-page.css">
+  <link rel="stylesheet" href="assets/css/1am-train.css">
+</head>
+
+<body>
+
+  <nav id="navbar">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="projects.html">Projects</a>
+    <a class="nav-link" href="index.html#about">Contact</a>
+    <a class="nav-link" href="blog.html">Blog</a>
+  </nav>
+
+  <!-- HERO IMAGE -->
+  <div class="hero-image-placeholder">
+    <video autoplay muted loop>
+      <source src="images/1amtrain_2.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- SHARED HERO -->
+  <div class="section-wrap">
+    <div class="hero">
+      <div class="version-tabs">
+        <button class="version-tab active" data-version="vr">
+          <span class="tab-label">1:AM Train</span>
+          <span class="tab-sub">VR · 2023</span>
+        </button>
+        <button class="version-tab" data-version="web">
+          <span class="tab-label">Midnight Train</span>
+          <span class="tab-sub">Web · 2022</span>
+        </button>
+      </div>
+
+      <!-- VR META -->
+      <div class="version-content" id="meta-vr">
+        <div class="award-tag">★ 1st Place — UofM XR Summit 2023</div>
+        <h1>1:AM Train</h1>
+        <p class="hero-hook">A VR wellness app where users ride a subway through infinite space as a ghost, with
+          interactive stations designed around
+          rest, reflection, and connection</p>
+        <div class="meta-bar">
+          <div class="meta-col">
+            <div class="meta-col-label">Details</div>
+            <div class="meta-col-row"><span class="meta-col-key">Engine</span><span class="meta-col-val">Unity</span>
+            </div>
+            <div class="meta-col-row"><span class="meta-col-key">Device</span><span class="meta-col-val">Meta Quest 2 /
+                Rift S</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">My Roles</span><span class="meta-col-val">Dev ·
+                Technical Art · PM</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Collaborators</div>
+            <div class="meta-col-row"><span class="meta-col-val">Sonia Lin</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Linhao Lu</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Derek Yang </span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Development Stack</div>
+            <div class="stack-categories">
+              <div class="stack-cat"><span class="stack-cat-name">Engine</span>
+                <div class="stack-chips"><span class="stack-chip">Unity</span><span class="stack-chip">OpenXR</span>
+                </div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">3D</span>
+                <div class="stack-chips"><span class="stack-chip">Blender</span><span class="stack-chip">Rhino</span>
+                </div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Art</span>
+                <div class="stack-chips"><span class="stack-chip">Photoshop</span><span class="stack-chip">Figma</span>
+                </div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Marketing</span>
+                <div class="stack-chips"><span class="stack-chip">TikTok Effect House</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="meta-col meta-col-links">
+            <div class="meta-col-label">Links</div>
+            <div class="sidebar-links">
+              <a href="https://youtu.be/xOead6svYcM?si=NkpiZM2Ap6TPKCD1" class="sidebar-link featured"><span
+                  class="link-icon">▶</span><span class="link-text">Gameplay Video</span><span
+                  class="link-arrow">↗</span></a>
+              <a href="https://docs.google.com/presentation/d/1ilw7caiov15EJFqGsM9HqQLOlGEgkXrSdGkFpl_DlcA/edit?usp=sharing"
+                class="sidebar-link featured"><span class="link-icon">◎</span><span class="link-text">Slide
+                  Deck</span><span class="link-arrow">↗</span></a>
+              <a href="https://www.tiktok.com/t/ZP9LthRnbepQP-dIypj/" class="sidebar-link featured"><span
+                  class="link-icon">△</span><span class="link-text">TikTok Filter</span><span
+                  class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEB META -->
+      <div class="version-content hidden" id="meta-web">
+        <h1>Midnight Train</h1>
+        <p class="hero-hook">A web wellness app that immerses users on a ghost train traveling through space, with
+          journaling, Spotify integration, breathing exercises, and anonymous real-time chat.</p>
+        <div class="meta-bar">
+          <div class="meta-col">
+            <div class="meta-col-label">Details</div>
+            <div class="meta-col-row"><span class="meta-col-key">Type</span><span class="meta-col-val">Web App</span>
+            </div>
+            <div class="meta-col-row"><span class="meta-col-key">Stack</span><span class="meta-col-val">HTML · JS ·
+                Firebase</span></div>
+            <div class="meta-col-row"><span class="meta-col-key">My Roles</span><span class="meta-col-val">Dev ·
+                Technical Art · PM</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Collaborators</div>
+            <div class="meta-col-row"><span class="meta-col-val">Nikita Abbaraju</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Chairie Faris</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Velyn Kwok</span></div>
+            <div class="meta-col-row"><span class="meta-col-val">Catherine Zhu</span></div>
+          </div>
+          <div class="meta-col">
+            <div class="meta-col-label">Development Stack</div>
+            <div class="stack-categories">
+              <div class="stack-cat"><span class="stack-cat-name">Frontend</span>
+                <div class="stack-chips"><span class="stack-chip">HTML / CSS / JS</span><span
+                    class="stack-chip">jQuery</span></div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Backend</span>
+                <div class="stack-chips"><span class="stack-chip">Firebase</span><span
+                    class="stack-chip">Socket.io</span></div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">APIs</span>
+                <div class="stack-chips"><span class="stack-chip">Spotify API</span><span
+                    class="stack-chip">Particles.js</span></div>
+              </div>
+              <div class="stack-cat"><span class="stack-cat-name">Art</span>
+                <div class="stack-chips"><span class="stack-chip">MediBang Paint</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="meta-col meta-col-links">
+            <div class="meta-col-label">Links</div>
+            <div class="sidebar-links">
+              <a href="https://eecs493-184c4.web.app/" class="sidebar-link featured"><span
+                  class="link-icon">⬦</span><span class="link-text">Try
+                  It</span><span class="link-arrow">↗</span></a>
+              <a href="https://youtu.be/MPtg90vghiw?si=dlGNgI23jF4Tvv5d" class="sidebar-link featured"><span
+                  class="link-icon">▶</span><span class="link-text">Project Overview Video</span><span
+                  class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ VR CONTENT ═══════════════════ -->
+  <div id="content-vr">
+
+    <div class="divider"></div>
+
+    <!-- OVERVIEW -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Overview</div>
+        <h2 class="section-heading">A train to somewhere quieter</h2>
+        <p class="body-text">1:AM Train is a reimagination of my previous web project, Midnight Train, in VR. Users
+          board as a ghost and ride a
+          subway traveling through infinite space with three distinct station stops, each designed around a different
+          mode of
+          decompression. The spatial freedom of VR transforms flat menu-driven features in the web version into
+          physical places users can be immersed in.</p>
+
+        <div class="callout">
+          <div class="callout-label">How VR deepens interactions beyond a 2D screen</div>
+          <p>Presence changes behavior. VR decreases the psychological distance of decompression because body
+            involvement makes the
+            interaction feel more meaningful. Unlike a screen, it also removes outside distractions entirely, giving
+            users the
+            mental space to actually unwind. </p>
+        </div>
+        <div class="media-holder video">
+          <video autoplay muted loop>
+            <source src="images/1amtrain_3.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="evolution-strip">
+          <div class="evo-item">
+            <span class="evo-label">Web version</span>
+            <span class="evo-val">Screen-based · Mouse driven events · 2D art</span>
+          </div>
+          <div class="evo-arrow">→</div>
+          <div class="evo-item evo-item-active">
+            <span class="evo-label">VR version</span>
+            <span class="evo-val">3D immersive environment · 6DOF interaction</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- MY ROLE -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">My Role</div>
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-tag">Dev</div>
+            <div class="role-name">VR Development</div>
+            <ul class="role-bullets">
+              <li>Locomotion systems (teleport, snap turn, swimming)</li>
+              <li>Haptic and visual feedback from environment interactions</li>
+              <li>Core UI/UX interactions</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-tag">Art</div>
+            <div class="role-name">Technical Art</div>
+            <ul class="role-bullets">
+              <li>Core ShaderGraph shaders (gradient skybox, moving textures)</li>
+              <li>Core 3D environment assets modeled in Blender</li>
+              <li>Custom 3D Model rig with animation</li>
+              <li>All 2D artwork and presentation material</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-tag">PM</div>
+            <div class="role-name">Project Management</div>
+            <ul class="role-bullets">
+              <li>Ran standups for an interdisciplinary team</li>
+              <li>Managed scope trade‑offs (cut multiplayer to deliver quality core experience)</li>
+              <li>Prepared pitch materials to communicate project value to non‑technical stakeholders</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- TECHNICAL -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Implementation</div>
+        <h2 class="section-heading">Technical Decisions</h2>
+
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">01</div>
+            <div>
+              <div class="tech-title">Voice journaling</div>
+              <div class="tech-subtitle">New interaction paradigms · Uninterrupted experience</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <div class="feature-body-lr">
+              <div class="feature-text">
+                <p>Typing in VR requires complex cognitive attention and dexterity that interrupts the emotions users
+                  are trying to process in the journaling experience. Voice input
+                  removes that friction and allows users to speak continuously without breaking presence. The
+                  implementation samples
+                  microphone waveform data each frame to drive a real-time visual level indicator, giving user
+                  confirmation of their input.</p>
+              </div>
+              <div class="media-holder natural" style="margin:0;">
+                <video autoplay muted loop>
+                  <source src="images/voice_journal.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">02</div>
+            <div>
+              <div class="tech-title">Swimming locomotion</div>
+              <div class="tech-subtitle">OpenXR · Controller velocity</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <p>For our station Sea Eleven, swimming is the primary locomotion method in place of teleportation. Each
+              frame, controller
+              velocity and direction are sampled and translated into directional movement forces, mimicking the
+              resistance and flow of
+              underwater motion, allowing the underwater world to feel tangible.</p>
+            <div class="media-holder">
+              <img src="images/swim_locomotion_graph.png" alt="Swimming locomotion demo">
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-block">
+          <div class="tech-header">
+            <div class="tech-num">03</div>
+            <div>
+              <div class="tech-title">ShaderGraph environments</div>
+              <div class="tech-subtitle">Gradient skybox · Moving textures</div>
+            </div>
+          </div>
+          <div class="tech-body">
+            <div class="feature-body-lr">
+              <div class="feature-text">
+                <p>Each station has a distinct atmosphere built through custom ShaderGraph shaders for URP
+                  compatibility, allowing for
+                  emission and lighting effects on the Quest 2. Gradient skybox shaders establish environmental color
+                  tone per scene
+                  without relying on texture assets. Radial UV distortion shaders produce expanding ripple rings
+                  staggered with
+                  phase-offset timing to simulate wave propagation, and billboard sprites using alpha-blended
+                  transparent textures are
+                  spawned through a particle system to populate environments. Fresnel emission shaders with animated
+                  noise drive turbulent
+                  glowing surfaces tied to interactive objects.</p>
+              </div>
+              <div class="media-holder natural" style="margin:0;">
+                <video autoplay muted loop>
+                  <source src="" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- STATIONS -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Stations</div>
+        <h2 class="section-heading">Three stops, three moods</h2>
+
+        <div class="station-block">
+          <div class="station-header">
+            <div class="station-name">Metro Dawn</div>
+            <div class="station-type">Home station · passive rest</div>
+          </div>
+          <div class="station-body">
+            <div class="feature-body-lr">
+              <div class="feature-text">
+                <p>Metro Dawn is the home station and entry point into our application. Users are greeted by the
+                  conductor who sets the
+                  tone, reminding them to slow down from the fast pace of everyday life. Once users board the train,
+                  they have access the
+                  subway map to navigate between stations. The wrist menu, accessible by tapping the virtual watch,
+                  surfaces the daily
+                  mood tracker, voice journal, settings, help, and exit. The journal accepts open-ended recordings or
+                  generates a random
+                  prompt if the user needs a starting point. Users can also sit on the train benches and watch drifting
+                  clouds and
+                  shooting stars pass by, as it’s a moment designed for passive rest.</p>
+              </div>
+              <div class="media-holder natural">
+                <video autoplay muted loop>
+                  <source src="images/metro_dawn.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="station-block">
+          <div class="station-header">
+            <div class="station-name">Sea Eleven</div>
+            <div class="station-type">Underwater · active movement</div>
+          </div>
+          <div class="station-body">
+            <div class="feature-body-rl">
+              <div class="media-holder natural">
+                <video autoplay muted loop>
+                  <source src="images/sea_eleven.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="feature-text">
+                <p>Sea Eleven is an underwater environment designed for decompression through active movement. Research
+                  suggests blue space
+                  environments, even virtual ones, naturally reduce stress through ambient sound, muted lighting and the
+                  sensory qualities
+                  of water. Users physically swim to navigate, creating a gentle physical rhythm that grounds attention
+                  in the present
+                  moment. Interactions are layered by object type, haptic feedback for marine life and distinct visual
+                  and audio cues for
+                  plants.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="station-block">
+          <div class="station-header">
+            <div class="station-name">Golden Aster</div>
+            <div class="station-type">Reflection · social</div>
+          </div>
+          <div class="station-body">
+            <div class="feature-body-lr">
+              <div class="feature-text">
+                <p>Golden Aster is an open sky environment designed for introspection. The station features a wishmaking
+                  interaction,
+                  inviting users to pause and reflect beneath an open sky. The reflective ground surface reinforces this
+                  inward headspace,
+                  creating a sense of stillness and quiet. While the vision for this station includes anonymous
+                  multiplayer conversations,
+                  the current prototype features this as a single-user experience due to development constraints.</p>
+              </div>
+              <div class="media-holder natural">
+                <video autoplay muted loop>
+                  <source src="images/golden_aster.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- REFLECTION VR -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Reflection</div>
+        <h2 class="section-heading">Takeaways from transitioning web to VR</h2>
+        <div class="reflection-grid">
+          <div class="reflection-card went-well">
+            <div class="reflection-header">What was gained</div>
+            <ul>
+              <li>Headsets create psychological boundary that signals to a brain that the this time is intentional and
+                separate</li>
+              <li>Spatial audio, haptic feedback, and 360 environments all engage the nervous system in ways a flat
+                screen cannot</li>
+            </ul>
+          </div>
+          <div class="reflection-card change">
+            <div class="reflection-header">What was lost</div>
+            <ul>
+              <li>Headsets exclude users with motion sickness, physical limitations, or no access to hardware</li>
+              <li>VR requires deliberate effort to set up and put on, which could actually work against a wellness habit
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-vr -->
+
+  <!-- ═══════════════════ WEB CONTENT ═══════════════════ -->
+  <div id="content-web" class="hidden">
+
+    <div class="divider"></div>
+
+
+    <!-- WHY IT EXISTS -->
+    <div class="section-wrap">
+      <div class="section">
+        <div class="section-eyebrow">Why It Exists</div>
+        <h2 class="section-heading">The mental health gap</h2>
+        <p class="body-text">Midnight Train was built in response to a growing problem since the pandemic. Mental health
+          struggles, especially among youth,
+          have been accelerating, and the tools available don't always meet people where they are. The goal was to build
+          something
+          that felt comforting rather than clinical, a space with practical wellness tools that fit naturally into
+          everyday life</p>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val">264M+</div>
+            <div class="stat-label">People worldwide affected by depression (WHO)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">3×</div>
+            <div class="stat-label">Increase in depression symptoms during COVID-19 vs pre-pandemic (JAMA, 2020)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">16.5%</div>
+            <div class="stat-label">U.S. youth aged 6–17 experiencing a major depressive episode in 2020 (NIMH)</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">Research basis</div>
+          <p>Giving space for personal reflection without judgment has been linked to higher stress tolerance, personal
+            growth, and emotional stability. Social interaction also relieves stress. The app was designed to support
+            both individual reflection through journaling, and optional social connection through anonymous chat.</p>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- MY ROLE WEB -->
+      <div class="section-wrap">
+        <div class="section">
+          <div class="section-eyebrow">My Role</div>
+          <div class="role-grid">
+            <div class="role-card">
+              <div class="role-tag">Dev</div>
+              <div class="role-name">Development</div>
+              <ul class="role-bullets">
+                <li>Login screen, home screen, menu system</li>
+                <li>Conductor interactions</li>
+                <li>Socket.io anonymous chat</li>
+                <li>Journaling + Firebase</li>
+                <li>Particles.js star field</li>
+                <li>Settings (volume, background, character)</li>
+                <li>All CSS animations</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <div class="role-tag">Art</div>
+              <div class="role-name">Creative Design</div>
+              <ul class="role-bullets">
+                <li>All 2D art assets</li>
+                <li>Presentation slides</li>
+                <li>Initial visual concept</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <div class="role-tag">PM</div>
+              <div class="role-name">Project Management</div>
+              <ul class="role-bullets">
+                <li>Weekly meetings, kanban-style development</li>
+                <li>Scope and risk management</li>
+                <li>Code review and pair programming</li>
+                <li>Initial concept and project proposal</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <div class="role-tag">UX</div>
+              <div class="role-name">User Research</div>
+              <ul class="role-bullets">
+                <li>12 user interviews</li>
+                <li>Multiple storyboards</li>
+                <li>Usability evaluations with external peers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- TECHNICAL WEB -->
+      <div class="section-wrap">
+        <div class="section">
+          <div class="section-eyebrow">Implementation</div>
+          <h2 class="section-heading">Technical Decisions</h2>
+
+          <div class="tech-block">
+            <div class="tech-header">
+              <div class="tech-num">01</div>
+              <div>
+                <div class="tech-title">Anonymous chat via Socket.io</div>
+                <div class="tech-subtitle">Bidirectional · Firebase decoupling · identity separation</div>
+              </div>
+            </div>
+            <div class="tech-body">
+              <div class="feature-body-lr">
+                <div class="feature-text">
+                  <p>Socket.io handles bidirectional real-time communication. Users connect to a single shared room and
+                    appear
+                    anonymously regardless of their Firebase login state — the two systems are deliberately decoupled. A
+                    logged-in user and a guest appear identically in the chat room. The anonymity was a design decision,
+                    not a
+                    technical limitation.</p>
+                </div>
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/chat_demo.mp4" type="video/mp4">
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tech-block">
+            <div class="tech-header">
+              <div class="tech-num">02</div>
+              <div>
+                <div class="tech-title">Procedural star field</div>
+                <div class="tech-subtitle">Particles.js · randomized parameters · CSS animation</div>
+              </div>
+            </div>
+            <div class="tech-body">
+              <div class="feature-body-rl">
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/starfield_demo.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="feature-text">
+                  <p>The star field outside the train window is generated via Particles.js with randomized size, speed,
+                    opacity, and direction per particle — no two sessions look the same. All interactive elements
+                    (buttons,
+                    menu toggles, dialogue triggers) use CSS-only animations — deliberate slow transitions that match
+                    the
+                    calm, contemplative tone of the app rather than snappy UI feedback.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+
+      <div class="divider"></div>
+
+      <!-- FEATURES WEB -->
+      <div class="section-wrap">
+        <div class="section">
+          <div class="section-eyebrow">Features</div>
+          <h2 class="section-heading">What's on the train</h2>
+
+          <!-- 1: LR -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">🔑</div>
+              <div>
+                <div class="feature-title">Persistent data / Account login</div>
+                <div class="feature-subtitle">Firebase Auth · session persistence · guest fallback</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-lr">
+                <div class="feature-text">
+                  <p>Users sign in via Firebase Authentication, which ties journal entries and preferences to their
+                    account
+                    across sessions and devices. Guest access is supported — unauthenticated users can still access
+                    anonymous
+                    chat and the breathing exercise without creating an account. The login state is intentionally
+                    decoupled
+                    from the chat system so identity is never surfaced in communal spaces.</p>
+                </div>
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_login.mp4" type="video/mp4">
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2: RL -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">✍️</div>
+              <div>
+                <div class="feature-title">Journaling</div>
+                <div class="feature-subtitle">Firestore · guided prompts · private entries</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-rl">
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_journal.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="feature-text">
+                  <p>Users write and save daily entries stored in Firestore, linked to their account. Entries are
+                    private —
+                    never shared or surfaced to other users. Guided prompts are available for users who want a starting
+                    point rather than a blank page.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3: LR -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">💬</div>
+              <div>
+                <div class="feature-title">Anonymous chat</div>
+                <div class="feature-subtitle">Socket.io · bidirectional · single shared room</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-lr">
+                <div class="feature-text">
+                  <p>Real-time bidirectional communication via Socket.io. All users connect to a single shared room and
+                    appear
+                    anonymously regardless of login state — identity is deliberately decoupled from the chat. The
+                    reasoning:
+                    users in a wellness context are more likely to say how they actually feel without identity attached.
+                  </p>
+                </div>
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_chat.mp4" type="video/mp4">
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4: RL -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">🎵</div>
+              <div>
+                <div class="feature-title">Spotify integration</div>
+                <div class="feature-subtitle">Spotify API · user's own playlists</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-rl">
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_spotify.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="feature-text">
+                  <p>Users connect their Spotify account and listen to their own playlists rather than a fixed lo-fi
+                    track.
+                    People already have music that relaxes them specifically — forcing a fixed background ignores that.
+                    The
+                    train provides the visual atmosphere; users bring their own audio.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5: LR -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">🌬️</div>
+              <div>
+                <div class="feature-title">Breathing exercise</div>
+                <div class="feature-subtitle">Guided sessions · timed inhale / hold / exhale</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-lr">
+                <div class="feature-text">
+                  <p>Guided breathing sessions with timed inhale/hold/exhale prompts. Self-contained — users can do a
+                    session
+                    without navigating away from the train. Works alongside Spotify so users can breathe to their own
+                    music.</p>
+                </div>
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_meditation.mp4" type="video/mp4">
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6: RL -->
+          <div class="feature-block">
+            <div class="feature-header">
+              <div class="feature-icon">🌟</div>
+              <div>
+                <div class="feature-title">Interactive environment</div>
+                <div class="feature-subtitle">Particles.js · CSS animations · conductor dialogue</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-body-rl">
+                <div class="media-holder natural" style="margin:0;">
+                  <video autoplay muted loop>
+                    <source src="images/mt_conductor_interaction.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="feature-text">
+                  <p>Clicking wall posters generates random uplifting quotes. The conductor has a full dialogue sequence
+                    triggered by approaching the door — narrative interaction that sets the tone. The star field outside
+                    the
+                    window is procedurally generated via Particles.js with randomized size, speed, and direction. All
+                    button
+                    and interactable animations were built in CSS — no JS animation libraries.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+    </div><!-- /content-web -->
+
+    <div style="height:48px;"></div>
+
+    <script>
+      // ── SCROLL REVEAL ──
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+
+      // Observe all sections upfront — both VR and Web
+      document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+      // ── VERSION TABS ──
+      const tabs = document.querySelectorAll('.version-tab');
+      const contentVR = document.getElementById('content-vr');
+      const contentWeb = document.getElementById('content-web');
+      const metaVR = document.getElementById('meta-vr');
+      const metaWeb = document.getElementById('meta-web');
+      const heroVideo = document.querySelector('.hero-image-placeholder video');
+
+      const vrHero = 'images/1amtrain_2.mp4';
+      const webHero = 'images/midnight_train.mp4';
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const v = tab.dataset.version;
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          if (v === 'vr') {
+            contentVR.classList.remove('hidden');
+            contentWeb.classList.add('hidden');
+            metaVR.classList.remove('hidden');
+            metaWeb.classList.add('hidden');
+            heroVideo.src = vrHero;
+          } else {
+            contentWeb.classList.remove('hidden');
+            contentVR.classList.add('hidden');
+            metaWeb.classList.remove('hidden');
+            metaVR.classList.add('hidden');
+            heroVideo.src = webHero;
+            // Re-observe any web sections not yet visible (hidden sections can't intersect)
+            document.querySelectorAll('#content-web .section').forEach(s => {
+              if (!s.classList.contains('visible')) observer.observe(s);
+            });
+          }
+        });
+      });
+    </script>
+</body>
+
+</html>

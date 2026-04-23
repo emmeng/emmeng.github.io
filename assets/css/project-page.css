@@ -451,7 +451,7 @@ body {
     overflow: hidden;
     /* FIX 3: no default min-height — collapses cleanly to image/video content */
     background: transparent;
-    border: 1px solid rgba(120, 184, 255, 0.2);
+    /* border: 1px solid rgba(120, 184, 255, 0.2); */
     position: relative;
 }
 
@@ -1511,5 +1511,44 @@ body {
 
     .hero {
         padding: 36px 5vw;
+    }
+}
+
+/* ── CHARACTERS + VISUAL DESIGN MERGED LAYOUT ── */
+.char-design-split {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-top: 24px;
+}
+
+.char-split-left,
+.char-split-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.char-split-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(120, 184, 255, 0.2);
+}
+
+/* override char-layout inside the split — it was standalone before */
+.char-split-left .char-layout {
+    display: block;
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .char-design-split {
+        grid-template-columns: 1fr;
     }
 }

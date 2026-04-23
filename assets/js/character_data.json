@@ -10,7 +10,7 @@
             "UNITY",
             "2D"
         ],
-        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "description": "Witch Task is a gamified productivity manager where users play as a witch running a potion business in a town filled with charming creatures. Each day, the town's inhabitants send potion orders that correspond to real-life tasks users need to complete. Built for anxious, creative students who struggle to stick with traditional productivity apps!",
         "projectLink": "witch-task.html"
     },
     "ghost": {
@@ -28,8 +28,8 @@
             "JS",
             "FIREBASE"
         ],
-        "description": "Midnight Train is a website designed to improve mood and promote wellbeing, immersing users on a subway traveling endlessly through space with interactive features.1:AM Train is the VR evolution of this concept, letting users experience the journey as a ghost in fully immersive 3D space with interactive stations that extend the website’s wellbeing activities.Together, the projects combine digital and spatial experiences to create calming, reflective environments that encourage relaxation, mindfulness, and connection.",
-        "projectLink": "midnight-train.html"
+        "description": "1:AM Train is a cozy VR space where users board as a ghost and travel through space, with interactive stations designed for relaxation, mindfulness, and reflection. The origin, Midnight Train, is a website designed to improve mood and wellbeing, offering the same journey through the browser.",
+        "projectLink": "1am-train.html"
     },
     "zero": {
         "characterName": "DR. ZERO",
@@ -51,14 +51,14 @@
         "characterIcon": "images/aliens_icon.png",
         "projectGif": "images/blog/bibi_underwater.gif",
         "developedDate": "February 2026",
-        "projectTitle": "MIIVERSE",
+        "projectTitle": "BLENDER GALLERY",
         "accentColor": "#AED0F6",
         "skills": [
             "UNITY",
             "VR",
             "BLENDER"
         ],
-        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "description": "Gallery showing my Blender work throughout the years!",
         "projectLink": "blender-gallery.html"
     },
     "vivi": {
@@ -73,7 +73,7 @@
             "MULTIPLAYER",
             "BLENDER"
         ],
-        "description": "An interactive 3D plaza scene featuring wandering characters, a subway system, and dynamic time-of-day lighting. Built with Three.js and featuring custom character behaviors and animations.",
+        "description": "GOGO TENNIS is a multiplayer fitness app that brings tennis home using devices you already own. One computer acts as a local network host, two smartphones serve as racket controllers, and Unity Netcode handles multiplayer communication. Real-time swing tracking via phone gyroscopes translates physical movement into precise in-game control.",
         "projectLink": "gogo-tennis.html"
     },
     "radiation": {

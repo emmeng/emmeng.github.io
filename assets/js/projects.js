@@ -93,7 +93,7 @@ let cardVisible = false;
 let currentAccentColor = '#78B8FF';
 let currentHour = new Date().getHours();
 
-// currentHour = 20;
+//  currentHour = 20;
 
 
 let foliageVertexShader = null;
@@ -292,6 +292,7 @@ function init() {
 
 // scene.fog = new THREE.Fog(fogColor, 10, 30);
 // scene.background = new THREE.Color(fogColor);
+
 
     // === TIME-OF-DAY GRADIENT SKY ===
     function getGradientSkyColors() {
@@ -525,12 +526,12 @@ function init() {
     });
 
 
-    // loadProp({
-    //     path: 'models/building_center.glb',
-    //     position: { x: 3, y: 0, z: 0 },
-    //     scale: 0.6,
-    //     hasShadow: false
-    // });
+    loadProp({
+        path: 'models/building_center.glb',
+        position: { x: -30, y: 0, z: 2 },
+        scale: 0.6,
+        hasShadow: false
+    });
 
     loadProp({
         path: 'models/boombox.glb',
@@ -602,6 +603,8 @@ function createShadows() {
     });
 
     window.shadowMaterial = shadowMaterial;
+
+    
 }
 
 /* ------------------ HOVER INTERACTION SYSTEM ------------------ */
@@ -707,6 +710,7 @@ function updateStarParticles() {
         }
     }
 }
+
 // Update hover detection in animate loop
 function updateHoverInteraction() {
     raycaster.setFromCamera(pointer, camera);
@@ -720,6 +724,7 @@ function updateHoverInteraction() {
             break;
         }
     }
+    
 
     // Hover ENTER - but NOT during fountain viewing or eating
     if (newHoveredChar && newHoveredChar !== hoveredCharacter) {
@@ -828,22 +833,22 @@ function getTimeTint() {
 function updateMaterialTint(child) {
     if (!child.material) return;
 
-    const TIME_TINT = getTimeTint();
-    const VERTEX_INTENSITY = getVertexLightIntensity();
+    // ShaderMaterial (characters)
+    if (child.material.uniforms) {
+        child.material.uniforms.intensity.value = getVertexLightIntensity();
+        child.material.uniforms.timeTint.value = getTimeTint();
+        child.material.needsUpdate = true;
+        return;
+    }
 
-    if (child.userData.hasVertexColors) {
-        const adjustedColor = child.userData.baseColor.clone()
-            .lerp(new THREE.Color(1, 1, 1), VERTEX_INTENSITY)
-            .multiply(TIME_TINT);
-
-        child.material.color.copy(adjustedColor);
-    } else {
+    // MeshBasicMaterial (props)
+    if (child.userData.baseColor) {
+        const TIME_TINT = getTimeTint();
         child.material.color
             .copy(child.userData.baseColor)
             .multiply(TIME_TINT);
+        child.material.needsUpdate = true;
     }
-
-    child.material.needsUpdate = true;
 }
 
 // Returns 0-1 based on how strong vertex lighting should be
@@ -857,7 +862,7 @@ function getVertexLightIntensity() {
     } else if (currentHour >= 5 && currentHour < 7) {
         return 0.7;  // Sunrise: mostly visible
     } else {
-        return 0.0;  // Night: full intensity
+        return 1.0;  // Night: full intensity
     }
 }
 
@@ -873,10 +878,8 @@ function loadCharacter(config) {
         shadowSize: 1.5,
         behavior: null,
         wanderSpeed: 0.02,
-
-        forwardOffset: 0, // Rotation offset in radians (e.g., -Math.PI/2 if model faces left)
+        forwardOffset: 0,
         onLoad: null
-        
     };
 
     const settings = { ...defaults, ...config };
@@ -885,9 +888,12 @@ function loadCharacter(config) {
     loader.load(settings.path, (gltf) => {
         const character = gltf.scene;
 
-        // Apply pixel-perfect materials
         character.traverse((child) => {
             if (child.isMesh) {
+                if (child.geometry.attributes.color_1) {
+                    child.geometry.setAttribute('color', child.geometry.attributes.color_1);
+                }
+
                 const oldMaterial = child.material;
                 const originalTexture = oldMaterial.map;
 
@@ -907,50 +913,70 @@ function loadCharacter(config) {
                     }
                 }
 
-                let isTransparent = oldMaterial.transparent || false;
-                let alphaTest = 0.0;
-
-                if (oldMaterial.alphaTest > 0) {
-                    alphaTest = oldMaterial.alphaTest;
-                    isTransparent = true;
-                }
-
-                const matName = oldMaterial.name ? oldMaterial.name.toLowerCase() : '';
-                if (matName.includes('transparent') || matName.includes('alpha') || matName.includes('cutout')) {
-                    isTransparent = true;
-                    alphaTest = 0.5;
-                }
                 const isInner = child.name.toLowerCase().includes('inner');
-                child.material = new THREE.MeshBasicMaterial({
-                    map: originalTexture,
-                    color: materialColor,
-                    vertexColors: true,
-                    side: THREE.DoubleSide,
-                    transparent: true,  // ALWAYS true (like index.js)
-                    opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
-                    // NO alphaTest
-                });
+                const hasVertexColors = !!child.geometry.attributes.color;
+
+                if (hasVertexColors) {
+                    child.material = new THREE.ShaderMaterial({
+                        uniforms: {
+                            map: { value: originalTexture },
+                            intensity: { value: getVertexLightIntensity() },
+                            timeTint: { value: getTimeTint() }
+                        },
+                        vertexShader: `
+        #include <skinning_pars_vertex>
+        attribute vec4 color;
+        varying vec2 vUv;
+        varying vec4 vColor;
+        void main() {
+            vUv = uv;
+            vColor = color;
+            vec3 transformed = vec3(position);
+            #include <skinbase_vertex>
+            #include <skinning_vertex>
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+        }
+    `,
+                        fragmentShader: `
+        uniform sampler2D map;
+        uniform float intensity;
+        uniform vec3 timeTint;
+        varying vec2 vUv;
+        varying vec4 vColor;
+        void main() {
+            vec4 texColor = texture2D(map, vUv);
+            gl_FragColor = vec4(texColor.rgb * mix(vec3(1.0), vColor.rgb, intensity) * timeTint, texColor.a);
+        }
+    `,
+                        transparent: true,
+                        side: THREE.DoubleSide,
+                    });
+                } else {
+                    child.material = new THREE.MeshBasicMaterial({
+                        map: originalTexture,
+                        color: materialColor,
+                        transparent: true,
+                        side: THREE.DoubleSide,
+                        opacity: oldMaterial.opacity !== undefined ? oldMaterial.opacity : 1.0,
+                        alphaTest: oldMaterial.alphaTest || 0,
+                    });
+                    child.userData.baseColor = materialColor.clone();
+                }
 
                 if (isInner) {
                     child.renderOrder = 1;
                 } else {
                     child.renderOrder = 2;
                 }
-                child.userData.baseColor = materialColor.clone();
-                // Apply time-based tint
+
                 updateMaterialTint(child);
-
-
-  
             }
         });
 
-        // Set transform
         character.position.set(settings.position.x, settings.position.y, settings.position.z);
         character.scale.setScalar(settings.scale);
         character.rotation.set(settings.rotation.x, settings.rotation.y, settings.rotation.z);
 
-        // Add shadow
         if (settings.hasShadow && window.shadowMaterial) {
             const shadowPlane = new THREE.Mesh(
                 new THREE.PlaneGeometry(settings.shadowSize, settings.shadowSize),
@@ -961,43 +987,37 @@ function loadCharacter(config) {
             character.add(shadowPlane);
         }
 
-        // Handle animations - store ALL animations by name
         let mixer = null;
         let animations = {};
         let currentAction = null;
 
         if (settings.hasAnimation && gltf.animations.length) {
             mixer = new THREE.AnimationMixer(character);
-            console.log(`\n📦 ${settings.path}`); // ADD THIS
+            console.log(`\n📦 ${settings.path}`);
 
-            // Store all animations by name
             gltf.animations.forEach(clip => {
                 animations[clip.name] = mixer.clipAction(clip);
                 console.log(`  ✓ Animation: ${clip.name}`);
             });
 
-            // Play first animation by default
-            if (gltf.animations.length > 0) {
-                // Try to find walk animation first, otherwise use first animation
+            if (gltf.animations.length > 0 && settings.behavior !== 'sitting') {
                 const walkAnim = gltf.animations.find(anim => anim.name.toLowerCase().includes('walk'));
                 const firstAnim = walkAnim || gltf.animations[0];
                 currentAction = animations[firstAnim.name];
                 currentAction.play();
             }
         } else {
-            console.log("NO ANIMATIONS")
+            console.log("NO ANIMATIONS");
         }
 
         scene.add(character);
 
-        // Setup behavior state
         const velocity = new THREE.Vector3(
-            (Math.random() - 0.5) * settings.wanderSpeed * 2, // Multiply by 2 to ensure meaningful movement
+            (Math.random() - 0.5) * settings.wanderSpeed * 2,
             0,
             (Math.random() - 0.5) * settings.wanderSpeed * 2
         );
 
-        // Store character data with animation system
         const charData = {
             model: character,
             mixer: mixer,
@@ -1008,18 +1028,13 @@ function loadCharacter(config) {
             state: 'walking',
             stateTimer: 0,
             fountainViewStartTime: 0,
-
-            // Hover state tracking
             isHovered: false,
             originalRotationY: character.rotation.y,
-
-            // Cafe system
             hasVisitedCafe: false,
             holdingFood: null,
             eatTime: null,
             eatingStartTime: 0,
 
-            // Helper function to switch animations smoothly
             playAnimation: function (animName, fadeTime = 0.2) {
                 const resolvedName = Object.keys(this.animations).find(name =>
                     name.toLowerCase().includes(animName.toLowerCase())
@@ -1036,7 +1051,7 @@ function loadCharacter(config) {
                         this.currentAction = newAction;
                         console.log(`Switched to: ${resolvedName}`);
                     }
-                    return newAction; // ✅ return it
+                    return newAction;
                 } else {
                     console.warn(`Animation "${animName}" not found in ${this.config.path}`);
                     return null;
@@ -1730,6 +1745,7 @@ function loadProp(config) {
     loader.load(settings.path, (gltf) => {
         const prop = gltf.scene;
 
+        
         prop.traverse((child) => {
             if (child.isMesh) {
                 const oldMaterial = child.material;
@@ -1922,6 +1938,8 @@ function loadFountain(config) {
                         map: texture,
                         color: oldMat.color || new THREE.Color(0xffffff)
                     });
+                    child.userData.baseColor = (oldMat.color || new THREE.Color(0xffffff)).clone();
+                    updateMaterialTint(child);
                 }
             }
         });
@@ -2139,15 +2157,14 @@ function makePassengerBoard() {
 function updatePassengerBoarding() {
     if (!subwayPassenger || !subwayPassenger.model || !train) return;
 
-    const boardingX = trainMiddleX; // Train position
+    const boardingX = trainMiddleX;
     const boardingZ = -8;
-    const boardingRadius = 0.5; // How close they need to be
+    const boardingRadius = 0.5;
 
     const dx = boardingX - subwayPassenger.model.position.x;
     const dz = boardingZ - subwayPassenger.model.position.z;
     const dist = Math.sqrt(dx * dx + dz * dz);
 
-    // Check if train is still at the station
     const trainAtStation = train.visible && Math.abs(train.position.x - trainMiddleX) < 1;
 
     if (dist > boardingRadius) {
@@ -2159,44 +2176,61 @@ function updatePassengerBoarding() {
         nextPos.x += moveX;
         nextPos.z += moveZ;
 
-        // ✅ Check prop collision before moving
-        const propCollision = checkPropCollision(nextPos);
+        const propCollision = checkPropCollision(nextPos, null, 1.2);
 
         if (propCollision) {
-            // Steer around the prop
             const away = new THREE.Vector3()
                 .subVectors(subwayPassenger.model.position, propCollision)
                 .normalize();
 
-            // Blend away direction with boarding direction so they still trend toward train
-            const boardingDir = new THREE.Vector3(dx, 0, dz).normalize();
-            const steerDir = away.clone().add(boardingDir).normalize();
+            if (!subwayPassenger._steerDir) {
+                const perp = new THREE.Vector3(-away.z, 0, away.x);
+                if (Math.random() < 0.5) perp.negate();
+                subwayPassenger._steerDir = perp.clone();
+                subwayPassenger._steerTimer = 60;
+            }
 
-            subwayPassenger.model.position.x += steerDir.x * speed;
-            subwayPassenger.model.position.z += steerDir.z * speed;
+            subwayPassenger.model.position.x += subwayPassenger._steerDir.x * speed;
+            subwayPassenger.model.position.z += subwayPassenger._steerDir.z * speed;
 
-            const angle = Math.atan2(-steerDir.x, -steerDir.z);
+            const angle = Math.atan2(-subwayPassenger._steerDir.x, -subwayPassenger._steerDir.z);
             subwayPassenger.model.rotation.y = angle + Math.PI;
+
         } else {
-            subwayPassenger.model.position.x += moveX;
-            subwayPassenger.model.position.z += moveZ;
+            if (subwayPassenger._steerTimer > 0) {
+                subwayPassenger._steerTimer--;
+                if (subwayPassenger._steerTimer <= 0) {
+                    subwayPassenger._steerDir = null;
+                } else {
+                    subwayPassenger.model.position.x += subwayPassenger._steerDir.x * speed;
+                    subwayPassenger.model.position.z += subwayPassenger._steerDir.z * speed;
 
-            const angle = Math.atan2(-dx, -dz);
-            subwayPassenger.model.rotation.y = angle + Math.PI;
+                    const angle = Math.atan2(-subwayPassenger._steerDir.x, -subwayPassenger._steerDir.z);
+                    subwayPassenger.model.rotation.y = angle + Math.PI;
+                }
+            } else {
+                subwayPassenger.model.position.x += moveX;
+                subwayPassenger.model.position.z += moveZ;
+
+                const angle = Math.atan2(-dx, -dz);
+                subwayPassenger.model.rotation.y = angle + Math.PI;
+            }
         }
 
         if (!trainAtStation) {
             console.log('Passenger missed the train!');
             passengerState = 'wandering';
             subwayPassenger.state = 'walking';
+            subwayPassenger._steerDir = null;
+            subwayPassenger._steerTimer = 0;
             subwayPassenger.velocity.set(
                 (Math.random() - 0.5) * 0.015,
                 0,
                 (Math.random() - 0.5) * 0.015
             );
         }
+
     } else {
-        // Reached boarding position
         console.log('Passenger successfully boarded!');
         scene.remove(subwayPassenger.model);
 
@@ -2398,7 +2432,7 @@ function animate() {
         // 1️⃣ Update animation mixers (pure animation only)
         loadedCharacters.forEach(char => {
             if (char.mixer) char.mixer.update(dt);
-            updateCharacterLighting(char);
+            //updateCharacterLighting(char);
             applyRotation(char);
         });
 
@@ -2863,13 +2897,13 @@ if (dropdownBtn && dropdownMenu) {
 
             card.innerHTML = `
                 <div class="dropdown-char-avatar">
-                    <img src="${data.avatar || data.characterIcon|| 'images/default-avatar.png'}"
-                         alt="${data.name || key}"
-                         onerror="this.style.opacity='0.3'">
+                    <img src="${data.avatar || data.characterIcon || 'images/default-avatar.png'}"
+                        alt="${data.name || key}"
+                        onerror="this.style.opacity='0.3'">
                 </div>
                 <div class="dropdown-char-info">
-                    <div class="dropdown-char-name">${data.name || key}</div>
                     <div class="dropdown-char-title">${data.projectTitle || ''}</div>
+                    <div class="dropdown-char-name">${data.name || key }</div>
                     <div class="dropdown-char-tags">
                         ${(data.skills || []).map(skill => `<span class="dropdown-tag">${skill}</span>`).join('')}
                     </div>

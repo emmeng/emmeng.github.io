@@ -1,0 +1,263 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .p404-page {
+    font-family: 'Source Code Pro', monospace;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #FFFFFF;
+    background-image:
+      linear-gradient(rgba(120, 184, 255, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 184, 255, 0.3) 1px, transparent 1px);
+    background-size: 120px 120px;
+    background-repeat: repeat;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p404-nav {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 22px 4vw;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+
+  .p404-nav a {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #78B8FF;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 40px;
+    transition: background 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .p404-nav a:hover {
+    background: #FDF4A4;
+    color: #43424C;
+  }
+
+  .p404-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 6vw 60px;
+    min-height: 560px;
+  }
+
+  .glitch-wrap {
+    position: relative;
+    line-height: 1;
+    margin-bottom: 28px;
+  }
+
+  .glitch-num {
+    font-size: clamp(100px, 22vw, 220px);
+    font-weight: 700;
+    color: #78B8FF;
+    letter-spacing: -0.02em;
+    display: block;
+    position: relative;
+  }
+
+  .glitch-num::before,
+  .glitch-num::after {
+    content: '404';
+    position: absolute;
+    inset: 0;
+    font-size: inherit;
+    font-weight: 700;
+    letter-spacing: inherit;
+  }
+
+  .glitch-num::before {
+    color: #FDF4A4;
+    -webkit-text-stroke: 2px #78B8FF;
+    animation: glitch-a 2.8s steps(1) infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+  }
+
+  .glitch-num::after {
+    color: #43424C;
+    opacity: 0.15;
+    animation: glitch-b 2.8s steps(1) infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitch-a {
+
+    0%,
+    14%,
+    59%,
+    66%,
+    100% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+
+    10% {
+      transform: translate(-6px, 3px);
+      opacity: 1;
+    }
+
+    12% {
+      transform: translate(4px, -2px);
+      opacity: 1;
+    }
+
+    62% {
+      transform: translate(8px, -4px);
+      opacity: 1;
+    }
+
+    64% {
+      transform: translate(-3px, 2px);
+      opacity: 1;
+    }
+  }
+
+  @keyframes glitch-b {
+
+    0%,
+    14%,
+    59%,
+    66%,
+    100% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+
+    10% {
+      transform: translate(6px, -3px);
+      opacity: 1;
+    }
+
+    12% {
+      transform: translate(-4px, 2px);
+      opacity: 1;
+    }
+
+    62% {
+      transform: translate(-8px, 4px);
+      opacity: 1;
+    }
+
+    64% {
+      transform: translate(3px, -2px);
+      opacity: 1;
+    }
+  }
+
+  .glitch-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(120, 184, 255, 0.07) 3px,
+        rgba(120, 184, 255, 0.07) 4px);
+    pointer-events: none;
+    z-index: 10;
+    animation: scanshift 0.15s steps(1) infinite;
+  }
+
+  @keyframes scanshift {
+    0% {
+      background-position: 0 0;
+    }
+
+    50% {
+      background-position: 0 2px;
+    }
+  }
+
+  .p404-msg {
+    font-size: clamp(16px, 3vw, 22px);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #43424C;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .p404-sub {
+    font-size: clamp(13px, 2vw, 15px);
+    font-weight: 400;
+    color: #78B8FF;
+    letter-spacing: 0.06em;
+    margin-bottom: 36px;
+    text-align: center;
+  }
+
+  .p404-btn {
+    font-family: 'Source Code Pro', monospace;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #43424C;
+    background: #FDF4A4;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    display: inline-block;
+  }
+
+  .p404-btn:hover {
+    background: #78B8FF;
+    color: #FFFFFF;
+    transform: translateY(-3px);
+  }
+
+  @media (max-width: 500px) {
+    .p404-nav {
+      padding: 16px 4vw;
+      gap: 4px;
+    }
+
+    .p404-nav a {
+      font-size: 13px;
+      padding: 5px 10px;
+    }
+  }
+</style>
+
+<div class="p404-page">
+  <nav class="p404-nav">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="projects.html">Projects</a>
+    <a class="nav-link" href="index.html#about">Contact</a>
+    <a class="nav-link" href="blog.html">Blog</a>
+  </nav>
+
+  <div class="p404-center">
+    <div class="glitch-wrap">
+      <span class="glitch-num">404</span>
+    </div>
+    <p class="p404-msg">Page not found</p>
+    <p class="p404-sub">Oh no! A link is broken...</p>
+    <a class="p404-btn" href="index.html">← go home</a>
+  </div>
+</div>
