@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>emi blog 🌧️</title>
+    <link rel="stylesheet" href="../assets/css/blog.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+        document.addEventListener('mousedown', function () {
+            document.body.style.cursor = 'url(../../images/blog/cursor_click.png) 32 32, auto';
+        });
+
+        document.addEventListener('mouseup', function () {
+            document.body.style.cursor = 'url(../../images/blog/cursor.png) 32 32, auto';
+        });
+    </script>
+</head>
+
+<body>
+    <div class="page">
+        <header class="header">
+            <div class="header-left">
+                <a href="../blog.html">
+                    <h1>emi<br>blog</h1>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <div class="icons">
+                    <img src="../images/blog/sunfish_clover.png" alt="">
+                    <img src="../images/blog/sunfish_clover.png" alt="">
+                    <img src="../images/blog/sunfish_clover.png" alt="">
+                </div>
+                <p class="tagline"> Can you tell I'm into the <br> cyber aesthetic recently</p>
+            </div>
+        </header>
+
+        <!-- BLOG CONTENT -->
+        <main class="article-content">
+
+            <!-- Header -->
+            <div class="article-header">
+                <div class="article-meta">
+                    <time datetime="2023-09-21">September 21, 2023</time>
+                    <div class="article-category">Project</div>
+                </div>
+                <h1 class="article-title">Real-Time Drawing Ingestion into Virtual Environments</h1>
+            </div>
+            <article class="article-body">
+                <p>
+                    Ok haha, sorry, I’m semi-clickbaiting in the fact that I want to talk a bit about the project reasoning and creative effort
+                    before going into the actual technical explanation the pipeline of converting physical drawings in real time to virtual assets
+                    that can be placed in a digital world. If you’re only curious about how that works, please click <a href="#technical-talk">here</a>.
+                </p>
+                <h2> Designing a Standout Experience to Maximize Passerby Interaction </h2>
+                <p>
+                    For Fall 2023, I was elected as one of the Co-Presidents of the VR Club at the University of Michigan, the Alternate
+                    Reality Initiative (ARI)! With this new position came a new challenge, which was that we needed to attract new club
+                    members for the new school year.
+                </p>
+                <p>
+                    One of the biggest opportunities for all clubs is Festifall, the University’s largest annual student organization and
+                    campus involvement fair held during the first week of the fall semester. For ARI, it was one of our best opportunities
+                    to attract new students and introduce them to VR.
+                </p>
+                <p>
+                    If you know me, you know that I love flashy, novel experiences. So when thinking about how ARI could attract attention, my
+                    main thought was building some kind of virtual experience to show that our club had technical capability to teach people XR development. And so that thought led Sonia, another member of the ARI leadership team, and me to create this project, MIVERSE. MI + verse,
+                    Michigan-verse.
+                </p>
+
+                <p>
+                    Inspired by aquarium installations where kids can color their own fish and watch them appear in a virtual aquarium on a
+                    screen, we decided to build our own version where participants can express their creativity by drawing a grafitti design and "spraying" it on our city walls. 
+                    We decided on this idea because when we first started brainstorming about XR, we kept coming back to two things: the
+                    ability to step outside the rules of the physical world, and the limitless creativity that comes
+                    with creating a virtual space. Therefore we wanted to give them the ability to create their own designs and see how it adds to the virtual city.
+                    Visually, we leaned into a cyber-sci-fi Tokyo/Hong Kong aesthetic, with neon colors and a city that never really felt
+                    like it left 2 AM. Because hand modeling an entire city can be time consuming, we focused on just building one busy street.
+                </p>
+
+                <p>
+                    As a content consumer, I think it’s easy to overlook environmental design. However, when you're actually the one designing, there's a lot more that I realized needs to be considered to make a
+                    fictional place feel lived in. Some of the things we considered for city street were what businesses would exist, how the
+                    characters would interact with the stores, and what rules would exist in this city. For example, due to the energy consumption
+                    required to power this city, we theorized that the city must have figured out some cheap way to generate energy, allowing for charging to be free.
+                    Furthermore to the street, we filled it with living spaces and businesses. Oh, and specifically a WcDonald’s because fast casual food will always exist in a capitalistic society!
+                    For finishing touches, we added signs and advertisements, as well as trash and waste scattered throughout the street to
+                    make the city feel more lived in and give the impression that people actually live and work there.
+                </p>
+
+                <div class="image-pair">
+                    <div class="article-image-medium">
+                        <img src="../images/blog/miverse_city_1.gif">
+                        <div class="image-caption">Electronics store</div>
+                    </div>
+                    <div class="article-image-medium">
+                        <img src="../images/blog/miverse_city_2.gif">
+                        <div class="image-caption">Apartment building</div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="article-image-large">
+                    <img src="../images/blog/miverse_lighting_comparison.png">
+                    <div class="image-caption">Environmental lighting can add a lot of city ambiance!</div>
+                </div>
+                <br>
+                <div class="image-pair">
+                    <div class="article-image-small">
+                        <img src="../images/blog/miverse_warning.gif">
+                        <div class="image-caption">Dynamic map bound warning when player tries to leave street</div>
+                    </div>
+                    <div class="article-image-small">
+                        <img src="../images/blog/miverse_vending_machine.gif">
+                        <div class="image-caption">Constant scrolling texture map boundary</div>
+                    </div>
+                </div>
+
+
+
+                <p>
+                    Now, with a city, of course we need people that live there. We ended up designing four characters: Jun, Lucy, Ramen, and
+                    Anton, a cool friend group that represented the kind of community we hoped new students would find when they joined the
+                    VR club.
+                </p>
+
+                <div class="article-image-large">
+                    <img src="../images/blog/miverse_characters.png">
+                    <div class="image-caption">Character designs</div>
+                </div>
+
+        <p> In these characters, we also put a lot of consideration into their designs, as a lot of the details were XR-related.
+            Jun wears a pair of MR glasses, Ramen has a TV screen on his head for a more VR-inspired design, and Lucy is holding
+            a phone, which represents AR. All four characters have our ARI emblem incorporated throughout their clothing, and to
+            make each character more memorable, we gave them a signature color. </p>
+
+        <p> Additionally we decided to use a 2.5D approach for the characters, which gave them a more stylized look while saving us the
+            time of fully modeling each character in 3D. I liked how this approach also felt like another way of combining
+            realities, by bringing 2D illustrations into a 3D world. </p>
+        
+        <div class="article-image-medium">
+            <img src="../images/blog/miverse_city_3.gif">
+            <div class="image-caption">Jun in front of the bar she owns</div>
+        </div>
+
+        <p> Once placed into the city, we gave each character their own topics and perspectives to share. When you talk with them,
+        you get to learn about different aspects of XR through the context of MIVERSE, allowing the technology to be introduced
+        naturally through conversations within the world! </p>
+
+                <div class="article-image-medium">
+                    <video autoplay muted loop>
+                        <source src="../images/blog/mivers_ramen.mp4" type="video/mp4">
+                    </video>
+                <div class="image-caption">ARI character interacting with Ramen, who explains VR</div>
+                </div>
+
+                
+                <h2 id="technical-talk">Physical to Virtual Real Time Image Ingestion Pipeline</h2>
+                <p>
+                    Now for the actual technical part of this project and the main point of the article!
+                </p>
+                <p>
+                    After building out the world and creating the virtual wall where people would actually graffiti, we needed to figure out
+                    how these interactive aquariums even worked. Surprisingly, the process was actually a lot more straightforward than we
+                    expected.   
+                </p>
+                <p>
+                    At the core, these setups are composed of two things: a drawn template and something that detects and uploads it. For
+                    example, an aquarium installation might provide a variety of fish templates for users to color in, along with a system
+                    that scans the finished drawings and brings them into the virtual aquarium.
+                </p>
+                <p>
+                    To do this, we used a Unity library called ProtoTurtle’s BitmapDrawing, which extends Unity’s Texture2D class with
+                    bitmap drawing operations that aren’t available by default. Unity’s Texture2D by default gives users SetPixel and
+                    GetPixel, which wasn’t useful in our case. ProtoTurtle adds operations like DrawLine, DrawCircle, DrawRectangle, and,
+                    most importantly for us, FloodFill, which floods a region of pixels with a new color starting from a given point. We
+                    ended up using FloodClear, which is a variation of FloodFill, to detect the black Sharpie outline of a drawing and make
+                    everything outside of it transparent. Essentially, it calculates the color distance between neighboring pixels and, if
+                    they are close enough to the original color, which we passed in as #FFFFFF, clears them.
+                </p>
+                <p>
+                    Some experimentation was definitely required. When we took pictures of the drawings, we had to try to get the white
+                    paper background evenly colored and as close to white as possible, even though there was some tolerance. We also found
+                    that the Sharpie border had to be at least 0.3 cm thick to provide clean detection.
+                </p>
+                <p>
+                    Once the image was taken, we would upload it to a watched folder on the computer our MIVERSE program was running on.
+                    When the code detected a new image in the folder, it would process the image and spawn it as a plane object on the
+                    graffiti wall in Unity, applying the cleaned-up texture with a transparent shader. And this whole thing ran quickly
+                    enough so that drawings appeared in pretty much real time.
+                </p>
+
+                <br>
+                <div class="article-image-medium">
+                    <img src="../images/blog/r2v_ingestion_diagram.png">
+                </div>
+
+                <br>
+    
+
+                
+                <div class="article-image-medium">
+                    <video autoplay muted loop>
+                        <source src="../images/blog/miverse_img_ingestion.mp4" type="video/mp4">
+                    </video>
+                    <div class="image-caption">Image ingestion pipeline demo!</div>
+                </div>
+
+                <p>
+                    And so, with everything ready to go, it was time for Festifall...
+                </p>
+                <h2>Festifall and What I Overlooked</h2>
+                <p>
+                    When Festifall finally came around, I was really excited to show everything off. Our booth was set up with our banner,
+                    required candy, and MIVERSE was running at maximum brightness with the paper and markers we prepared on the side.
+                </p>
+                <p>
+                    However, I completely overlooked one thing: no one had time to stop and draw.
+                </p>
+                <p>
+                    Students were constantly moving between booths, and usually, people only had enough time for a quick introduction to the
+                    club and a short interaction with moving the ARI characters in the MIVERSE world. The entire interactive drawing and
+                    scanning component we had spent time on never actually got used, which was a little unfortunate.
+                </p>
+                <p>
+                    Still! I think it was really fun to try out and work on something that I thought was cool and had never understood
+                    before. Thankfully, MIVERSE still had a longer life due to it becoming our main club branding. We ended up using it as
+                    the foundation of our beginner Unity and Blender workshops I ran for new club members, as it gave us a cool world to
+                    teach content in!
+                </p>
+                <p>
+                    And I do think it really did give us a much stronger start in terms of club membership that year. I don’t have the exact
+                    signup statistics, but our first meeting room was packed.
+                </p>
+                <p>
+                    But I think the main takeaway from this project is about designing experiences. A feature can work exactly as intended
+                    but still fail if it doesn’t fit the context in which people are using it. You have to consider the entire experience,
+                    not just whether the feature itself works :>
+                </p>
+
+
+
+            </article>
+
+            <!-- Footer -->
+            <footer class="article-footer">
+                <div class="article-tags">
+                    <span class="tag">WISH</span>
+                    <span class="tag">I</span>
+                    <span class="tag">TOOK</span>
+                    <span class="tag">SOME</span>
+                    <span class="tag">IRL</span>
+                    <span class="tag">PICS</span>
+                </div>
+
+                <div class="article-navigation">
+                    <a href="../blog.html" class="nav-link back-to-blog">
+                        ← Back to blog
+                    </a>
+                </div>
+            </footer>
+        </main>
+
+        <!-- LACE BACKGROUND -->
+        <div class="lace-background left-side-bg"></div>
+        <div class="lace-background right-side-bg"></div>
+
+    </div>
+</body>
+
+</html>

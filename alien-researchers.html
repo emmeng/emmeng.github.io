@@ -21,11 +21,7 @@
     <a class="nav-link" href="blog.html">Blog</a>
   </nav>
 
-  <!-- FULL WIDTH HERO IMAGE -->
-  <!--
-    TO ADD IMAGE: replace the div contents with just <img src="images/niantic_thumbnail.png" alt="">
-    The .hero-image-placeholder handles sizing automatically.
-  -->
+
   <div class="hero-image-placeholder">
     <video autoplay loop muted playsinline>
     <source src="images/niantic_header_2.mp4" type="video/mp4">
@@ -38,7 +34,7 @@
       <div class="award-tag">★ Grand Prize — Niantic Lightship Real-World AR Challenge 2023</div>
       <h1>Huh!? I've Been Hired By Alien Researchers</h1>
       <p class="hero-hook">An AR mobile game for language learning through real-world exploration. Players collect
-        vocabulary by walking to GPS-anchored waypoints placed around them in the environment.</p>
+        vocabulary by walking to GPS-anchored waypoints placed around throughout their surroundings.</p>
 
       <!-- 4-COLUMN META BAR -->
       <div class="meta-bar">
@@ -108,16 +104,11 @@
         <div class="meta-col meta-col-links">
           <div class="meta-col-label">Links</div>
           <div class="sidebar-links">
-            <!--
-              featured class = solid blue button, stands out
-              remove featured for a regular outlined link
-            -->
             <a href="https://itch.io/jam/lightship-real-world-ar/rate/2403315" class="sidebar-link featured">
               <span class="link-icon">◎</span>
               <span class="link-text">Itch Submission</span>
               <span class="link-arrow">↗</span>
             </a>
-            <!-- Add more links here as needed -->
           </div>
         </div>
 
@@ -132,9 +123,9 @@
     <div class="section">
       <div class="section-eyebrow">Overview</div>
       <h2 class="section-heading"> Foreign Vocabulary Learning Through Movement</h2>
-      <p class="body-text">The game is structured around a fictional organization — the ICRC, the Interplanetary
-        Communications Research Company — whose goal is to study how human brains memorize foreign words. Players are hired by
-        Dr. Zero to assist with fieldwork, which in practice means walking around while memorizing vocabulary with interactive challenge spots in AR.</p>
+      <p class="body-text">The game is structured around a fictional organization, the ICRC, the Interplanetary
+        Communications Research Company whose goal is to study how human brains memorize foreign words. Players are hired by
+        Dr. Zero to assist with fieldwork, sending them to walk around the physical world while memorizing vocabulary with interactive challenge spots in AR.</p>
       <div class="callout">
         <div class="callout-label">Research motivation</div>
         <p>Multiple studies indicate that information retention increases during light-to-moderate aerobic exercise,
@@ -144,17 +135,6 @@
           ||
           <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4942640/" class="read-more">Physical Exercise and Neuroplasticity <span class="rm-arrow">↗</span></a>
       </div>
-
-      
-     
-
-      <!-- RESPONSIVE VIDEO EMBED -->
-      <!--
-        MEDIA HOLDER GUIDE:
-          Image:   <div class="media-holder"><img src="..." alt=""></div>
-          Video:   <div class="media-holder video"><iframe src="..."></iframe></div>
-          Empty:   <div class="media-holder empty" data-hint="Description of what goes here"></div>
-      -->
       <div class="media-holder video">
         <iframe src="https://www.youtube.com/embed/p7zyFa7Ndis?si=jA-uJWP2ECGBmudJ" title="YouTube video player"
           frameborder="0"
@@ -173,8 +153,7 @@
       <div class="section-eyebrow">My Role</div>
       <div class="role-grid">
         <div class="role-card">
-          <div class="role-tag">Dev</div>
-          <div class="role-name">Development</div>
+          <div class="role-tag">Development</div>
           <ul class="role-bullets">
             <li>Waypoint query and placement system</li>
             <li>Pedometer implementation</li>
@@ -183,22 +162,21 @@
           </ul>
         </div>
         <div class="role-card">
-          <div class="role-tag">Art</div>
-          <div class="role-name">Technical Art</div>
+          <div class="role-tag">Technical Art</div>
           <ul class="role-bullets">
             <li>Concept and UX design</li>
             <li>2D and 3D asset creation</li>
             <li>Texturing and AR optimization</li>
-            <li>Release trailer</li>
+            <li>Producing final project trailer</li>
           </ul>
         </div>
         <div class="role-card">
-          <div class="role-tag">PM</div>
-          <div class="role-name">Project Management</div>
+
+          <div class="role-tag">Project Management</div>
           <ul class="role-bullets">
             <li>Deadlines and milestone tracking</li>
             <li>Team meetings and task allocation</li>
-            <li>Concept direction</li>
+            <li>Concept direction and scope management</li>
           </ul>
         </div>
       </div>
@@ -213,91 +191,135 @@
       <div class="section-eyebrow">Technical</div>
       <h2 class="section-heading">System Highlights</h2>
 
-      <!-- 01 — image bottom -->
-      <div class="tech-block">
-        <div class="tech-header">
-          <div class="tech-num">01</div>
-          <div>
-            <div class="tech-title">Waypoint Placement System</div>
-            <div class="tech-subtitle">Niantic VPS · spatial querying · C#</div>
-          </div>
-        </div>
-        <div class="tech-body">
-          <p>Niantic's Lightship platform maintains a database of real-world "Wayspots" — GPS-tagged locations built
-            from their existing player network. The system queries this database within a configurable radius of the
-            player's position and randomly selects from the returned candidates to place vocabulary waypoints.</p>
-          <p>One edge case: Wayspots can be indoors or behind access-restricted areas. We filtered by distance and
-            cross-referenced with the device's heading to deprioritize waypoints behind the player.</p>
-          <div class="code-block">
-            <pre><span class="cm">// Query Niantic Wayspot database within radius,</span>
-<span class="cm">// then randomly select from returned candidates</span>
+<div class="tech-block">
+
+  <div class="tech-header">
+    <div>
+      <div class="tech-title">Building using Niantic's ARDK 3.0</div>
+      <div class="tech-subtitle">Niantic VPS · Environmental meshing · Occlusion</div>
+    </div>
+  </div>
+
+<div class="tech-body-left narrow-media">
+
+      <div class="media-holder ">
+      <img src="images/maki_standing.gif" alt="Maki standing in AR" />
+      <p class="media-caption">Character standing in augmented reality</p> 
+    </div>
+
+
+    <div class="tech-text">
+
+      <p>
+        Our core AR features use several capabilities from Niantic’s ARDK 3.0. For example, we used the Visual
+        Positioning
+        System (VPS) to create geospatial points for users to interact with instead of relying on raw GPS coordinates.
+        VPS
+        gave us sub-meter positioning accuracy by localizing against the user’s surrounding environment, while also
+        allowing us to
+        validate waypoints against Niantic’s existing “Wayspot” database, a collection of GPS-tagged real-world
+        locations
+        built from their player network. This gave us more reliable locations than querying GPS alone.
+      </p>
+
+      <p>
+        Using the VPS output, we built a dynamic waypoint layer that turned nearby Wayspots into interactable locations.
+        At
+        runtime, we queried for Wayspots within a configurable radius of the player, filtered the results based on our
+        gameplay requirements, and continuously refreshed the available waypoints as the player moved through the
+        environment.
+      </p>
+
+      <!-- <div class="code-block">
+        <pre><span class="cm">// Querying Niantic's Wayspot database within a set radius and returning randomly selected points,</span>
 <span class="kw">var</span> query = WayspotAnchorService
     .GetWayspots(playerPosition, radiusMeters);
+
 <span class="kw">var</span> selected = query
     .OrderBy(_ => Random.value)
     .Take(waypointCount).ToList();</pre>
-          </div>
-          <!-- Image at bottom: use media-holder inside tech-body -->
-          <div class="media-holder tech-img-bottom empty" data-hint="Map view — waypoints around a player"></div>
-        </div>
-      </div>
+      </div> -->
+
+      <p>
+        ARDK 3.0 also allowed us to generate a real-time mesh of the environment from the device camera, which we used
+        for
+        depth occlusion. This was important for our AR interactions with the language-learning characters because we
+        needed virtual
+        objects to correctly interact with and appear behind real-world geometry. Since the mesh takes a few seconds
+        after the
+        session starts to reach a usable confidence level, we gated object visibility once mesh confidence crossed a
+        threshold.
+        For a smooth transition, we used the dissolve shader shown below to bring the objects into the “real world”
+        instead of
+        having them suddenly pop into view.
+      </p>
+
+    </div>
+  </div>
+</div>
 
       <!-- 02 — image right -->
       <div class="tech-block">
         <div class="tech-header">
-          <div class="tech-num">02</div>
           <div>
             <div class="tech-title">Top-Down Dissolve Shader</div>
-            <div class="tech-subtitle">ShaderGraph · world-space Y clip</div>
+            <div class="tech-subtitle"> Unity ShaderGraph</div>
           </div>
         </div>
         <div class="tech-body-right">
           <div class="tech-text">
-            <p>Objects dissolve in and out based on world-space Y position — revealing from the ground up on spawn,
-              collapsing downward on dismiss. The clip threshold is a single animated float.</p>
-            <p>Used world-space Y rather than object-space because ARDK anchors objects at varying elevations.
-              Object-space would have made the effect inconsistent across anchor heights.</p>
-            <div class="code-block">
-    <pre><span class="cm">// _t: 0 = fully hidden, 1 = fully revealed</span>
-    <span class="cm">// clip plane rises from object base to top in world space</span>
-    <span class="kw">float</span> baseY  = transform.position.y - objectHalfHeight;
-    <span class="kw">float</span> topY   = transform.position.y + objectHalfHeight;
-    _t = Mathf.MoveTowards(_t, <span class="nu">1f</span>, Time.deltaTime * dissolveSpeed);
-    
-    <span class="kw">float</span> cutoff = Mathf.Lerp(baseY, topY, _t);
-    material.SetFloat(<span class="st">"_CutoffHeight"</span>,  cutoff);
-    material.SetFloat(<span class="st">"_NoiseStrength"</span>, noiseStrength);</pre>
-</div>
+            <p>Characters dissolve in and out using procedural Simple Noise combined with an animated threshold. The noise pattern is
+            remapped and multiplied before being passed through a Step node and Alpha Clip Threshold, progressively revealing or
+            hiding the characters. We also added a configurable edge width and color to highlight the boundary of the dissolve,
+            creating a digital transition that helps the virtual characters feel like they are holographically entering and leaving
+            the real world.</p>
           </div>
-          <div class="media-holder" style="min-height:180px;margin:0;" data-hint="Dissolve shader gif">
+          <div class="media-holder" data-hint="Dissolve shader gif">
             <img src="images/obi_shader.gif" alt="Dissolve shader gif">
           </div>
         </div>
       </div>
 
-      <!-- 03 — image left -->
+      <!-- 03 — step detection -->
       <div class="tech-block">
         <div class="tech-header">
-          <div class="tech-num">03</div>
           <div>
-            <div class="tech-title">AR Depth Occlusion + Environment Meshing</div>
-            <div class="tech-subtitle">ARDK 3.0 · depth buffer · real-time mesh generation</div>
+            <div class="tech-title">Step Detection</div>
+            <div class="tech-subtitle">Hardware sensor reading</div>
           </div>
         </div>
-        <div class="tech-body-left">
-          <!-- Image on left: media-holder comes first -->
-          <div class="media-holder empty" style="min-height:180px;margin:0;" data-hint="Occlusion demo screenshot">
-          </div>
-          <div class="tech-text">
-            <p>ARDK 3.0 generates a real-time mesh of the environment from the device camera, enabling depth occlusion
-              — game objects are correctly hidden behind real-world surfaces rather than rendering on top of everything.
-            </p>
-            <p>The mesh takes a few seconds to reach usable confidence on session start. We gated object visibility on
-              mesh confidence crossing a threshold, then used the dissolve shader to bring objects in once ready —
-              avoiding the pop from premature spawning.</p>
+        <div class="tech-body">
+          <p>Since there were no suitable APIs for step counting, I wrote a own simple pedometer using the mobile device's
+          accelerometer to detect steps by comparing the magnitude of the acceleration vector against a fixed threshold each
+          frame. To prevent overcounting, a boolean flag was implemented to prevent another step from being counted while the
+          acceleration remained above the threshold. Notably, through testing, we found that this fixed threshold detection on raw
+          accelerometer data is sensitive to how the phone is carried. Carrying the phone in hand versus in a pocket produces
+          different acceleration profiles, so the same threshold does not generalize well across different carrying positions. A
+          smoothing filter or adaptive threshold based on recent motion history would be a more robust next step.</p>
+          <div class="code-block">
+            <pre><span class="kw">void</span> Update()
+      {
+          Vector3 acceleration = Input.acceleration;
+          <span class="kw">float</span> accelerationMagnitude = acceleration.magnitude;
+      
+          <span class="kw">if</span> (accelerationMagnitude > StepThreshold)
+          {
+              <span class="kw">if</span> (!isStepDetected)
+              {
+                  stepCount++;
+                  isStepDetected = <span class="kw">true</span>;
+              }
+          }
+          <span class="kw">else</span>
+          {
+              isStepDetected = <span class="kw">false</span>;
+          }
+      }</pre>
           </div>
         </div>
       </div>
+
+
 
     </div>
   </div>
@@ -310,54 +332,32 @@
       <div class="section-eyebrow">Optimization</div>
       <h2 class="section-heading">Mobile Constraints</h2>
       <p class="body-text">ARDK's camera processing, meshing, and the game renderer all run concurrently on mobile
-        hardware. A few things we did to stay within budget:</p>
+        hardware. To maintain good performance, we followed a few key optimization practices:</p>
       <div class="perf-grid">
         <div class="perf-card">
           <div class="perf-val">Polygon budgets</div>
-          <div class="perf-desc">All 3D assets modeled to mobile AR limits from the start</div>
+          <div class="perf-desc">All 3D assets modeled to mobile AR limits from the start. Keeping polygon counts less than 10k per scene</div>
         </div>
         <div class="perf-card">
           <div class="perf-val">Texture atlasing</div>
           <div class="perf-desc">Combined textures to reduce draw calls and GPU memory use</div>
         </div>
-        <div class="perf-card">
-          <div class="perf-val">Mesh confidence gating</div>
-          <div class="perf-desc">Object spawning held until ARDK mesh quality met minimum threshold</div>
-        </div>
+
         <div class="perf-card">
           <div class="perf-val">Rig optimization</div>
           <div class="perf-desc">Mixamo rigs retargeted and keyframes reduced for real-time mobile playback</div>
         </div>
       </div>
     </div>
+
+    <div class="media-holder" style="max-width: 30%; margin: 24px auto;">
+      <video src="images/aliens_irl_gameplay.mp4" autoplay loop muted playsinline>
+      </video>
+      <p class="media-caption">IRL gameplay!</p>
+    </div>
   </div>
 
   <div class="divider"></div>
-
-  <!-- REFLECTION -->
-  <div class="section-wrap">
-    <div class="section">
-      <div class="section-eyebrow">Reflection</div>
-      <h2 class="section-heading">What I'd Change</h2>
-      <div class="reflection-grid">
-        <div class="reflection-card went-well">
-          <div class="reflection-header">Went well</div>
-          <ul>
-            <li>Mesh gating and dissolve shader solving the same problem from different angles</li>
-            <li>World-space Y caught before terrain bugs appeared</li>
-            <li>Shipped on deadline across a wide scope</li>
-          </ul>
-        </div>
-        <div class="reflection-card change">
-          <div class="reflection-header">Would do differently</div>
-          <ul>
-            <li>Test waypoint density in low-Wayspot areas earlier — coverage varies significantly by location</li>
-            <li>Profile on low-end devices earlier in development</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div style="height: 48px;"></div>
 

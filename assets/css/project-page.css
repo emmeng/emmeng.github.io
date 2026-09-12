@@ -391,7 +391,7 @@ body {
 
 /* ── CALLOUT ── */
 .callout {
-    border-left: 3px solid var(--blue);
+    /* border-left: 3px solid var(--blue); */
     background: rgba(120, 184, 255, 0.07);
     padding: 14px 18px;
     margin: 20px 0;
@@ -447,7 +447,6 @@ body {
 /* ── MEDIA HOLDER ── */
 .media-holder {
     border-radius: 4px;
-    margin: 14px 0;
     overflow: hidden;
     /* FIX 3: no default min-height — collapses cleanly to image/video content */
     background: transparent;
@@ -514,6 +513,13 @@ body {
 
 .media-holder.tech-img-bottom {
     margin-top: 14px;
+}
+
+.media-caption {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin-top: 8px;
 }
 
 /* ── ROLE GRID ── */
@@ -639,7 +645,7 @@ body {
 }
 
 .tech-body p:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0;xq
 }
 
 .tech-body-right {
@@ -653,7 +659,7 @@ body {
 .tech-body-left {
     padding: 16px 18px;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 1fr 300px;
     gap: 20px;
     align-items: start;
 }
@@ -677,6 +683,7 @@ body {
     line-height: 1.75;
     color: var(--dark);
     margin-bottom: 10px;
+    
 }
 
 .tech-text p:last-child {
@@ -685,6 +692,14 @@ body {
 
 .tech-img-bottom {
     margin-top: 14px;
+}
+
+.tech-body-left.narrow-media {
+    grid-template-columns: 300px 1fr;
+}
+
+.tech-body-right.narrow-media {
+    grid-template-columns: 1fr 300px;
 }
 
 /* ── CODE BLOCK ── */
@@ -1493,9 +1508,11 @@ body {
     .reflection-grid {
         grid-template-columns: 1fr;
     }
-
+    
     .tech-body-right,
-    .tech-body-left {
+    .tech-body-left,
+    .tech-body-left.narrow-media,
+    .tech-body-right.narrow-media {
         grid-template-columns: 1fr;
     }
 

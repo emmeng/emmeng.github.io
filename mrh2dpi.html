@@ -33,7 +33,7 @@
       <div class="award-tag">★ Named Author — Nature Scientific Reports · 2024</div>
       <h1>MR Radiation Visualization</h1>
       <p class="hero-hook">A mixed reality tool for visualizing dual neutron/gamma radiation scatter patterns on the
-        HoloLens 2. Designed for emergency responders who need to locate radiation sources in real time without
+        HoloLens 2. The tool is designed for emergency responders who need to locate radiation sources in real time without
         specialized training.</p>
 
       <!-- 4-COLUMN META BAR -->
@@ -110,13 +110,6 @@
               <span class="link-arrow">↗</span>
             </a>
 
-            <a href="https://gitlab.eecs.umich.edu/umich-dnng/dnng-hololens-visualization"
-              class="sidebar-link featured">
-              <span class="link-icon">⬡</span>
-              <span class="link-text">GitLab Repository</span>
-              <span class="link-arrow">↗</span>
-            </a>
-
           </div>
         </div>
 
@@ -133,16 +126,13 @@
       <h2 class="section-heading">Radiation Data Made Spatial</h2>
       <p class="body-text">The H2DPI (handheld dual particle imager) detects radiation and generates waveforms
         across 32 light detectors. Those waveforms are processed into cone-shaped data structures representing probable
-        source directions. Our HoloLens 2 program receives those cones, calculates back-projection, and overlays the resulting
+        source directions. Our HoloLens 2 program recieves that data, calculates a back-projection, and overlays the resulting
         heatmap directly onto the user's physical surroundings.</p>
-      <p class="body-text">Radiation images previously required users to mentally project 2D angular data into 3D
-        space. The MR overlay eliminates that step, making source localization accessible to non-specialists such as
-        emergency responders, inspectors, or personnel without radiation imaging training.</p>
 
       <div class="callout">
         <div class="callout-label">User constraint</div>
-        <p>The primary users are emergency responders — the UI had to be operable quickly under stress, potentially
-          with gloves, without requiring prior training on the system.</p>
+        <p> Because the primary users are emergency responders, the UI had to be operable quickly under stress, potentially
+          with gloves, and without requiring prior training on the system.</p>
       </div>
 
       <div class="media-holder video">
@@ -161,24 +151,22 @@
       <div class="section-eyebrow">Research Context</div>
       <h2 class="section-heading">Why MR Data Visualization Is Important</h2>
       <p class="body-text">The H2DPI works by detecting double-scatter events, which are pairs of radiation interactions that
-        occur within 30 nanoseconds of each other across two separate detector volumes. Each double-scatter event
+        occur within 30 nanoseconds of each other across two separate detector volumes. Each event
         produces an estimated incidence cone: a geometric shape representing the probable direction the radiation came
         from. Once enough cones are stacked over time, their overlap reveals where the source is.</p>
       <p class="body-text">Until now, those cone stacks were displayed as 2D angular plots on a screen, azimuth on
-        one axis, altitude on the other. To use them, a trained operator had to mentally translate that 2D map into
-        a 3D direction relative to where they were standing. That translation step is slow, error-prone, and requires
-        specialist knowledge.</p>
+        one axis, altitude on the other, which meant a trained operator had to mentally translate that 2D map into
+        a real world direction. This translation step is slow, error-prone, and requires specialist knowledge.
+        The MR overlay now eliminates that step, making radiation source localization easily determinable just by
+        walking around the space.</p>
 
       <div class="callout">
-        <div class="callout-label">What MR changes</div>
-        <p>By projecting the back-projected image directly onto the spatial mesh of the real environment, the angular
-          data becomes a heatmap on the actual walls, floors, and objects around the user.
-          <br>
-          <br>
+        <div class="callout-label">Additional MR enhancement</div>
+        <p>
           Our system also added a neural network mode for low-event-rate situations. When
-          double-scatter events are too sparse to form a clear image, single-interaction count rates across all 20
-          detector volumes are fed into a trained network that predicts the source's azimuthal direction in under one
-          second, displaying a yellow arrow in the user's field of view in the HoloLens.
+          double-scatter events are too sparse to form a clear image, a yellow arrow displays in the user's field of view in the Hololens, pointing towards
+          the likely source direction. This arrow comes from the trained network where it predicts the source's source's azimuthal direction in under one
+          second, using single interaction count rates across all 20 detector volumes as input.
         </p>
       </div>
 
@@ -191,7 +179,7 @@
   <div class="section-wrap">
     <div class="section">
       <div class="section-eyebrow">System Context</div>
-      <h2 class="section-heading">Where My Work Sat In The Pipeline</h2>
+      <h2 class="section-heading">My Role in the Pipeline</h2>
       <p class="body-text">The full system spans hardware detection, data processing, and MR visualization. My work
         was on the Unity/HoloLens side where the data has been received and requires visualization.</p>
 
@@ -216,7 +204,7 @@
             <div class="pipe-name">Unity / HoloLens 2</div>
             <div class="pipe-detail">Receives JSON, anchors to detector, back-projects cones, renders UI</div>
           </div>
-          <div class="pipe-mine-label">My scope</div>
+          <div class="pipe-mine-label">My responsibility!</div>
         </div>
       </div>
 
@@ -231,19 +219,16 @@
       <div class="section-eyebrow">My Role</div>
       <div class="role-grid">
         <div class="role-card">
-          <div class="role-tag">Unity Dev</div>
-          <div class="role-name">Development</div>
+          <div class="role-tag">Unity Development</div>
           <ul class="role-bullets">
             <li>QR code spatial anchoring</li>
             <li>Hand menu system (wrist-activated)</li>
-            <li>Colormap implementation and runtime switching</li>
             <li>Visualization mode controls</li>
-            <li>Contributed to pixel shader for mesh coloring and directional ray rendering</li>
+            <li>Mapping of data onto real-world mesh</li>
           </ul>
         </div>
         <div class="role-card">
-          <div class="role-tag">UX</div>
-          <div class="role-name">UX + Documentation</div>
+          <div class="role-tag">UI/UX</div>
           <ul class="role-bullets">
             <li>HCI-focused UI design for emergency responder use</li>
             <li>Project documentation for future collaborators</li>
@@ -251,13 +236,7 @@
             <li>Informational posters in Illustrator</li>
           </ul>
         </div>
-        <div class="role-card">
-          <div class="role-tag">Web Dev</div>
-          <div class="role-name">Development</div>
-          <ul class="role-bullets">
-            <li>Created web portal for H2DPI data visualization for data summarization</li>
-          </ul>
-        </div>
+
       </div>
     </div>
   </div>
@@ -274,10 +253,9 @@
       <!-- FIX 3: tech-block div now correctly wraps header + body, closing before 02 starts -->
       <div class="tech-block">
         <div class="tech-header">
-          <div class="tech-num">01</div>
           <div>
             <div class="tech-title">QR Code Spatial Anchoring</div>
-            <div class="tech-subtitle">HoloLens Spatial Mapping · QR Code API · coordinate transforms</div>
+            <div class="tech-subtitle">HoloLens Spatial Mapping · QR Code API</div>
           </div>
         </div>
 
@@ -291,7 +269,7 @@
               its center gives the HoloLens a scannable reference point.</p>
             <p>When the user scans the QR code, the HoloLens resolves its position in the spatial map and calculates the
               detector's coordinate frame from that offset. All subsequent cone back-projection and ray rendering is
-              computed relative to that reference — if the detector moves, rescanning updates the anchor.</p>
+              computed relative to that reference. If the detector moves, rescanning is required to update the anchor.</p>
           </div>
         </div>
       </div><!-- END tech-block 01 -->
@@ -299,19 +277,17 @@
       <!-- 02 — Hand menu -->
       <div class="tech-block">
         <div class="tech-header">
-          <div class="tech-num">02</div>
           <div>
             <div class="tech-title">Hand Menu and Visualization Controls</div>
-            <div class="tech-subtitle">MRTK · wrist-activated UI · HCI constraints</div>
+            <div class="tech-subtitle">MRTK · Wrist-activated UI</div>
           </div>
         </div>
         <div class="tech-body-right">
           <div class="tech-text">
-            <p>The hand menu appears when the user turns their wrist palm-up — a native HoloLens 2 interaction via
-              MRTK. The design constraint was the user profile: emergency responders potentially wearing gloves, under
-              time pressure, with no prior training on this specific system.</p>
+            <p>The hand menu appears when the user turns their wrist palm-up, a native HoloLens 2 interaction via
+              MRTK. The UI was designed with our user, emergency responders in mind.</p>
             <p>Controls are grouped by function rather than by feature, with large touch targets and minimal hierarchy.
-              The menu exposes all visualization modes without nesting — a user scanning quickly should be able to
+              The menu exposes all visualization modes without nesting as a user scanning quickly should be able to
               locate and toggle any setting in one step.</p>
           </div>
           <div class="media-holder" style="min-height:200px;margin:0;" data-hint="Screenshot of wrist hand menu">
@@ -325,10 +301,9 @@
       <!-- 03 — Colormap -->
       <div class="tech-block">
         <div class="tech-header">
-          <div class="tech-num">03</div>
           <div>
-            <div class="tech-title">Colormap Implementation</div>
-            <div class="tech-subtitle">Perceptually uniform colormaps · runtime switching · accessibility</div>
+            <div class="tech-title">Mapping radiation to Mesh</div>
+            <div class="tech-subtitle">Real World Projection · Accessibility</div>
           </div>
         </div>
         <div class="tech-body-left">
@@ -338,13 +313,12 @@
             </video>
           </div>
           <div class="tech-text">
-            <p>The radiation heatmap needs to convey intensity clearly across varying real-world backgrounds and to
-              different users. The system implements five perceptually uniform sequential colormaps from Matplotlib —
-              Viridis, Inferno, Magma, Plasma, and Cividis — switchable at runtime from the hand menu.</p>
-            <p>Perceptual uniformity matters here because a colormap that looks high-contrast on a white wall may be
-              unreadable against green foliage, and colormaps containing red may be uninformative to users with
-              deuteranomaly. Giving the operator runtime control addresses both problems without a fixed build-time
-              choice.</p>
+            <p>Each radiation point collected from the H2DPI is stored as an azimuth and altitude pair. To project this data onto a 3D
+            surface tracked by the HoloLens, we converted each mesh point into the detector’s local frame, and normalized each
+            point’s direction to derive a corresponding azimuth and altitude. These two angles are then used as texture coordinates
+            so any real space point in can look up its intensity recorded. These raw intensity values are sharpened with a nonlinear
+            curve to filter noise, and are then mapped through one of the five perceptually uniform colormaps chosen so intensity is
+            clear across real-world backgrounds and for different users.</p>
           </div>
         </div>
       </div><!-- END tech-block 03 -->
@@ -415,7 +389,7 @@
 
       <p class="body-text" style="margin-top: 20px;">This project and its documentation was written to hand off to
         subsequent semester teams, who continued the work the
-        following year.</p>
+        following year!</p>
     </div>
   </div>
 
