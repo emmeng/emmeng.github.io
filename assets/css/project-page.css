@@ -1569,3 +1569,41 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.closer-text-lite {
+  text-align: center;
+  font-size: 13px;
+  color: var(--dark);
+  opacity: 0.6;
+  padding: 24px 0;
+}
+
+.inline-link {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(120, 184, 255, 0.4);
+}
+
+.inline-link:hover {
+  border-color: var(--blue);
+}
+
+.closer-text-lite {
+    text-align: center;
+    font-size: 13px;
+    color: var(--dark);
+    opacity: 0.6;
+    padding: 24px 0;
+}
+
+.inline-link {
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(120, 184, 255, 0.4);
+}
+
+.inline-link:hover {
+    border-color: var(--blue);
+}

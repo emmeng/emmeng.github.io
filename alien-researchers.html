@@ -43,7 +43,7 @@
           <div class="meta-col-label">Details</div>
           <div class="meta-col-row">
             <span class="meta-col-key">Timeline</span>
-            <span class="meta-col-val">OCT – DEC 2023</span>
+            <span class="meta-col-val">Oct – Dec 2023</span>
           </div>
           <div class="meta-col-row">
             <span class="meta-col-key">Platform</span>
@@ -289,13 +289,13 @@
           </div>
         </div>
         <div class="tech-body">
-          <p>Since there were no suitable APIs for step counting, I wrote a own simple pedometer using the mobile device's
+          <p>Since there were no suitable APIs for step counting, I wrote my own simple pedometer using the mobile device's
           accelerometer to detect steps by comparing the magnitude of the acceleration vector against a fixed threshold each
           frame. To prevent overcounting, a boolean flag was implemented to prevent another step from being counted while the
           acceleration remained above the threshold. Notably, through testing, we found that this fixed threshold detection on raw
           accelerometer data is sensitive to how the phone is carried. Carrying the phone in hand versus in a pocket produces
           different acceleration profiles, so the same threshold does not generalize well across different carrying positions. A
-          smoothing filter or adaptive threshold based on recent motion history would be a more robust next step.</p>
+          smoothing filter or adaptive threshold based on recent motion history would be a more robust solution!</p>
           <div class="code-block">
             <pre><span class="kw">void</span> Update()
       {
@@ -357,9 +357,10 @@
     </div>
   </div>
 
-  <div class="divider"></div>
-
-  <div style="height: 48px;"></div>
+  <div class="section-wrap">
+    <p class="closer-text-lite">Have questions or comments? <a href="mailto:emileemeng@gmail.com"
+        class="inline-link">Let's talk!</a></p>
+  </div>
 
   <script>
     const observer = new IntersectionObserver((entries) => {
