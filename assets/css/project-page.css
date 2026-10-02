@@ -1607,3 +1607,70 @@ body {
 .inline-link:hover {
     border-color: var(--blue);
 }
+
+/* ── COMPACT MEDIA + CAPTION ── */
+.media-compact {
+    max-width: 420px;
+    margin: 18px auto;
+}
+
+.media-compact-caption {
+    text-align: center;
+}
+.media-compact img,
+.media-compact video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.media-compact-caption {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--dark);
+    opacity: 0.65;
+    margin-top: 6px;
+}
+
+/* empty placeholder state, same pattern as your existing media-holder */
+.media-compact .media-compact-empty {
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(120, 184, 255, 0.03);
+    border-radius: 4px;
+    border: 1px solid rgba(120, 184, 255, 0.2);
+}
+
+.media-compact .media-compact-empty::after {
+    content: attr(data-hint);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    opacity: 0.45;
+    padding: 20px;
+    text-align: center;
+}
+
+/* stack multiple compact items closer together than default section spacing */
+.media-compact+.media-compact {
+    margin-top: 14px;
+}
+
+.media-compact.natural {
+    max-width: 100%;
+    width: fit-content;
+}
+
+.media-compact.natural img,
+.media-compact.natural video {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
