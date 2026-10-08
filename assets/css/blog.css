@@ -1,4 +1,3 @@
-/* FONT FACE */
 @font-face {
     font-family: 'BuildingsUnderRailway';
     src: url('../../assets/fonts/Buildingsandundertherailwaytracksfree_ver.otf') format('opentype');
@@ -11,7 +10,7 @@
     --custom-font-spacing: -0.05em;
 }
 
-/* GLOBAL STYLES */
+/* MAIN */
 
 html,
 body {
@@ -46,7 +45,7 @@ body {
 
 .header {
     position: relative;
-    background: #cfe8f1;
+    background: #D3E8F3;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -104,34 +103,11 @@ body {
     height: 64px;
     z-index: 2;
     pointer-events: none;
-    animation: awning-wobble 6s ease-in-out infinite;
     transform-origin: top center;
 }
 
 .awning path {
-    fill: #cfe8f1;
-}
-
-@keyframes awning-wobble {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    30% {
-        transform: rotate(0.5deg);
-    }
-
-    50% {
-        transform: rotate(0deg);
-    }
-
-    70% {
-        transform: rotate(-0.5deg);
-    }
-
-    100% {
-        transform: rotate(0deg);
-    }
+    fill: #D3E8F3;
 }
 
 /* CONTENT */
@@ -147,7 +123,6 @@ body {
     z-index: 1;
     flex-grow: 1;
     min-height: 0;
-    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* LEFT COLUMN */
@@ -182,7 +157,7 @@ body {
 }
 
 .blue {
-    background: #cfe8f1;
+    background: #D3E8F3;
     color: #604D4D;
 }
 
@@ -229,7 +204,7 @@ body {
 .cd {
     width: 250px;
     height: 250px;
-    background-color: #cfe8f1;
+    background-color: #D3E8F3;
     padding: 10px;
     border-radius: 6px;
     position: relative;
@@ -305,7 +280,7 @@ body {
     border-radius: 4px;
     font-family: 'Carlito', sans-serif;
     padding-bottom: 12px;
-    border-bottom: #cfe8f1 1px solid;
+    border-bottom: #D3E8F3 1px solid;
 }
 
 .todo-item:hover {
@@ -695,7 +670,7 @@ body {
 }
 
 .tag {
-    background: #cfe8f1;
+    background: #D3E8F3;
     color: #604D4D;
     padding: 5px 15px;
     border-radius: 20px;
@@ -740,13 +715,13 @@ body {
     color: #604D4D;
     text-decoration: none;
     padding: 8px 15px;
-    border: 1px solid #cfe8f1;
+    border: 1px solid #D3E8F3;
     border-radius: 4px;
     transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    background: #cfe8f1;
+    background: #D3E8F3;
     transform: translateY(-2px);
 }
 .email-wrapper {
@@ -758,22 +733,30 @@ body {
 
 /* RESPONSIVE */
 @media (max-width: 900px) {
-    .page {
-        width: 90%;
+
+    html,
+    body {
+        overflow-x: hidden;
+        /* stops the lace from causing sideways scroll */
     }
 
-    .content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 30px 16px;
-        margin-top: -20px;
+    .page {
+        width: 86%;
+        /* leaves a 7vw margin on each side for the lace */
+    }
+
+    /* HEADER + AWNING */
+    .awning {
+        height: 5.4vw;
+        /* scales with width so the scallops keep the desktop shape */
     }
 
     .header {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 20px 16px 50px;
+        padding: 20px 16px calc(5.4vw + 12px);
+        /* room for the awning */
     }
 
     .header-right {
@@ -785,43 +768,67 @@ body {
         margin: 0 3px;
     }
 
+    /* MAIN CONTENT */
+    .content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 16px 30px;
+        margin-top: -2.7vw;
+        /* about half the awning height */
+        background-size: 400px auto;
+        /* fixed size so the grid tiles less */
+    }
+
+    /* Posts first, status/music/roadmap after */
     .right-column {
+        order: 1;
         height: auto;
-        max-height: 70vh;
+        max-height: none;
+        padding: 30px 0 0 0;
+    }
+
+    .left-column {
+        order: 2;
+        height: auto;
     }
 
     .posts {
-        max-height: 50vh;
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 
-    /* Hide images on mobile, show text only */
     .post-image {
-        display: none;
-    }
-
-    .post {
-        padding: 15px;
-        border-left: 4px solid #b7cf6f;
-    }
-
-    .post:hover {
-        transform: translateX(5px);
-        border-left-color: #604D4D;
-    }
-
-    .post-info {
-        padding: 0;
+        height: 250px;
     }
 
     .post-info h3 {
-        font-size: 1.1rem;
-        margin-top: 0;
+        font-size: 1.4rem;
     }
 
-    /* Article responsive */
+        /* LACE */
+        .lace-background {
+            --tile: clamp(50px, calc(50px + (100vw - 600px) * 0.017), 55px);
+            width: var(--tile);
+            transform: none;
+            background-size: var(--tile) auto;
+            background-position: center top;
+        }
+    
+        .left-side-bg {
+            left: calc(var(--tile) / -2);
+            right: auto;
+        }
+    
+        .right-side-bg {
+            right: calc(var(--tile) / -2);
+            left: auto;
+        }
+
+    /* ARTICLES */
     .article-content {
         padding: 20px;
-        margin-top: -20px;
+        margin-top: -2.7vw;
     }
 
     .article-title {
@@ -854,19 +861,37 @@ body {
 
 @media (max-width: 600px) {
     .page {
-        width: 95%;
+        width: 86%;
+    }
+
+    /* HEADER + AWNING */
+    .awning {
+        height: 5.4vw;
+    }
+
+    .header {
+        padding: 20px 16px calc(5.4vw + 12px);
     }
 
     .header-left h1 {
         font-size: 2rem;
     }
 
+    .content {
+        margin-top: -2.7vw;
+    }
+
     .panel-header {
         font-size: 0.85rem;
     }
 
+    /* POSTS */
+    .post-image {
+        height: 200px;
+    }
+
     .post-info h3 {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
     }
 
     .cd {
@@ -874,12 +899,10 @@ body {
         height: 250px;
     }
 
-    .post-image {
-        display: none;
-    }
-
+    /* ARTICLES */
     .article-content {
         padding: 15px;
+        margin-top: -2.7vw;
     }
 
     .article-title {
@@ -896,5 +919,28 @@ body {
 
     .article-body h2 {
         font-size: 1.5rem;
+    }
+}
+
+/* DESKTOP LACE: never smaller than 60px */
+@media (min-width: 901px) {
+    .lace-background {
+        --tile: max(60px, 4.2vw);
+        /* 4.2vw is what your desktop tile already is, so big screens look the same */
+        width: var(--tile);
+        transform: none;
+        background-size: var(--tile) auto;
+        background-position: center top;
+    }
+
+    .left-side-bg {
+        left: calc(var(--tile) / -2);
+        /* centered on the page edge, like before */
+        right: auto;
+    }
+
+    .right-side-bg {
+        right: calc(var(--tile) / -2);
+        left: auto;
     }
 }

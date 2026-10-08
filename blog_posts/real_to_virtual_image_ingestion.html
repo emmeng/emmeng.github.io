@@ -54,7 +54,7 @@
             <article class="article-body">
                 <p>
                     Ok haha, sorry, I’m semi-clickbaiting in the fact that I want to talk a bit about the project reasoning and creative effort
-                    before going into the actual technical explanation the pipeline of converting physical drawings in real time to virtual assets
+                    before going into the actual technical explanation regarding the pipeline of converting physical drawings in real time to virtual assets
                     that can be placed in a digital world. If you’re only curious about how that works, please click <a href="#technical-talk">here</a>.
                 </p>
                 <h2> Designing a Standout Experience to Maximize Passerby Interaction </h2>
@@ -69,8 +69,8 @@
                     to attract new students and introduce them to VR.
                 </p>
                 <p>
-                    If you know me, you know that I love flashy, novel experiences. So when thinking about how ARI could attract attention, my
-                    main thought was building some kind of virtual experience to show that our club had technical capability to teach people XR development. And so that thought led Sonia, another member of the ARI leadership team, and me to create this project, MIVERSE. MI + verse,
+                    If you know me, you know that I love flashy and novel experiences. So when thinking about how ARI could attract attention, my
+                    main thought was building some kind of virtual experience to show that our club had technical capability to teach people XR development. And so that thought led another member of the ARI leadership team, and me to create this project, MIVERSE. MI + verse,
                     Michigan-verse.
                 </p>
 
@@ -89,7 +89,7 @@
                     fictional place feel lived in. Some of the things we considered for city street were what businesses would exist, how the
                     characters would interact with the stores, and what rules would exist in this city. For example, due to the energy consumption
                     required to power this city, we theorized that the city must have figured out some cheap way to generate energy, allowing for charging to be free.
-                    Furthermore to the street, we filled it with living spaces and businesses. Oh, and specifically a WcDonald’s because fast casual food will always exist in a capitalistic society!
+                    Furthermore thinking about the street, we filled it with living spaces and businesses. Oh, and specifically a WcDonald’s because fast casual food will always exist in a capitalistic society!
                     For finishing touches, we added signs and advertisements, as well as trash and waste scattered throughout the street to
                     make the city feel more lived in and give the impression that people actually live and work there.
                 </p>
@@ -135,8 +135,8 @@
                     <div class="image-caption">Character designs</div>
                 </div>
 
-        <p> In these characters, we also put a lot of consideration into their designs, as a lot of the details were XR-related.
-            Jun wears a pair of MR glasses, Ramen has a TV screen on his head for a more VR-inspired design, and Lucy is holding
+        <p> In these characters, we also put a lot of consideration into their designs, focusing on XR-related elements.
+            Jun wears a pair of MR glasses, Anton has headphones for spatial audio, Ramen has a TV screen on his head for a more VR-inspired design, and Lucy is holding
             a phone, which represents AR. All four characters have our ARI emblem incorporated throughout their clothing, and to
             make each character more memorable, we gave them a signature color. </p>
 
@@ -171,29 +171,29 @@
                     expected.   
                 </p>
                 <p>
-                    At the core, these setups are composed of two things: a drawn template and something that detects and uploads it. For
+                    At the core, these setups are composed of two things: a drawn template and something that detects and uploads the drawing to the software. For
                     example, an aquarium installation might provide a variety of fish templates for users to color in, along with a system
                     that scans the finished drawings and brings them into the virtual aquarium.
                 </p>
                 <p>
-                    To do this, we used a Unity library called ProtoTurtle’s BitmapDrawing, which extends Unity’s Texture2D class with
-                    bitmap drawing operations that aren’t available by default. Unity’s Texture2D by default gives users SetPixel and
-                    GetPixel, which wasn’t useful in our case. ProtoTurtle adds operations like DrawLine, DrawCircle, DrawRectangle, and,
-                    most importantly for us, FloodFill, which floods a region of pixels with a new color starting from a given point. We
-                    ended up using FloodClear, which is a variation of FloodFill, to detect the black Sharpie outline of a drawing and make
-                    everything outside of it transparent. Essentially, it calculates the color distance between neighboring pixels and, if
-                    they are close enough to the original color, which we passed in as #FFFFFF, clears them.
+                    To mimic this, we used a Unity library called ProtoTurtle’s BitmapDrawing, which extends Unity’s Texture2D class with
+                    bitmap drawing operations that aren’t available by default. Unity’s Texture2D by default gives users SetPixel() and
+                    GetPixel(), which wasn’t useful in our case. ProtoTurtle adds operations like DrawLine(), DrawCircle(), DrawRectangle(), and,
+                    most importantly for us, FloodFill(), which floods a region of pixels with a new color starting from a given point. We
+                    ended up using FloodClear(), which is a variation of FloodFill(), to detect the black Sharpie outline of a drawing and make
+                    everything outside of it transparent. Essentially, it calculates the color distance between neighboring pixels. If
+                    they are close enough to the original color, which we passed in as #FFFFFF, it makes them transparent.
                 </p>
                 <p>
                     Some experimentation was definitely required. When we took pictures of the drawings, we had to try to get the white
-                    paper background evenly colored and as close to white as possible, even though there was some tolerance. We also found
+                    paper background evenly colored and as close to white as possible, even though there was tolerance was built in. We also found
                     that the Sharpie border had to be at least 0.3 cm thick to provide clean detection.
                 </p>
                 <p>
                     Once the image was taken, we would upload it to a watched folder on the computer our MIVERSE program was running on.
-                    When the code detected a new image in the folder, it would process the image and spawn it as a plane object on the
+                    When the code detected a new image in the folder, it would process the image and load the texture up into the spray can. Once the user clicks to spray, it would spawn a plane object on the
                     graffiti wall in Unity, applying the cleaned-up texture with a transparent shader. And this whole thing ran quickly
-                    enough so that drawings appeared in pretty much real time.
+                    enough so that drawings appeared in real time!
                 </p>
 
                 <br>
@@ -230,9 +230,9 @@
                 </p>
                 <p>
                     Still! I think it was really fun to try out and work on something that I thought was cool and had never understood
-                    before. Thankfully, MIVERSE still had a longer life due to it becoming our main club branding. We ended up using it as
-                    the foundation of our beginner Unity and Blender workshops I ran for new club members, as it gave us a cool world to
-                    teach content in!
+                    before. Thankfully, MIVERSE still had a longer life after becoming our main club branding. We ended up using it as the
+                    foundation for the beginner Unity and Blender workshops I ran for new club members, since it gave us a cool world to
+                    teach the content in!
                 </p>
                 <p>
                     And I do think it really did give us a much stronger start in terms of club membership that year. I don’t have the exact
