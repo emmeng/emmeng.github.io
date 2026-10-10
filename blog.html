@@ -87,20 +87,26 @@
                     </p>
                 </section>
 
-                <!-- MUSIC -->
-                <section class="panel fade-in">
-                    <div class="panel-header blue">I'm listening to:</div>
+            <!-- MUSIC -->
+            <section class="panel fade-in">
+                <div class="panel-header blue">I'm listening to:</div>
 
-                    <div class="music">
+                <div class="music">
+                    <a id="cd-link" class="cd-link" href="#" target="_blank"
+                        rel="noopener">
                         <div class="cd">
-                            <img class="cd-disc spin" src="images/blog/cd.png" alt="">
-                            <img class="cd-overlay" src="images/blog/cd_cover.png">
+                            <img img id="cd-disc" class="cd-disc spin" src="images/blog/cd_none.png" alt="">
+                            <img class="cd-overlay" src="images/blog/cd_cover.png" alt="">
                         </div>
+                    </a>
+                    <a id="song-link" class="song-link" href="#" target="_blank"
+                        rel="noopener">
                         <div class="song">
-                            <strong>Moonwalkin' - LNGSHOT</strong><br>
+                            <strong>not listening to anything atm...</strong><br>
                         </div>
-                    </div>
-                </section>
+                    </a>
+                </div>
+            </section>
 
                 <!-- ROADMAP -->
                 <section class="panel fade-in">
@@ -138,7 +144,9 @@
                 <div class="panel-header blue"> Missing my cat TwT</div>
                     <img class="panel-image" src="images/blog/keke.png" alt="">
                 </section>
-            <script async data-uid="2db74d24fd" src="https://emilee-meng.kit.com/2db74d24fd/index.js"></script>
+            <div class="panel fade-in kit-wrapper">
+                <script async data-uid="2db74d24fd" src="https://emilee-meng.kit.com/2db74d24fd/index.js"></script>
+            </div>
             <section class="panel fade-in">
                 <a href="mailto:emileemeng@gmail.com" class="email-wrapper">
                 <div class="panel-header blue"> Chat with me: emileemeng@gmail.com</div>
@@ -210,6 +218,8 @@
         <div class="lace-background left-side-bg"></div>
         <div class="lace-background right-side-bg"></div>
     </div>
+
+    <script src="assets/js/blog.js"></script>
 </body>
 
 </html>

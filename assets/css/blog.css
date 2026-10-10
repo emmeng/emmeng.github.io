@@ -5,6 +5,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 :root {
     --custom-font-family: 'BuildingsUnderRailway', system-ui, sans-serif;
     --custom-font-spacing: -0.05em;
@@ -17,6 +18,7 @@ body {
     cursor: url('../../images/blog/cursor.png') 32 32,
         auto;
 }
+
 * {
     box-sizing: border-box;
 }
@@ -154,6 +156,13 @@ body {
     font-size: 0.95rem;
     font-family: var(--custom-font-family);
     letter-spacing: var(--custom-font-spacing);
+    overflow-wrap: anywhere;
+    /* stops long text (like the email) from overflowing */
+}
+
+/* A header with nothing under it (like "Chat with me") gets no extra space below */
+.panel-header:last-child {
+    margin-bottom: 0;
 }
 
 .blue {
@@ -191,6 +200,13 @@ body {
     color: #604D4D;
 }
 
+/* KIT EMBED */
+.kit-wrapper .formkit-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+
 /* MUSIC */
 .music {
     display: flex;
@@ -201,9 +217,24 @@ body {
     padding: 10px 0 10px 0;
 }
 
+.cd-link,
+.song-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: inherit;
+    /* keeps your custom cursor instead of the default hand */
+}
+
+.cd-link {
+    width: 100%;
+}
+
 .cd {
-    width: 250px;
-    height: 250px;
+    width: 100%;
+    /* same width as the "I'm listening to" header */
+    height: auto;
+    aspect-ratio: 1 / 1;
     background-color: #D3E8F3;
     padding: 10px;
     border-radius: 6px;
@@ -320,7 +351,7 @@ body {
 
 /* RIGHT COLUMN */
 .right-column {
-    padding: 40px 20px 0px 0px;
+    padding: 40px 20px 40px 0px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -334,11 +365,10 @@ body {
     font-family: var(--custom-font-family);
     letter-spacing: var(--custom-font-spacing);
     clip-path: polygon(0% 0%,
-                100% 0%,
-                90% 50%,
-                100% 100%,
-                0% 100%
-            );
+            100% 0%,
+            90% 50%,
+            100% 100%,
+            0% 100%);
 }
 
 /* POSTS */
@@ -540,6 +570,7 @@ body {
     max-height: 450px;
     display: block;
 }
+
 /* Article Image */
 .article-image-large {
     border-radius: 8px;
@@ -551,6 +582,7 @@ body {
     object-fit: cover;
     display: block;
 }
+
 .article-image-medium img {
     width: 60%;
     height: auto;
@@ -562,6 +594,7 @@ body {
     height: auto;
     display: block;
 }
+
 .article-image-medium,
 .article-image-small {
     display: flex;
@@ -569,10 +602,12 @@ body {
     align-items: center;
     justify-content: flex-start;
 }
+
 .image-pair .article-image-medium img {
     width: auto;
     max-width: 100%;
 }
+
 .image-pair .article-image-small img {
     width: auto;
     max-width: 45%;
@@ -580,16 +615,17 @@ body {
 
 .image-pair {
     display: flex;
-        gap: 10px;
-        justify-content: center;
-        /* centers the group */
-        align-items: flex-start;
-        flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    /* centers the group */
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
+
 .email-wrapper {
     text-decoration: none;
     color: inherit;
-    display: inline-block;
+    display: block;
     cursor: pointer;
 }
 
@@ -724,10 +760,11 @@ body {
     background: #D3E8F3;
     transform: translateY(-2px);
 }
+
 .email-wrapper {
     text-decoration: none;
     color: inherit;
-    display: inline-block;
+    display: block;
     cursor: pointer;
 }
 
@@ -806,24 +843,24 @@ body {
         font-size: 1.4rem;
     }
 
-        /* LACE */
-        .lace-background {
-            --tile: clamp(50px, calc(50px + (100vw - 600px) * 0.017), 55px);
-            width: var(--tile);
-            transform: none;
-            background-size: var(--tile) auto;
-            background-position: center top;
-        }
-    
-        .left-side-bg {
-            left: calc(var(--tile) / -2);
-            right: auto;
-        }
-    
-        .right-side-bg {
-            right: calc(var(--tile) / -2);
-            left: auto;
-        }
+    /* LACE */
+    .lace-background {
+        --tile: clamp(50px, calc(50px + (100vw - 600px) * 0.017), 55px);
+        width: var(--tile);
+        transform: none;
+        background-size: var(--tile) auto;
+        background-position: center top;
+    }
+
+    .left-side-bg {
+        left: calc(var(--tile) / -2);
+        right: auto;
+    }
+
+    .right-side-bg {
+        right: calc(var(--tile) / -2);
+        left: auto;
+    }
 
     /* ARTICLES */
     .article-content {
@@ -874,7 +911,10 @@ body {
     }
 
     .header-left h1 {
-        font-size: 2rem;
+        font-size: 2.8rem;
+        /* bumped up from 2rem so the logo stays readable on phones */
+        margin-bottom: 14px;
+        /* space between the logo and the icons */
     }
 
     .content {
@@ -892,11 +932,6 @@ body {
 
     .post-info h3 {
         font-size: 1.3rem;
-    }
-
-    .cd {
-        width: 250px;
-        height: 250px;
     }
 
     /* ARTICLES */
